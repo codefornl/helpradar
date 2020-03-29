@@ -17,5 +17,9 @@ In the design and development of this project we use the following guiding princ
 * All non privacy specific information is open for anyone to see.
 * Use open source tools unless it hinders speed of development or there is no viable open alternative.
 
+## Success criteria
+* Commitment from responsing professionals in the organisation / coordination of the crowd.
+* ...
+
 # Specifications
 For first high level specs see [roadmap](docs/roadmap.md) in docs folder.

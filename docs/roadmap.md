@@ -16,25 +16,33 @@ The primary objective sets out to aid the first two. The aim in designing the sy
 all of these groups. Providing added benefit for the responding community can reduce the burden on data collectors thus increasing the chances of higher quality data.
 
 ## Responding professionals
-* _What can they do to make this system provide value for the responding community this closing a gap?_
-* _What (information) would bring them most value?_
+* _What can they do to (make this system) provide value for the responding community thus closing a gap?_
+* _What (information) would bring most value for profressional organisations?_
+* _What kind of visualisation of this information would aid in executing their responsiblities?_
 
 ## Crisis management
 * _What are the specific types of data that are relevant in scenario evaluation?_
+  * _Does the government has a taxonomy for segmenting civil organisations and is this relevant in this case?_
+  * _What kind of aid categories/classifications for initiatives are important and/or crucial to have insights in?_
+* _What kind of visualisation of this information would aid in executing their responsiblities?_
 * _Which information if relevant over time? And at what frequency?_
 * _What timeframes for intial delivery are we looking at right now?_
 * _Are there any other systems with which interfaces are desired?_
 
 ## Responding community
 * _What are their needs?_
+  * _Where do they usually lack experience?_
+* _What types of (relevant) organisations can we distinguish?_
 * _Which types of organisations in the responding community are most likely to provide help? This in focussing data collection effort_
+* _Which types of organisations in the responding community are most likely to be succesful in their help efforts? This in focussing data collection effort_
+* _At what scales are different types of organisations._
 
 ## Data collectors
 * _Do we have any idea or can we make an estimate of the amount of initiatives?_
 * _Would they be doing the collection from home with a mobile phone?_
 * _Is there capacity to coordinate the data collection region based?_
 * _Would a script be helpful for calling?_
-* _Is there a potential network throughout the country that can assist in the collection?_
+* _Is there a potential network throughout the country that can assist in the collection? VNG, Provinces, NGOs?_
 * _Could we charter people within national organisations with regional branches themselves as proxy data collectors?_
 
 # Non functionals
@@ -54,7 +62,7 @@ all of these groups. Providing added benefit for the responding community can re
   * Integrate or export to [Humanitarian Data Exchange](https://data.humdata.org/)
 
 # Features
-Sections below describe a
+Sections below describe a list of possible features for a solution.
 
 ## [Setup Project & Automation](https://github.com/codefornl/helpradar/milestone/1)
 Initially the setup of this project is required. Given the desire for rapid development of this project

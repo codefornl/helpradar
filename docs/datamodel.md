@@ -15,8 +15,10 @@ _I'm curious as to what is helpful for data scientists_
   * Community Center
   * Nursing Home
   * Commercial
+  * NGO's (This are pro and possibly not belong in this list.)
   * Online Platform
-* Categories _A Tagging system that allows for multiple options_
+* Ad-hoc or existing?
+* Categories _A Tagging system that allows for multiple options, what granularity is valuable here?_
   * Transport
   * Healthcare
   * Care
@@ -38,12 +40,12 @@ _I'm curious as to what is helpful for data scientists_
 * Contacts {0..*}
 
 ## Stat
-Here there is a lot unclarity. Initial conversations made clear that it is relevant to get a picture over time. Since initiatives come, grow and go or merge together. So time and scale are relevant here. But there's still a lot unclear in what ways to possibly expres that. For online platforms it could be relevant to store a daily resolutioncapacity in terms of cases. For offline initiatives merely their activity and/or the size of the initiative in terms of (active) members is probably enough since other numbers aren't tracked_
+Here there is a lot unclarity. Initial conversations made clear that it is relevant to get a picture over time. Since initiatives come, grow and go or merge together. So time and scale are relevant here. But there's still a lot unclear in what ways to possibly expres that. For online platforms it could be relevant to store a daily **resolution capacity** in terms of cases. For offline initiatives merely their activity and/or the size of the initiative in terms of (active) members is probably enough since other numbers aren't tracked_
 
 * RecordDate
 * IsActive
 * Volunteercount
-* Capacity 
+* Resolution capacity 
 
 ## Contact
 Given infomation over time is desired. These contacts are either the ones being called periodically to check in or otherwise people that are themselves responsible for data entry.
