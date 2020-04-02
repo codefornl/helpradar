@@ -44,6 +44,7 @@ all of these groups. Providing added benefit for the responding community can re
 * _Would a script be helpful for calling?_
 * _Is there a potential network throughout the country that can assist in the collection? VNG, Provinces, NGOs?_
 * _Could we charter people within national organisations with regional branches themselves as proxy data collectors?_
+* _Assuming anyone can be a data collector. Would it a simple report initiative form be helpful? 'Official' collectors can then follow up on this._
 
 # Non functionals
 * Infrastructure
@@ -85,6 +86,7 @@ Given the aim to crowdsource a lot of the data we can assume that if we don't ta
 
 * Identify / search potential organisations that setup civil initiatives on map
 * Prevent duplicate entries by showing already known initiatieves.
+* Report initiative (Maybe just a simple form which can then be further investigated/validated)
 * Add initiative
 * Update initiative
 * Close initiative
@@ -113,3 +115,9 @@ Merely providing the tools is probably not enough on the longer term. In order t
 * Data Collection Endpoint.
 * Api Key Management for the above.
 * Scrapers
+
+## AI Identification
+What can ben helpful is that algorithms can scour the internet to identify possible initiatives which can then be validated and tracked bu humans.
+
+## Gamification
+This is me dreaming of mobilizing the crowd to provide the data by giving them some significance and extra motivation when they collaborate with us.
