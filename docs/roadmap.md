@@ -3,6 +3,15 @@ This document is aimed at providing a high level overview in what various stages
 
 _At this stage this document is primarily a high level braindump of possible (non functional) requirements and features_
 
+## Goal
+Build a platform that is predominantly very strong at collecting as much of the desired data in as good as possible quality!
+
+### Strategies
+* Actively get data manually first by calling and scouring the internet
+* (Manually) Follow up on this frequently
+* Seek ways to provide value for and involve the responding community (Guides)
+* Automate & delegate collection
+
 # Context
 This solution sets out to map the civil initiatives (responding community) from various perspectives like location, type, size and time. This to aid the responding professionals and government(crisis management) in providing support and decision making. One of the main challenges in achieving this is the fact that a large part of these civil initiatives is situated offline. There is virtually no benefit for these organisation to spend time in reporting their activities online. So it is largely required to go and get that information.
 
@@ -62,10 +71,10 @@ all of these groups. Providing added benefit for the responding community can re
   * Has an open documented (Swagger) API for the public part of the data.
   * Integrate or export to [Humanitarian Data Exchange](https://data.humdata.org/)
 
-# Features
+# Milestones / Features
 Sections below describe a list of possible features for a solution.
 
-## [Setup Project & Automation](https://github.com/codefornl/helpradar/milestone/1)
+## 1. [Setup Project & Automation](https://github.com/codefornl/helpradar/milestone/1)
 Initially the setup of this project is required. Given the desire for rapid development of this project
 having the neccesary infrastructure & automation in place to achieve this is crucial.
 
@@ -77,24 +86,43 @@ having the neccesary infrastructure & automation in place to achieve this is cru
 * Setup internationalization
 * Add Authentication
 
-## [Initial Data Entry](https://github.com/codefornl/helpradar/milestone/2)
+## 2. MVP [Initial Data Entry](https://github.com/codefornl/helpradar/milestone/2)
 In order to start testing and collecting the desired data An MVP that allows for this should be constructed.
 
-**Goal:** Setup an easy and quick data entry process that aids in a sane dataset.
+**Goal:** Setup an easy and quick data entry process that facilitates small scale testing of data format
+**Blocker** If we can get a better idea on the statistics data potentially relevant we can start.
 
-Given the aim to crowdsource a lot of the data we can assume that if we don't take measures the data contains errors and duplicates. The idea is to leverage already available data on maps for instance. So one can search for a certain type of organisation and add that as an initiative.
-
-* Identify / search potential organisations that setup civil initiatives on map
-* Prevent duplicate entries by showing already known initiatieves.
-* Report initiative (Maybe just a simple form which can then be further investigated/validated)
 * Add initiative
 * Update initiative
+* Basic Call/Enquiry Script
+* Have basic feedback in place -> email?
+* Add initiative stats
+  * _Is zooming in to a postal code/individual level too much?_
+  * _What projections/dimensions could be relevant on timebased data?_
+* List initiatives (Have a total counter for goal purposes)
+
+## Improve Data Quality
+Given the aim to crowdsource a lot of the data we can assume that if we don't take measures the data contains errors and duplicates. The idea is to leverage already available data on maps for instance. So one can search for a certain type of organisation and add that as an initiative.
+
+* Add research friendly data exports (csv mimetype on API endpoint)
+* Report initiative (Maybe just a simple form which can then be further investigated/validated)
+
 * Close initiative
 * Add parent initiative/organisation
-* Basic Call/Enquiry Script
-* Have basic feedback in place
+* Identify / search potential organisations that setup civil initiatives on map
+* Prevent duplicate entries by showing already known initiatieves.
+
+## Collect follow up data
+* Provide list of follow up tasks.
+* Claim follow-up.
+* Add follow up.
+* Data Collection Endpoint.
+* Api Key Management for the above.
+* Scrapers
 
 ## Data Visualisation
+_thinking about this for longer, the visualization part is less relevant for LOT-C. They're primarily interested in the data itself and posess the means themselves to visualize and combine that with other information_
+
 * Show initiaves on a map 
 _Could be relevant for search and thus go to earlier milestone_
 * Visualize regional capacities
@@ -108,13 +136,6 @@ Merely providing the tools is probably not enough on the longer term. In order t
 * Provide Best Practices
 * Add reader role (so professionals can get in touch with initiatives using private info)
 
-## Collect follow up data
-* Provide list of follow up tasks.
-* Claim follow-up.
-* Add follow up.
-* Data Collection Endpoint.
-* Api Key Management for the above.
-* Scrapers
 
 ## AI Identification
 What can ben helpful is that algorithms can scour the internet to identify possible initiatives which can then be validated and tracked bu humans.
