@@ -1,5 +1,5 @@
 # High level requirements & roadmap
-This document is aimed at providing a high level overview in what various stages we can segment the development of this application. All with the aim of providing value as soon as possible. In essence this entails two things: Data Entry and Visualisation.
+This document is aimed at providing a high level overview in what various possible requirements and features. See the [Research & Development phases & goals](docs/phases_goals.md) for more clarity on how we can tackle this project by splitting it up in various R&D phases. All with the aim of providing value as soon as possible. In essence the ultimate goals is getting is as much data as possible with the best quality. Fancy visualisations should only be implemented if they actually aid the data entry process. Otherwise this can be done on secondary projects or people feeling the desire to do it.
 
 _At this stage this document is primarily a high level braindump of possible (non functional) requirements and features_
 
