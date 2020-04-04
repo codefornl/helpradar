@@ -19,6 +19,7 @@ _I'm curious as to what is helpful for data scientists_
 * Type
   * Religous Centre
   * Sports Club
+  * Scouting
   * Community Center
   * Nursing Home
   * Commercial
@@ -43,6 +44,8 @@ _I'm curious as to what is helpful for data scientists_
   * Municipality
   * Province / Region
   * Geolocation
+* Cost?
+* Eenmalig/Duur aanbod?
 * Date Added
 * Date Closed (If the initiative no longer is active)
 * Remarks

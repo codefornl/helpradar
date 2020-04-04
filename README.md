@@ -22,4 +22,4 @@ In the design and development of this project we use the following guiding princ
 * ...
 
 # Specifications
-For first high level specs see [roadmap](docs/roadmap.md) in docs folder.
+For first high level specs see [roadmap](docs/roadmap.md) in docs folder. See the [Research & Development phases & goals](docs/phases_goals.md) for more clarity on how we can tackle this project by splitting it up in various R&D phases.
