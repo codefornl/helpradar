@@ -24,12 +24,6 @@ class HeldNodig:
             rawlocation = card.find('h6').text.strip(' \t\n\r')
             # remove (maps) from rawlocation, split on first space
             rawlocation = rawlocation.strip('(Maps)')
-<<<<<<< HEAD
-=======
-            locationobject = rawlocation.split(' ', 1)
-            location = {'postalcode': locationobject[0].strip(
-            ), 'city': locationobject[1].strip(), 'title': rawlocation.strip()}
->>>>>>> 7d80ae4... Now merging various sites into a sqlite db
 
             description = card.find(
                 'p', class_='card-text').text.strip(' \t\n\r')
