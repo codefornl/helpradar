@@ -14,8 +14,7 @@ Lijst van online bronnen voor initiatieven.
 - [ ] https://www.bezorg-dezorg.nl/ - __afgesloten met user/password/volledige persoonsgegevens__
 - [ ] https://studentenhelpenscholieren.nl/
 - [X] https://zorgheldenauto.nl
-
-
+- [ ] [Whapp](https://whapp.nl/) __Denk ook te gesloten__
 
 ### Extra informatie
 **api address:**: https://api-server-271218.appspot.com/v1/tasks?zipcode=1945RP&taskTypeId=32ea2942-68be-11ea-bc55-0242ac130003
