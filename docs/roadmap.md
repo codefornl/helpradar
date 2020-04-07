@@ -7,6 +7,7 @@ _At this stage this document is primarily a high level braindump of possible (no
 Build a platform that is predominantly very strong at collecting as much of the desired data in as good as possible quality!
 
 ### Strategies
+* Scape the internet as much as possible
 * Actively get data manually first by calling and scouring the internet
 * (Manually) Follow up on this frequently
 * Seek ways to provide value for and involve the responding community (Guides)

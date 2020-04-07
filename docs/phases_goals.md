@@ -8,6 +8,7 @@ This should primarily answer the question: **_what initiatives & data should we 
 
 * Which types of initiatives are deployed by what kind of organisation?
 * What type(s) of help do they offer, where, how much (supply & demand), how are they doing this, to whom, since when, do they offer it for free?
+  * Identificatievraag voor b.v. email: Biedt u in het kader van de coronacrisis extra hulp aan de samenleven, en zo ja wat voor een hulp?
 * Which types of initiatives or organisations are out of scope?
   * For now the offerings of medical and PPE equipment by alternative suppliers is out of scope since this is already being tracked in another system.
 * What kind of data is relevant in answering the needs / questions?
