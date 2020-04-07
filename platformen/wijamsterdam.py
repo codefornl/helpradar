@@ -25,11 +25,7 @@ class WijAmsterdam:
             description = card.find(
                 'p').text.strip(' \t\n\r')
             link = card.find('a')['href']
-<<<<<<< HEAD
             db.session.add(Initiative(name=title,
-=======
-            db.session.add(Initiative(category=title,
->>>>>>> 7d80ae4... Now merging various sites into a sqlite db
                                       description=description,
                                       group="unknown",
                                       source='https://wijamsterdam.nl' + link,
