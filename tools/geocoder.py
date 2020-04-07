@@ -1,6 +1,7 @@
 import time
 from geopy.geocoders import Nominatim
 from platformen import Initiative, Db
+import re
 
 class Geocoder:
 
@@ -10,19 +11,34 @@ class Geocoder:
     def geocode(self):
         db = Db()
         locationset = db.session.query(Initiative).filter(Initiative.location.isnot(None)).with_for_update().all()
+
+        # Regex voor postcode geschreven ls `9999XX`
+        pattern = r'\d{4}[A-Z]{2}'
+        p = re.compile(pattern)
         for item in locationset:
+            geocodeterm = item.location
+            # item.location prepareren voor stadsdelen
+            geocodeterm = geocodeterm.replace('Amsterdam Algemeen', 'Amsterdam')
 
+            if geocodeterm.startswith('Stadsdeel'):
+                geocodeterm = geocodeterm + ' Amsterdam'
+            
             # item.location prepareren voor `landelijk`
-            if item.location=='Landelijk':
-                match = self.geolocator.geocode(item.location)
+            if geocodeterm in ['Landelijk', 'Heel Nederland']:
+                geocodeterm = 'Nederland'
             else:
-                match = self.geolocator.geocode('Nederland')
+                # item.location prepareren voor `postcode`
+                zipwithoutspace = p.findall(item.location)
 
-            # todo - item.location prepareren voor `postcode`
+                if len(zipwithoutspace) > 0:
 
-            match = self.geolocator.geocode(item.location)
+                    for hit in zipwithoutspace:
+                        geocodeterm = geocodeterm.replace(hit, hit[:4] + '' + hit[4:])
+
+            match = self.geolocator.geocode(geocodeterm)
+
             if match is None:
-                print("ERROR  : " + item.location + " niet gevonden")
+                print("ERROR  : " + geocodeterm + " niet gevonden")
                 item.osm_address = "Niet gevonden"
             else:
                 item.osm_address = match.address
@@ -34,6 +50,8 @@ class Geocoder:
             db.session.add(item)
             db.session.commit()
             time.sleep(1) # Sleep so we don't overstretch the nominatim api
+
+
 
 
 
