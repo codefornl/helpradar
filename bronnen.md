@@ -15,6 +15,11 @@ Lijst van online bronnen voor initiatieven.
 - [ ] https://studentenhelpenscholieren.nl/
 - [X] https://zorgheldenauto.nl
 - [ ] [Whapp](https://whapp.nl/) __Denk ook te gesloten__
+- [ ] http://helponzezorg.nl/
+- [ ] https://bezorgeninvelsen.nl/
+- [ ] https://wearestillopen.com/nl
+- [ ] https://www.facebook.com/groups/coronahulp
+- [ ] [FB - Corona Hulp Amsterdam](https://www.facebook.com/groups/864958550670010)
 
 ### Extra informatie
 **api address:**: https://api-server-271218.appspot.com/v1/tasks?zipcode=1945RP&taskTypeId=32ea2942-68be-11ea-bc55-0242ac130003
