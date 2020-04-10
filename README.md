@@ -28,6 +28,7 @@ We kunnen zeker wel wat handjes gebruiken op de korte en lange termijn. We zijn 
 We kunnen sowieso al hulp gebruiken van:
 * **Marketeer(s)** Om organisaties en burgers actief via mail & social media te bewegen input te leveren op het platform.
 * **Developers & Data scientists** Om zoveel mogelijk data van online & social media platformen binnen te halen en te analyseren.
+* **Designers** Voor een logo, simpele website maar vooral een visueel concept neer te zetten wat dit kan worden.
 
 # Visie
 Dit is een tijd waarin mensen vanuit intrinsieke motivatie allerlei hulp bieden. We verlangen naar een wereld waarin mensen co-creëren voor het welzijn van de samenleving vanuit deze stimulerende intrinsieke motivatie. Wij willen een veilige omgeving bieden om hulp te delen.
