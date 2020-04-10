@@ -61,5 +61,5 @@ Begeleiding en aansturing vanuit de behoeftestelling door:
 * Lees voor de technische en functionele specificaties en wensen de [roadmap](docs/roadmap.md)
 * Wat wij proberen te onderzoeken wordt beschreven in de [Research & Development phases & goals](docs/phases_goals.md)
 * De lijst met online platformen staat in [bronnen](bronnen.md)
-* Hoe wij denken dat de organisatie rondom het platform kan worden ingeregeld staat in [Stroomschema](Stroomschema.svg)
-* Een ruwe schets van ons [concept](concept.svg) toont aan hoe dit in het grote geheel past.
+* Hoe wij denken dat de organisatie rondom het platform kan worden ingeregeld staat in [Stroomschema](docs/Stroomschema.svg)
+* Een ruwe schets van ons [concept](docs/concept.svg) toont aan hoe dit in het grote geheel past.
