@@ -1,8 +1,11 @@
 # Data Model Draft
 This is a draft of the data being stored. It's merely a list of possible things I can come up with. This it might contain a lot more privacy related information than what is really necessary. At this stage we can safely assume a lot of unknowns. 
 
-## Initiative
+# Initiative
 There are various granularities in initiatives. There's different scenario's to take into account:
+
+## Different types of initiative relations
+Initiatives(organisations) can relate to each other in various ways. Local organisations can be a **child of** national organisations and vice versa. Local initiatives are **present on** national platforms. Local initiatives can **collaborate**. A few of these are already explained below.
 
 ### Local branches of national organisations
 Offline initiatives can be assumed to be local where some of these local initiatives are part of a bigger national regional of national organisation. When crowdsourcing it could be relevant to exploit this hierachy and thus store information on different levels because there's relevant contact information. Wether or not and at what stage this hierarchy is actually stored and at what granularity (will we even go down as far as individuals?) is open for debate. It probably delays to much when doing this to early. But this is the reason there is already a ParentInitiativeID.
@@ -10,7 +13,10 @@ Offline initiatives can be assumed to be local where some of these local initiat
 ### Tracking information on a local level of national online platforms
 An online platform is essentially a national organisation. In order to track information on a regional level (city probably) we can split the platform in local initiatives using the same logic as above. Information can then be tracked on this level.
 
-### Model
+
+# Model
+Below was initial notes. A more formal design is now in [datamodel.dbml](datamodel.dbml) file.
+
 _I'm curious as to what is helpful for data scientists_
 
 * Id
