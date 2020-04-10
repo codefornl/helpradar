@@ -22,6 +22,14 @@ Wij denken dat het goed is als de "professionele organisaties" weten wat de "ini
 # Wie werken er aan helpradar?
 Vanuit de Community van Code For NL is het initiatief gestart. In onze ogen valt een systeem als helpradar onder de [commons](https://en.wikipedia.org/wiki/Digital_commons_(economics)) en is het zaak dat dit een product is van de samenleving dat niet door de overheid, bedrijven of personen economisch of anderszins kan worden uitgebaat. De regie over een database met helpbieders en hulpvragers dient uiterst zorgvuldig te worden georganiseerd. Wij werken dan ook samen met onafhankelijke partijen die een duidelijke visie hebben met betrekking tot privacy en commons en kunnen faciliteren in een veilige en goed beveiligde omgeving die desondanks de samenleving en individuele personen regie geeft over de eigen en de gemeenschappelijke informatie.
 
+## Help Helpradar!
+We kunnen zeker wel wat handjes gebruiken op de korte en lange termijn. We zijn hard aan het werk een simpel systeem met Ushahidi neer te zetten zodat we bijdrages van burgers kunnen organiseren en ook onze eigen eerste bevindingen kunnen tonen. De contouren voor de lange worden gaandeweg ook duidelijker.
+
+We kunnen sowieso al hulp gebruiken van:
+* **Marketeer(s)** Om organisaties en burgers actief via mail & social media te bewegen input te leveren op het platform.
+* **Developers & Data scientists** Om zoveel mogelijk data van online & social media platformen binnen te halen en te analyseren.
+* **Designers** Voor een logo, simpele website maar vooral een visueel concept neer te zetten wat dit kan worden.
+
 # Visie
 Dit is een tijd waarin mensen vanuit intrinsieke motivatie allerlei hulp bieden. We verlangen naar een wereld waarin mensen co-creëren voor het welzijn van de samenleving vanuit deze stimulerende intrinsieke motivatie. Wij willen een veilige omgeving bieden om hulp te delen.
 
