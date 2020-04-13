@@ -9,6 +9,10 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <script
+    src="https://code.jquery.com/jquery-3.4.1.js"
+    integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+    crossorigin="anonymous"></script>
 </head>
 <body>
   <nav class="indigo lighten-1" role="navigation">
@@ -39,12 +43,15 @@
       <div class="row center">
         <h5 class="header col s12 light">In samenwerking met het Landelijk Operationeel Team Corona willen het land laten zien hoe deze crisis tot mooie initiatieven leidt onder onze bevolking.</h5>
       </div>
+      <div class="row center">
+        <a href="" id="download-button" class="btn-large waves-effect waves-light orange">Ga naar het overzicht</a>
+      </div>
     </div>
   </div>
-
+  
   <div class="container">
     <div class="row">
-      <form class="col s6">
+      <form class="col s6" id="tip">
         <p class="light">
           Weet jij van een initiatief, geef het ons door met dit formulier.
         </p>
@@ -71,7 +78,7 @@
         </div>
         <div class="row">
           <div class="input-field col s12">
-            <button class="btn waves-effect waves-light orange" type="submit" name="action">Tip Ons
+            <button class="btn waves-effect waves-light orange" type="submit" >Tip Ons
               <i class="material-icons right">send</i>
             </button>
           </div>
@@ -226,10 +233,21 @@
   </footer>
 
 
-  <!--  Scripts-->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <!--  Scripts -->
+  <!-- <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script> -->
   <script src="js/materialize.js"></script>
   <script src="js/init.js"></script>
-
+  <script>
+    $( "#tip" ).submit(function( event ) {
+      /*
+      $.ajax({
+        url: "http://api.helpradar.nl/oauth/token",
+        accepts: "application/json"
+      })
+      */
+      alert( "Wordt aan gewerkt." );
+      event.preventDefault();
+    });
+  </script>
   </body>
 </html>
