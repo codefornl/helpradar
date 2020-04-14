@@ -103,7 +103,7 @@
     <a name="what"></a>
     <div class="section">
       <h2 class="header">
-        Wat is Heldradar?
+        Wat is Helpradar?
       </h2>
       <div class="row">
         <span class="light">
@@ -238,15 +238,36 @@
   <script src="js/materialize.js"></script>
   <script src="js/init.js"></script>
   <script>
-    $( "#tip" ).submit(function( event ) {
-      /*
-      $.ajax({
-        url: "http://api.helpradar.nl/oauth/token",
-        accepts: "application/json"
-      })
-      */
-      alert( "Wordt aan gewerkt." );
-      event.preventDefault();
+    //var $apiUri = "http://api.helpradar.nl";
+    var apiUri = "https://helpradar-test.ushahidi.io";
+    var apiKey = "a7a6c85e-0220-40be-b797-f6d143184b5f";
+    $( "#tip" ).submit(function(event) 
+      {
+        alert( "Work in progress!");
+        event.preventDefault();
+
+        /*
+        $.ajax({
+          method: "POST",
+          url: apiUri + "/oauth/token",
+          accepts: "application/json",
+          //headers: { "Authorization": "Basic " + apiKey},
+          data: {
+            "grant_type":"client_credentials",
+            "client_id": "",
+            "client_secret":"",
+            "scope":"posts"
+          },
+          success : function (data) {
+            console.log(data);
+            event.preventDefault();
+          },
+          error: function(error){
+            alert( "Fout bij versturen tip " + error.message);
+            console.log(error);
+          }
+        });
+        */
     });
   </script>
   </body>
