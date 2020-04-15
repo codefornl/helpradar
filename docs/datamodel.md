@@ -15,7 +15,6 @@ Offline initiatives can be assumed to be local where some of these local initiat
 ### Tracking information on a local level of national online platforms
 An online platform is essentially a national organisation. In order to track information on a regional level (city probably) we can split the platform in local initiatives using the same logic as above. Information can then be tracked on this level.
 
-
 # Model
 Het ontwerp in [datamodel.dbml](datamodel.dbml) gaat uit van een eindsituatie zoals we de wensen zouden kunnen
 vangen in een database. Echter gebruiken we Ushahidi om input en redactie van de data te faciliteren. Het feit dat dit een tool
@@ -24,17 +23,19 @@ is met meer flexibiliteit betekent dat het noodzakelijk wordt om te bedenken hoe
 ## Uitdaging
 Het datamodel tracht een balans te zoeken tussen bruikbaarheid en complexiteit. De voornaamste complexiteit zit hem in het netwerk aspect en de definitie van initiatief. In principe kan een facebook groep bijvoorbeeld een initiatief van een organisatie zijn, we kunnen die organisatie ook als initiatief beschouwen als deze zich op verschillende platformen presenteert. Het model faciliteert een simpele weergave waarbij de organisatie gewoon als velden is opgenomen in het initiatief. Het biedt echter ook de mogelijkheid om de initiatieven op te splitsen. Dit is echter vanuit beheersoogpunt met Ushahidi enkel in beperkte mate mogelijk. Hier over meer in de mapping.
 
-## Data Definities
+# Data Definities
 De volgende sectie doen een voorstel voor invulling van verschillende elementen voor classificatie.
 
 ### Organisatiesoort
 * Religieus
 * (Sport)Vereniging
 * Buurthuis
-* Welzijn
+* Stichting Welzijn
+* School
 * Overheid _Het niveau van de overheid zou duidelijk moeten worden uit andere data zoals de schaal_
-* Verzorgingshuis
+* Verzorgingstehuis
 * Bedrijf/ZZP  _Een ZZP'er is een individu maar opereert uit naam van z'n initiatief_
+* Non-Profit
 * NGO
 * Online Platform
 * Individu
@@ -68,22 +69,21 @@ Dit is geen definitieve of uitputtende lijst maar eerder een initiële inventari
   * Medisch
   * Ouderen
   * Gehandicapten
-  * Kinderopvang
-* Distributie
+  * Kinderopvang _Gewoon oppas of andere professionele vormen van kinderopvang_
+* Transport
   * Goederen
   * Voedsel
-  * Diensten
-  * Personen
+  * Dienstverleners _In feite vervoer van niet burgers ofwel professionals zoals zorgverleners bijvoorbeeld._
+  * Burgers
 * Huishoudelijk
   * Schoonmaken
   * Boodschappen
-  * Tuin
-  * Onderhoud
+  * Onderhoud _Klussen in huis of tuin_
 * Onderwijs
   * Bijscholing
 * Kennis
-  * Lokaal
-  * Onderzoek
+  * Lokaal _Mensen die kennis hebben van lokale organisaties, netwerken of regelgeving._
+  * Onderzoek _Met kennis bij kunnen dragen aan onderzoeken._
 * Geestelijk
   * Psychisch
   * Religieus
@@ -91,11 +91,12 @@ Dit is geen definitieve of uitputtende lijst maar eerder een initiële inventari
   * Muziek
   * Theater
   * Sport
-  * Steunbetuiging
+  * Steunbetuiging _Acties als het versturen van kaartjes, zingen of klappen._
   * Coaching
-* Productie
-  * Gekwalificeerde hulpmiddelen
-  * Ongekwalificeerd hulpmiddelen
+* Productie _Productie van goederen ten behoeve van bijvoorbeeld hulpverleners of hulpbehoevenden._
+  * Gekwalificeerde hulpmiddelen _Hulpmiddelen die zijn goedgekeurd voor professioneel gebruik_
+  * Ongekwalificeerd hulpmiddelen _Hulpmiddelen zonder keurmerk of goedkeuring._
+  * Voedsel _Productie van voedsel (bijvoorbeeld restaurants die nu wel thuis bezorgen._
 * Onderdak
   * Daklozen
   * Hulpverleners
@@ -108,5 +109,14 @@ Het idee is dat tags faciliteren in het flexibel verder classificeren van initia
 * Whatsapp, Facebook _Niet binair in die zin_
 _Initiatief technisch zou dit ook kunnen betekenen dat een initiatief verschillende presence_on links zou hebben naar facebook groepen e.d. die als los initiatief opgenomen zijn_
 
-## Mapping
+# Ushahidi Mapping
 Deze sectie beoogt invulling te geven aan hoe het datamodel en stamgegevens in Ushahidi worden opgenomen.
+
+## Beperkingen
+Er zijn een aantal beperkingen die enerzijds lastig zijn en anderzijds mogelijkheden bieden.
+
+* Is met name goed in losse locatiegebaseerde informatie met als uitgangspunt een gebeurtenis.
+  * Een initiatief is nog te beschouwen als een gebeurtenis. Maar een contact of een meetmoment hebben hier niet zo heel veel meer mee te maken. 
+* Kan geen data inhoudelijk valideren, enkel verplichten ja of nee.
+* Niet echt geschikt om relaties te leggen. Althans, die mogelijkheid is beperkt tot relaties tussen verschillende type posts.
+  * Het is echter wel mogelijk om vanuit een taak hangend aan een survey relaties te leggen naar types van surveys van hetzelfde type!
