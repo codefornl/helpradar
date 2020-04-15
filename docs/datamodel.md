@@ -43,9 +43,9 @@ _Buurthuis en Welzijn zijn vaak twee handen op één buik, dus wellicht is dat s
 
 ### Types
 * marketplace (bij elkaar brengen)
-* mobilisatie/actie (vanuit initiatief actie)
-* monitor/beeld (informatie bij elkaar brengen),
-* grouping (zelf-help binnen de groep) _Dit is dan bijvoorbeeld een whatsapp groep in de peergroup van familie oid?_
+* mobilisatie (vanuit initiatief actie)
+* monitor (informatie bij elkaar brengen),
+* peergroup (zelf-help binnen de groep) _Dit is dan bijvoorbeeld een whatsapp groep in de peergroup van familie oid?_
 
 ### Categorieën
 Van de aandachtskaart van LOT-C (Staat alleen in Drive):
