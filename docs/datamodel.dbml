@@ -17,8 +17,9 @@ Table initiatives as I{
   name varchar [not null]
   description varchar
   organiser varchar [note: 'The name of the organisation or person who initiated this']
+  organiser_kind_id int [ref: > OK.id]
   targets varchar [note: 'If needed the target group(s) could be defined using simple text.']
-  type_id int [ref: > types.id]
+  type_id int [ref: > T.id]
   scale scale
   url varchar
   email varchar
@@ -32,7 +33,15 @@ Table initiatives as I{
 
 // This is considered to be the Vorm which is spoken of in the initial questions.
 // So is this a marketplace, a monitor (overview), mobilisation, peergroup or individual.
-Table types as t {
+Table types as T {
+  id int [pk, increment]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  name varchar [not null]
+}
+
+// This is considered to be the soort who is spoken of in the initial questions.
+Table organisation_kind as OK {
   id int [pk, increment]
   created_at timestamp [not null]
   updated_at timestamp [not null]
@@ -99,6 +108,7 @@ Table initiative_links {
   created_at timestamp [not null]
   updated_at timestamp [not null]
   type linktype [not null, note: 'various type of edges in a graph of initiatives']
+  notes varchar [note: 'can be used to add metadata. For instance a url in case of a present_on relation']
 }
 
 // initiatives can relate to each other in many way
