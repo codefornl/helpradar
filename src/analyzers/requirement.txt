@@ -1,0 +1,7 @@
+sqlite3
+pandas
+nltk
+numpy
+sklearn
+matplotlib
+gensim
