@@ -1,5 +1,7 @@
 # Data Model Draft
-This is a draft of the data being stored. It's merely a list of possible things I can come up with. This it might contain a lot more privacy related information than what is really necessary. At this stage we can safely assume a lot of unknowns. 
+Voor de technische lezers is een database model dat als uitgangspunt dient te vinden in [datamodel.dbml](datamodel.dbml) maar ook visueel te bekijken op. Dit document is meer een uiteenzetting van ideeën over een model en stamgegevens die bedoeld zijn voor specificatie van initiatieven.
+
+_Dit document was eerst in het Engels maar is overgegaan op Nederlands nadat dit voor alle communicatie en documentatie gebruikt werd. Uitzondering is hierbij de code / technische documentatie omdat het gebruikelijk en meestal eenvoudiger & overdraagbaarder is om dit in het engels te doen._
 
 # Initiative
 There are various granularities in initiatives. There's different scenario's to take into account:
@@ -59,8 +61,9 @@ _Wat moet ik me hier concreet bij voorstellen? Een website met algemene informat
 1. Handelingsperspectief (scholen, sporten, oefeningen, mindfulness)
 _Het lastige vind ik dat handelingsperspectief misschien niet makkelijk uit te leggen is aan vrijwilligers. Daarom staat het in onderstaand voorstel allemaal onder mentaal / vermaak_
 
-**Vertaald naar categorieën:**
+**Vertaald naar categorieën & aanvullingen:**  
 Dit is geen definitieve of uitputtende lijst maar eerder een initiële inventarisatie van mogelijke categorieën.
+
 * Zorg
   * Medisch
   * Ouderen
