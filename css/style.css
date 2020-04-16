@@ -12,3 +12,83 @@
 .icon-block .material-icons {
 	font-size: inherit;
 }
+
+:root {
+  --dark-turqoise: #063F48;
+  --very-light-pink: #D8D8D8;
+}
+
+.hr-orange-text {
+  color: #EA6026;
+}
+
+.hr-orange {
+  background-color: #EA6026;
+}
+
+.hr-tomato-text {
+  color: #E63922;
+}
+
+.hr-tomato {
+  background-color: #E63922;
+}
+
+.hr-dark-turqoise-text {
+  color: #063F48;
+}
+
+.hr-dark-turqoise {
+  background-color: #063F48;
+}
+
+.hr-very-light-pink-text {
+  color: var(--very-light-pink);
+}
+
+.hr-very-light-pink {
+  background-color: var(--very-light-pink);
+}
+
+.hr-deep-aqua-text {
+  color: #0A7274;
+}
+
+.hr-deep-aqua {
+  background-color: #0A7274;
+}
+
+.hr-turquoise-blue-text {
+  color: #0AB0B3
+}
+
+.hr-turquoise-blue {
+  background-color: #0AB0B3
+}
+
+/**
+*  Regular link styles don't really work within black text.
+*/
+p a {
+  color: var(--dark-turqoise);
+  border-bottom: 1px dotted var(--dark-turqoise);
+}
+
+p a:hover {
+  color: black;
+}
+
+/**
+* Navigation links also need overriding
+*/
+nav li a {
+  color: var(--very-light-pink);
+}
+
+nav li a:hover {
+  color: white;
+}
+
+nav .brand-logo{
+  color: #EA6026
+}
