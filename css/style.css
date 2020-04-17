@@ -78,6 +78,16 @@ p a:hover {
   color: black;
 }
 
+i a {
+  color: var(--dark-turqoise);
+  border-bottom: 1px dotted var(--dark-turqoise);
+}
+
+i a:hover {
+  color: black;
+}
+
+
 /**
 * Navigation links also need overriding
 */
@@ -87,4 +97,8 @@ nav li a {
 
 nav li a:hover {
   color: white;
+}
+
+i.mini {
+  font-size: 0.6rem;
 }
