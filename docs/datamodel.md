@@ -100,6 +100,7 @@ Dit is geen definitieve of uitputtende lijst maar eerder een initiële inventari
 * Onderdak
   * Daklozen
   * Hulpverleners
+* Personeel
 
 ### Tags
 Het idee is dat tags faciliteren in het flexibel verder classificeren van initiatieven met (binaire) eigenschappen zoals:
@@ -120,3 +121,23 @@ Er zijn een aantal beperkingen die enerzijds lastig zijn en anderzijds mogelijkh
 * Kan geen data inhoudelijk valideren, enkel verplichten ja of nee.
 * Niet echt geschikt om relaties te leggen. Althans, die mogelijkheid is beperkt tot relaties tussen verschillende type posts.
   * Het is echter wel mogelijk om vanuit een taak hangend aan een survey relaties te leggen naar types van surveys van hetzelfde type!
+
+## Uitzonderingen
+De vertaling van velden in het datamodel naar de veldnamen in ushahidi zou mapping vrij eenvoudig moeten maken. Ik ga hier met name even in op hoe we uitzonderingen (kunnen) vormgeven in Ushahidi.
+
+### Tags
+Ushahidi kent niet het concept van tags. Checkboxes komen misschien het dichts bij maar zijn niet flexibel. Om te voorkomen dat mensen maar vrijelijk allerlei tags toe kunnen voegen doen we het met twee velden. Een checkboxes veld Tags en een korte tekst veld 'Tags Nieuw'
+
+### Initiative Links
+De enige manier om relaties te leggen naar posts van eenzelfde type is door taken te maken. In zo'n taak kan wel een link naar een post van het type initiatief gemaakt worden. Voor iedere link type zouden we dan een taak aan kunnen maken. Dit heeft wel als effect dat de informatie niet als zodanig publiek te verkrijgen is en waarschijnlijk ook niet te exporteren.
+
+Per taak kunnen we dan één of meerdere relatievelden aanmaken. Maar dit moet zich allemaal nog gaan vormen.
+
+Taken:
+* Aanwezig op _Hier beginnen we mee omdat dit in feit voor iedere entry op een platform hoort_
+* Kind van
+* Werkt samen met
+* Verwijst naar
+
+### Contacten
+Ushahidi is hier niet heel erg geschikt voor. Bij voorkeur zoeken we hier een andere tool voor. We zouden dit voor nu in een vrij tekstveld op kunnen nemen. Maar ook dit is wel weer privacygevoelige informatie! We kunnen contacten ook al posttype opnemen, maar deze mogen dan niet gepubliceerd worden en zijn ook eigenlijk niet te vinden op deze manier.
