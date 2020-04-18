@@ -12,8 +12,6 @@ Table initiatives as I{
   id int [pk]
   created_at timestamp [not null]
   updated_at timestamp [not null]
-  started_at timestamp [note: 'indicate since when the initiatieve is active']
-  stopped_at timestamp [note: 'indicate when the initiatieve stopped']
   name varchar [not null]
   description varchar
   organiser varchar [note: 'The name of the organisation or person who initiated this']
@@ -27,6 +25,10 @@ Table initiatives as I{
   address varchar [note: 'should be split up fully more probably']
   latitude float(8,5) [note: 'depending on store using a spatial datatype is preferred']
   longitude float(8,5)
+  started_at timestamp [note: 'indicate since when the initiatieve is active']
+  stopped_at timestamp [note: 'indicate when the initiatieve stopped']
+  frequency varchar [note: 'Human readable for recurrence like, eenmalig, iedere week op zaterdag om 14:00']
+  availability varchar [note: 'Free text to specify amount of time asked or provided. Can be combined with frequency']
   notes varchar [note: 'as long as we are not keeping scores formally this info should end up here']
   involvements varchar [note: 'field to address the desire to get an idea if pro organisations are involved or collaborating with this initiative']
 }
@@ -108,7 +110,6 @@ Table initiative_links {
   created_at timestamp [not null]
   updated_at timestamp [not null]
   type linktype [not null, note: 'various type of edges in a graph of initiatives']
-  notes varchar [note: 'can be used to add metadata. For instance a url in case of a present_on relation']
 }
 
 // initiatives can relate to each other in many way
