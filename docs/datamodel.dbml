@@ -1,0 +1,165 @@
+// created with dbdiagram.io: https://dbdiagram.io/d/5e9071c539d18f5553fd6860
+
+// This table is essentially what it's all about.
+// Initiatives are at the core and can compose a network
+// of initiatives(organisations).
+// REMARK: In order to distinguish initiatives from organisations they're
+// having relations with can become very complex, because that we need to 
+// include a lot of professional organisations in the database when doing
+// this properly apart from the fact that it requires a lot of maintenance on the data
+// entry side. So to keep it very simple I just leave that to a simple textfield
+Table initiatives as I{
+  id int [pk]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  started_at timestamp [note: 'indicate since when the initiatieve is active']
+  stopped_at timestamp [note: 'indicate when the initiatieve stopped']
+  name varchar [not null]
+  description varchar
+  organiser varchar [note: 'The name of the organisation or person who initiated this']
+  organiser_kind_id int [ref: > OK.id]
+  targets varchar [note: 'If needed the target group(s) could be defined using simple text.']
+  type_id int [ref: > T.id]
+  scale scale
+  url varchar
+  email varchar
+  phone char[16] [unique]
+  address varchar [note: 'should be split up fully more probably']
+  latitude float(8,5) [note: 'depending on store using a spatial datatype is preferred']
+  longitude float(8,5)
+  notes varchar [note: 'as long as we are not keeping scores formally this info should end up here']
+  involvements varchar [note: 'field to address the desire to get an idea if pro organisations are involved or collaborating with this initiative']
+}
+
+// This is considered to be the Vorm which is spoken of in the initial questions.
+// So is this a marketplace, a monitor (overview), mobilisation, peergroup or individual.
+Table types as T {
+  id int [pk, increment]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  name varchar [not null]
+}
+
+// This is considered to be the soort who is spoken of in the initial questions.
+Table organisation_kind as OK {
+  id int [pk, increment]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  name varchar [not null]
+}
+
+// The categories of help can be doing groceries,
+// other chores, mental, psychological, transport, care, healthcare etc.
+Table categories as C {
+  id int [pk, increment]
+  parent_id int [not null, ref: > C.id]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  name varchar
+}
+
+// An initiative can offer various categories of help thus needing a many-to-many.
+Table initiative_categories
+{
+  initiative_id int [not null, ref: > I.id]
+  category_id int [not null, ref: > C.id]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+// At what scale is this initiative operating?
+enum scale {
+  neighbourhood
+  city // Often city and municipality are equal.
+  municipality
+  region
+  province
+  country
+}
+
+// Tags are intended to solve a few more unknowns/flexible aspects of the demands like:
+// Type of medium (facebook, website, whatsapp)
+// Wether an initiative is paid
+Table tags as TG {
+  id int [pk, increment]
+  name varchar [not null, note: 'possibly some constraints on formatting here will aid the sanity of the data.']
+}
+
+Table initiative_tags
+{
+  initiative_id int [not null, ref: > I.id]
+  tad_id int [not null, ref: > TG.id]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+// The idea is that there are all sorts of relations
+// Between initiatives & organisations. This relation
+// essentially is an edge in a (directed) graph.
+// Although there could be constraints to what type of
+// relations is valid between what types of initiatives
+// but for now that sanity check is considered out of scope.
+// But this could for instance be that the present_on linktype
+// is only valid if the target initiative is a marketplace
+// or overview platform.
+Table initiative_links {
+  source_initiative_id int [ref: > I.id]
+  target_initiative_id int [ref: > I.id]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  type linktype [not null, note: 'various type of edges in a graph of initiatives']
+  notes varchar [note: 'can be used to add metadata. For instance a url in case of a present_on relation']
+}
+
+// initiatives can relate to each other in many way
+// This model does limit it using an enum and not use a regular relation
+// This does reduce flexibility in favour of keeping this clean.
+enum linktype{
+  child_of
+  parent_of
+  present_on
+  collaborates_with
+  refers_to
+}
+
+// All text fields in this table should be encrypted.
+Table contacts as CT {
+  id int [pk, increment] // auto-increment
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  full_name varchar [not null]
+  email varchar
+  phone varchar
+  // no address to limit privacy related data.
+}
+
+// An initiative can have multiple contacts
+Table initiative_contacts
+{
+  initiative_id int [not null, ref: > I.id]
+  contact_id int [not null, ref: > CT.id]
+  created_at timestamp
+  updated_at timestamp
+}
+
+// I was thinking about desiging the a user system
+// so contacts can edit their organisations, but this
+// is possibly easier when we simply have this redacted
+// and a contact merely changing data.
+
+// It's hard to properly design this at this stage.
+// One of the aspects is, could it reference a possible category
+// of help it's about? So when it relates to a category transport
+// it might be expected that either it's about the number of people/seats
+// available or the nr of cars for instance.
+Table stats as S {
+  id int [pk]
+  initiative_id int [not null, ref: > I.id]
+  category_id int [ref: > C.id]
+  record_date datetime [not null]
+  value int [not null]
+  precision int [note: 'given it should allow for storage of any numerical data an indicator is needed regardless of using a floating point number or an int']
+  unit varchar [note: 'level of flexibility here also unclear']
+  notes varchar [note: 'por more explanation like how this number was derived/collected']
+}
+
