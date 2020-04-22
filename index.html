@@ -31,9 +31,32 @@
 	<meta name="msapplication-TileColor" content="#FFFFFF">
 	<meta name="msapplication-TileImage" content="assets/favicon-144.png">
 	<meta name="msapplication-config" content="/browserconfig.xml">
-	<!-- ****** faviconit.com favicons ****** -->
+  <!-- ****** faviconit.com favicons ****** -->
+  <!-- Matomo -->
+  <script type="text/javascript">
+    var _paq = window._paq || [];
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+    _paq.push(["setCookieDomain", "*.helpradar.nl"]);
+    _paq.push(["setDomains", ["*.www.helpradar.nl","*.app.helpradar.nl","*.helpradar.nl"]]);
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="//click.codefor.nl/";
+      _paq.push(['setTrackerUrl', u+'matomo.php']);
+      _paq.push(['setSiteId', '3']);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+  <!-- End Matomo Code -->
 </head>
 <body>
+  <noscript>
+    <!-- Matomo Image Tracker-->
+    <img src="https://click.codefor.nl/matomo.php?idsite=3&amp;rec=1&amp;action_name=landingpage" style="border:0" alt="" />
+    <!-- End Matomo -->
+  </noscript>
   <nav class="hr-deep-aqua" role="navigation">
     <div class="nav-wrapper container">
       <a id="logo-container" href="#" class="brand-logo hr-orange-text">
