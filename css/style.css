@@ -15,6 +15,7 @@
 
 :root {
   --dark-turqoise: #063F48;
+  --deep-aqua: #0A7274;
   --very-light-pink: #D8D8D8;
 }
 
@@ -35,11 +36,11 @@
 }
 
 .hr-dark-turqoise-text {
-  color: #063F48;
+  color: var(--dark-turqoise);
 }
 
 .hr-dark-turqoise {
-  background-color: #063F48;
+  background-color: var(--dark-turqoise);
 }
 
 .hr-very-light-pink-text {
@@ -51,11 +52,11 @@
 }
 
 .hr-deep-aqua-text {
-  color: #0A7274;
+  color: var(--deep-aqua);
 }
 
 .hr-deep-aqua {
-  background-color: #0A7274;
+  background-color: var(--deep-aqua);
 }
 
 .hr-turquoise-blue-text {
@@ -70,8 +71,8 @@
 *  Regular link styles don't really work within black text.
 */
 p a {
-  color: var(--dark-turqoise);
-  border-bottom: 1px dotted var(--dark-turqoise);
+  color: var(--deep-aqua);
+  border-bottom: 1px dotted var(--deep-aqua);
 }
 
 p a:hover {
@@ -79,11 +80,20 @@ p a:hover {
 }
 
 i a {
-  color: var(--dark-turqoise);
-  border-bottom: 1px dotted var(--dark-turqoise);
+  color: var(--deep-aqua);
+  border-bottom: 1px dotted var(--deep-aqua);
 }
 
 i a:hover {
+  color: black;
+}
+
+h5 a {
+  color: var(--deep-aqua);
+  border-bottom: 1px dotted var(--deep-aqua);
+}
+
+h5 a:hover {
   color: black;
 }
 
