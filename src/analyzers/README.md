@@ -17,7 +17,11 @@ In deze map staan vooralsnog jupyter notebooks die de gescrapte hulpvraag en aan
     - Classificatie op de labels aanbod en vraag door middel van TF-IDF vectors
     - Topic classificatie door middel van LDA. 
     - gewogen TFIDF term analyze. Welke term komt het vaakst voor (ongewogen en gewogen). 
-    
+
+# tweede notebook: initiatives-spacy.ipynb
+- Lijkt op het eerste, maar dit is een variant met de spacy library voor NLP.
+
 # todo:
 - classifier verbeteren
 - doc2vec voorbeeld
+- Toewerken naar NLP proces waarbij de initiatieven door worden ingedeeld naar de groepen van LOT-C
