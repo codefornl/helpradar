@@ -5,3 +5,4 @@ numpy
 sklearn
 matplotlib
 gensim
+spacy
