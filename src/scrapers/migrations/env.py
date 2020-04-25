@@ -22,7 +22,6 @@ parent_dir = os.path.abspath(os.getcwd())
 sys.path.append(parent_dir)
 
 from models.initiatives import Base
-Base.metadata.reflect()
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
