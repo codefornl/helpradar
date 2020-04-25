@@ -34,7 +34,7 @@ Base = declarative_base()
 #    state = Column(Enum("running", "imported", "failed", "processed", "processing_error"), nullable=False)
 
 class InitiativeImport(Base):
-    __tablename__ = 'initiatives'
+    __tablename__ = 'initiative_imports'
     id = Column(Integer, primary_key=True)
     #batch_id = Column(Integer, ForeignKey('importbatches.id'), nullable=False)
     category = Column(String(250))
