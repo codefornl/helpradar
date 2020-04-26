@@ -1,6 +1,7 @@
 import time
 from geopy.geocoders import Nominatim
-from platformen import Initiative, Db
+from models.initiatives import InitiativeImport
+from models.database import Db
 import re
 
 class Geocoder:

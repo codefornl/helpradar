@@ -1,6 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer, String, Text, Float, DateTime, Enum
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -23,14 +23,16 @@ class Platform(InitiativeBase):
     id = Column(Integer, ForeignKey('initiatives.id'), primary_key=True)
     place = Column(Text)
 
-# Group each import run in a batch for later importing.
-class ImportBatch(Base):
-    __tablename__ = 'importbatches'
-    id = Column(Integer, primary_key=True)
-    platform_id = Column(Integer, ForeignKey('platforms.id'), nullable=False)
-    started_at = Column(DateTime, nullable=False)
-    stopped_at = Column(DateTime, nullable=False)
-    state = Column(Enum("running", "imported", "failed", "processed", "processing_error"), nullable=False)
+class BatchImportState(Enum):
+    RUNNING = "running"
+    IMPORTED = "imported"
+    FAILED = "failed"
+    PROCESSED = "processed"
+    PROCESSING_ERROR = "processing_error"
+
+class InitiativeGroup(Enum):
+    SUPPLY = "supply"
+    DEMAND = 'demand'
 
 class InitiativeImport(Base):
     __tablename__ = 'initiative_imports'
@@ -56,3 +58,15 @@ class InitiativeImport(Base):
     created_at = Column(DateTime)
     scraped_at = Column(DateTime)
     state = Column(Enum("imported", "processed", "processing_error"), nullable=False, server_default='imported')
+
+# Group each import run in a batch for later importing.
+class ImportBatch(Base):
+    __tablename__ = 'importbatches'
+    id = Column(Integer, primary_key=True)
+    platform_id = Column(Integer, ForeignKey('platforms.id'), nullable=False)
+    started_at = Column(DateTime, nullable=False)
+    stopped_at = Column(DateTime, nullable=False)
+    state = Column(Enum("running", "imported", "failed", "processed", "processing_error"), nullable=False)
+
+    platform = relationship(Platform, primaryjoin=platform_id == Platform.id)
+    initiatives = relationship(InitiativeImport, lazy='dynamic')

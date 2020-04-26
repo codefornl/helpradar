@@ -2,7 +2,7 @@ import requests
 import json
 
 from bs4 import BeautifulSoup
-from .database import Initiative, Db
+import models
 
 
 class HeldNodig:
