@@ -2,6 +2,8 @@ from sqlalchemy import Column, ForeignKey, Integer, String, Text, Float, DateTim
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
+import datetime
+
 Base = declarative_base()
 
 # Base class for both platforms and helpinitiatives
@@ -70,3 +72,13 @@ class ImportBatch(Base):
 
     platform = relationship(Platform, primaryjoin=platform_id == Platform.id)
     initiatives = relationship(InitiativeImport, lazy='dynamic')
+
+    @staticmethod
+    def start_new(platform):
+        return ImportBatch(
+                platform=platform,
+                started_at=datetime.datetime.now(datetime.timezone.utc),
+                # This is because I made the stopped_at not nullable.
+                stopped_at=datetime.datetime.now(datetime.timezone.utc),
+                state=BatchImportState.RUNNING)
+        

@@ -48,11 +48,7 @@ class NLvoorElkaar:
         self.db = Db()
         platform = self.load_platform()
         # create batch
-        batch = ImportBatch(
-            platform=platform,
-            started_at=datetime.datetime.now(datetime.timezone.utc),
-            stopped_at=datetime.datetime.now(datetime.timezone.utc),
-            state=BatchImportState.RUNNING)
+        batch = ImportBatch.start_new(platform)
         self.db.session.add(batch)
         self.db.session.commit()
 
