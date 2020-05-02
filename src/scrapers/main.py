@@ -1,9 +1,13 @@
 import os
 import sys
 from tools import Geocoder
-from platformen import HeldNodig, NLvoorElkaar, WijAmsterdam, MensenDieWillenHelpen, Zorgheldenauto, PuurPapendrecht, CoronaHelpers, NijmegenOost
+from platformen import HeldNodig, NLvoorElkaar, WijAmsterdam, MensenDieWillenHelpen, Zorgheldenauto, PuurPapendrecht, NijmegenOost
+from platformen import CoronaHelpersScraper
 
-# CoronaHelpers().scrape(); Niet bruikbaar. te sterk beveiligd om binnen legale kaders te scrapen.
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+CoronaHelpersScraper().scrape()
 
 HeldNodig().scrape()
 NLvoorElkaar().scrape()
