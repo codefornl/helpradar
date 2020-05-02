@@ -1,5 +1,6 @@
 #from .heldnodig import HeldNodig
 from .nlvoorelkaar import NLvoorElkaar
+from .scraper import Scraper
 #from .wijamsterdam import WijAmsterdam
 #from .mensendiewillenhelpen import MensenDieWillenHelpen
 #from .zorgheldenauto import Zorgheldenauto
