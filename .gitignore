@@ -8,8 +8,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 .vscode
+.vs
 crawler.py
-
 
 # Created by https://www.gitignore.io/api/linux,macos,windows
 # Edit at https://www.gitignore.io/?templates=linux,macos,windows
@@ -84,3 +84,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/linux,macos,windows
+*.db
