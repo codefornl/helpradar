@@ -9,3 +9,5 @@ install:
 script:
   - "coverage run src/scrapers/runUnitTests.py"
   - "coverage xml -o coverage.xml"
+after_success:
+  - "coveralls"
