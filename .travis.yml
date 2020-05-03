@@ -1,0 +1,11 @@
+language: python
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
+install:
+  - "pip install -r src/scrapers/requirements.txt"
+  - "pip install -r src/scrapers/requirements_test.txt"
+script:
+  - "coverage run src/scrapers/runUnitTests.py"
+  - "coverage xml -o coverage.xml"
