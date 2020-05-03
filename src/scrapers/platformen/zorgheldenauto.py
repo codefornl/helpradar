@@ -53,7 +53,7 @@ class Zorgheldenauto:
         'Easyrent',
         'Ekris BMW en MINI ',
         'Euromobil',
-        'Ellens Investments', 
+        'Ellens Investments',
         'Freeroad',
         'Geerts Cleaning Service',
         'Goldcar',

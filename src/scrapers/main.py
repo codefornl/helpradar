@@ -1,10 +1,9 @@
-import os
-import sys
-from tools import Geocoder
-from platformen import HeldNodig, NLvoorElkaar, WijAmsterdam, MensenDieWillenHelpen, Zorgheldenauto, PuurPapendrecht, NijmegenOost
-from platformen import CoronaHelpersScraper
-
 import logging
+
+from platformen import HeldNodig, NLvoorElkaar, WijAmsterdam, MensenDieWillenHelpen, \
+    Zorgheldenauto, PuurPapendrecht, NijmegenOost, CoronaHelpersScraper
+from tools import Geocoder
+
 logging.basicConfig(level=logging.DEBUG)
 
 CoronaHelpersScraper().scrape()

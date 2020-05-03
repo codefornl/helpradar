@@ -1,5 +1,6 @@
-import requests
 import json
+import requests
+
 from .database import Initiative, Db
 
 
@@ -27,7 +28,7 @@ class MensenDieWillenHelpen:
                                       source='https://www.gewoonmensendiemensenwillenhelpen.nl/ik-wil-helpen',
                                       source_id=card['id'],
                                       location=card['zipcode'] +
-                                      ' ' + card['city'],
+                                               ' ' + card['city'],
                                       frequency=card['when'],
                                       )
                            )
