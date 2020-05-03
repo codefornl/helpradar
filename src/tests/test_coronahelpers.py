@@ -1,6 +1,5 @@
-from unittest import TestCase
+from unittest import TestCase, main
 
-import context
 from platformen import CoronaHelpersScraper
 
 
@@ -120,4 +119,4 @@ class TestCoronaHelpersScraper(TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2)
+    main(verbosity=2)

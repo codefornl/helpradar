@@ -1,4 +1,7 @@
 language: python
+addons:
+  sonarcloud:
+    organization: "codefornl_helpradar"
 python:
   - "3.6"
   - "3.7"
@@ -8,6 +11,8 @@ install:
   - "pip install -r src/requirements_test.txt"
   - "mkdir -p reports"
 script:
-  - "pytest --cov-report=xml --cov=src/scrapers"
+  - "pytest"
+  - "safety check -r src/requirements.txt"
+  - "sonar-scanner"
 after_success:
   - "coveralls"
