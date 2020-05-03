@@ -1,10 +1,11 @@
+import re
 import time
 from geopy.geocoders import Nominatim
+
 from platformen import Initiative, Db
-import re
+
 
 class Geocoder:
-
     def __init__(self):
         self.geolocator = Nominatim(user_agent="codefornl-covid19")
 
@@ -22,7 +23,7 @@ class Geocoder:
 
             if geocodeterm.startswith('Stadsdeel'):
                 geocodeterm = geocodeterm + ' Amsterdam'
-            
+
             # item.location prepareren voor `landelijk`
             if geocodeterm in ['Landelijk', 'Heel Nederland']:
                 geocodeterm = 'Nederland'
@@ -49,10 +50,4 @@ class Geocoder:
                 print("SUCCESS: " + match.address)
             db.session.add(item)
             db.session.commit()
-            time.sleep(1) # Sleep so we don't overstretch the nominatim api
-
-
-
-
-
-    
+            time.sleep(1)  # Sleep so we don't overstretch the nominatim api
