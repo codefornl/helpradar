@@ -1,7 +1,6 @@
 import requests
-import json
-
 from bs4 import BeautifulSoup
+
 from .database import Initiative, Db
 
 
@@ -24,16 +23,10 @@ class PuurPapendrecht:
                 counter += 1
                 for card in results:
                     try:
-                        title = card.find(
-                            class_='heading3 heading3--semibold').text.strip(' \t\n\r')
-                        name = card.find(
-                            class_='entity-content-title').text
-                        description = card.find(
-                            class_='paragraph').text.strip(' \t\n\r')
-                        rawtheme = card.find(
-                            class_='postpreview-subtitle').text
-                        final_link = None
-                        source_id = None
+                        title = card.find(class_='heading3 heading3--semibold').text.strip(' \t\n\r')
+                        name = card.find(class_='entity-content-title').text
+                        description = card.find(class_='paragraph').text.strip(' \t\n\r')
+                        rawtheme = card.find(class_='postpreview-subtitle').text
                         link = card.find(class_='postpreview-content')
                         final_link = link['href']
                         source_id = final_link.split('/')[-2]

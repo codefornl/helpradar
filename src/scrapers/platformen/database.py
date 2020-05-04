@@ -1,10 +1,10 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Text, Float
+from sqlalchemy import Column, Integer, String, Text, Float, create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
- 
+
+
 class Initiative(Base):
     __tablename__ = 'initiatives'
     # Here we define columns for the table person
@@ -23,7 +23,6 @@ class Initiative(Base):
     osm_address = Column(Text)
 
 
-
 class Db:
     session = None
 
@@ -36,5 +35,3 @@ class Db:
         self.session = Session()
         # Create all tables in the engine. This is equivalent to "Create Table"
         # statements in raw SQL.
-        
-    

@@ -1,6 +1,8 @@
 **/*.code-workspace
 venv/
 **/venv/
+.coverage
+coverage.xml
 
 
 # Byte-compiled / optimized / DLL files
