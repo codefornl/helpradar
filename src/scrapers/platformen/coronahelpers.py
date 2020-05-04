@@ -3,14 +3,16 @@ import logging
 import requests
 from time import sleep
 
-from .database import Initiative, Db
+from models.database import Db
+from models.initiatives import InitiativeBase, Platform, ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
+from .scraper import Scraper
 
-
-class WebScraper(object):
+class WebScraper(Scraper):
     """ General scraper class """
 
-    def __init__(self, domain):
-        self.domain = domain
+    def __init__(self, platform_url: str, name: str, code: str):
+        super().__init__(platform_url, name, code)
+        self.domain = platform_url
 
         self.HTTPRequestHeaders = {}
         self.HTTPGetParameters = {}
@@ -46,7 +48,7 @@ class WebScraper(object):
 
 class CoronaHelpersScraper(WebScraper):
     def __init__(self):
-        super().__init__("www.coronahelpers.nl")
+        super().__init__("www.coronahelpers.nl", "Corona Helpers", "chlp")
 
         self.APIDeedsEndpoint = 'api/deeds'
         self.HTTPRequestHeaders = {
@@ -187,9 +189,9 @@ class CoronaHelpersScraper(WebScraper):
         deedID = self.getDeedIDFromJSON(deedDetails)
         coordinates = self.getCoordinatesFromDeedDetails(deedDetails)
 
-        initiative = Initiative(
+        initiative = InitiativeImport(
             category=deedDetails["fullType"],
-            group="demand",
+            group="supply",
             description=deedDetails["summary"],
             # name = deedDetails[""],
             source=self.getAPIDeedDetailsURL(deedID),

@@ -2,7 +2,8 @@ import re
 import time
 from geopy.geocoders import Nominatim
 
-from platformen import Initiative, Db
+from models.database import Db
+from models.initiatives import InitiativeImport
 
 
 class Geocoder:
@@ -11,7 +12,7 @@ class Geocoder:
 
     def geocode(self):
         db = Db()
-        locationset = db.session.query(Initiative).filter(Initiative.location.isnot(None)).with_for_update().all()
+        locationset = db.session.query(InitiativeImport).filter(InitiativeImport.location.isnot(None)).with_for_update().all()
 
         # Regex voor postcode geschreven ls `9999XX`
         pattern = r'\d{4}[A-Z]{2}'

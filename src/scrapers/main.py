@@ -1,18 +1,20 @@
 import os
 import sys
-from platformen import HeldNodig, NLvoorElkaar, WijAmsterdam, MensenDieWillenHelpen, \
-    Zorgheldenauto, PuurPapendrecht, NijmegenOost, CoronaHelpersScraper
+import logging
+
+from platformen import  NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper\
+    # HeldNodig, MensenDieWillenHelpen, \
+    # Zorgheldenauto, PuurPapendrecht, NijmegenOost
 from tools import Geocoder
 
 logging.basicConfig(level=logging.DEBUG)
 
-#CoronaHelpersScraper().scrape()
 #HeldNodig().scrape()
 #MensenDieWillenHelpen().scrape()
 #Zorgheldenauto().scrape()
 #PuurPapendrecht().scrape()
 #NijmegenOost().scrape()
-scrapers = [NLvoorElkaar(), WijAmsterdam()]
+scrapers = [NLvoorElkaar(), WijAmsterdam(), CoronaHelpersScraper()]
 
 if sys.argv[1] == '/?':
     print('If not argument given, runs all scrapers')
@@ -30,5 +32,5 @@ else:
         elif len(sys.argv) > 1 and scraper.code in sys.argv:
             scraper.scrape()
 
-# Try to create geolocation for items
-Geocoder().geocode()
+    # Try to create geolocation for items
+    Geocoder().geocode()
