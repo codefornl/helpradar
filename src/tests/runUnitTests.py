@@ -1,6 +1,6 @@
 import unittest
 
-from platformen import CoronaHelpersScraper
+from scrapers.platformen import CoronaHelpersScraper
 
 
 class TestCoronaHelpersScraper(unittest.TestCase):
