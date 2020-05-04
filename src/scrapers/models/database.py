@@ -13,7 +13,7 @@ class Db:
         
         path = PurePath(os.path.dirname(__file__))
         print(path.parent)
-        engine = create_engine('sqlite:///' + str(path.parent) + '\\helpradar.db')
+        engine = create_engine('sqlite:///' + str(path.parent) + '//helpradar.db')
         #Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
         self.session = Session()

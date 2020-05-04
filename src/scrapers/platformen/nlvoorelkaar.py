@@ -5,9 +5,9 @@ import datetime
 from bs4 import BeautifulSoup
 from models.database import Db
 from models.initiatives import InitiativeBase, Platform, ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
+from .scraper import Scraper
 
-
-class InitiativeGroupConfig(object):
+class InitiativeGroupConfig:
 
     def __init__(self, group, url, fieldmap):
         self.group = group
@@ -18,10 +18,11 @@ class InitiativeGroupConfig(object):
         markerurlsegment = 'hulpaanbod' if self.group == InitiativeGroup.SUPPLY else 'hulpvragen'
         return 'https://www.nlvoorelkaar.nl/%s/%s' % (markerurlsegment, id)
 
-class NLvoorElkaar:
+class NLvoorElkaar(Scraper):
     """NL Voor Elkaar scraper die zowel vraag als aanbod ophaalt"""
 
     def __init__(self):
+        super().__init__("www.nlvoorelkaar.nl", 'NL Voor Elkaar', "nlve")
         # Category 45 is the one for Corona
         self.configs = {
             InitiativeGroup.SUPPLY: InitiativeGroupConfig(
@@ -45,12 +46,13 @@ class NLvoorElkaar:
             }
 
     def scrape(self):
-        self.db = Db()
+        super().scrape()
+
         platform = self.load_platform()
         # create batch
         batch = ImportBatch.start_new(platform)
-        self.db.session.add(batch)
-        self.db.session.commit()
+        self._db.session.add(batch)
+        self._db.session.commit()
 
         try:
             # run supply scraper
@@ -67,8 +69,7 @@ class NLvoorElkaar:
 
         batch.stopped_at = datetime.datetime.now(datetime.timezone.utc)
 
-        self.db.session.commit()
-
+        self._db.session.commit()
 
     def scrapegroup(self, config: InitiativeGroupConfig, batch: ImportBatch):
         print('scraping ' + config.group)
@@ -105,35 +106,35 @@ class NLvoorElkaar:
                             setattr(initiative, config.fieldmap[label], records[i+1].contents[0])
                             setcount += 1
 
-                    if(config.group == InitiativeGroup.DEMAND):
+                    if config.group == InitiativeGroup.DEMAND:
                         title = soup.find("h2", "result__title");
                         name = title.contents[0]
 
                     # TODO: Logging is no values are assigned
                 except Exception as e:
                     print('error scraping ' + markerurl + ':' + e.args[0])
-                    if initiative != None:
+                    if initiative is not None:
                         initiative.state = "processing_error"
                 
-                if initiative != None:
+                if initiative is not None:
                     batch.initiatives.append(initiative)
 
                 # debugging
-                #if len(parsed_markers) >= 10:
-                #    break
+                if not self.should_continue(len(parsed_markers)):
+                    break
 
-        self.db.session.commit()
+        self._db.session.commit()
 
-    def load_platform(self):
-        """ retrieve platform instance or create it """
-        platform = self.db.session.query(Platform).filter(Platform.url.like('%www.nlvoorelkaar.nl%')).first()
-        
-        if(platform == None):
-            platform = Platform(name='NL Voor Elkaar',
-                description='In moeilijke tijden is het belangrijk om elkaar kracht te geven. Om te laten zien dat we samen, zelfs als we afstand moeten houden, sterker zijn dan welke crisis ook.',
-                url='https://www.nlvoorelkaar.nl',
-                place='Nederland')
-            self.db.session.add(platform)
-
-        return platform
+    # def load_platform(self):
+    #     """ retrieve platform instance or create it """
+    #     platform = self.db.session.query(Platform).filter(Platform.url.like('%www.nlvoorelkaar.nl%')).first()
+    #
+    #     if platform is None:
+    #         platform = Platform(name=self.name,
+    #             description='In moeilijke tijden is het belangrijk om elkaar kracht te geven. Om te laten zien dat we samen, zelfs als we afstand moeten houden, sterker zijn dan welke crisis ook.',
+    #             url=self.platform_url,
+    #             place='Nederland')
+    #         self.db.session.add(platform)
+    #
+    #     return platform
 

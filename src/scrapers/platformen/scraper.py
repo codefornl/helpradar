@@ -1,14 +1,43 @@
-from models.database import Db
+import sys
 
-class Scraper(object):
+from models.database import Db
+from models.initiatives import Platform, BatchImportState
+
+class Scraper:
     """
     Concept for a base class that defines and deals basic setup of a scraper 
     """
-    def __init__(self, platform_url):
+    def __init__(self, platform_url: str, name: str, code: str):
         self.platform_url = platform_url
-        self.db = Db()
+        self.name = name
+        self.code = code
+        self._db = Db()
 
-    def start_scrape():
+    def scrape(self):
+        print(f"starting {self.name} ({self.code}) scraper")
+
+    def should_continue(self, count):
+        if sys.gettrace() is not None:
+            return count <= 5
+        else:
+            return True
+
+    def load_platform(self):
+        """ retrieve platform instance or create it """
+        platform = self._db.session.query(Platform).filter(Platform.url.like('%'+self.platform_url+'%')).first()
+        if platform is None:
+            platform = Platform(name=self.name,
+                                url=self.platform_url,
+                                place='Nederland')
+            self._db.session.add(platform)
+            # we can also raise exception or create default instance.
+            # raise Exception("No platform found")
+
+        return platform
+
+class ScraperConcept(Scraper):
+    """This is conceptual code for discussion purposes to go in Scraper class"""
+    def start_scrape(self):
         try:
             platform = self.load_platform()
             # start batch
@@ -43,12 +72,12 @@ class Scraper(object):
         while has_more:
             current_initiatives = self.get_items(batch)
             if not current_initiatives:
-                has_more is false
+                has_more = False
                 continue
 
             for initiative in current_initiatives:
                 self.scrape_item(initiative)
-                if initiative != None:
+                if initiative is not None:
                     batch.initiatives.append(initiative)
 
 
@@ -61,7 +90,7 @@ class Scraper(object):
         the Batch itself. I have no idea if we can dynamically add attributes
         that simply are used only for a specific scraper.
         """
-        return [InitiativeImport()]
+        return #[InitiativeImport()]
 
     def scrape_item(self, batch, item):
         """
@@ -69,12 +98,3 @@ class Scraper(object):
         POssible the scraping can be deferred to the TreeParser or any other class
         """
         return item
-
-    def load_platform(self):
-        """ retrieve platform instance or create it """
-        platform = self.db.session.query(Platform).filter(Platform.url.like('%'+self.platform_url+'%')).first()
-        if(platform == None):
-            # raise exception or create default instance.
-            raise Exception("No platform found")
-
-        return None

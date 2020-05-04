@@ -2,30 +2,33 @@ import requests
 import json
 
 from bs4 import BeautifulSoup
-from .database import Initiative, Db
+from models.database import Db
+from models.initiatives import InitiativeBase, Platform, ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
+from .scraper import Scraper
 
-
-class WijAmsterdam:
+class WijAmsterdam(Scraper):
     """A simple example class"""
 
     def __init__(self):
+        super().__init__("www.wijamsterdam.nl", "Wij Amsterdam", "wijams")
         self.URL = 'https://wijamsterdam.nl/initiatieven'
 
     def scrape(self):
-        db = Db()
+        super().scrape()
         page = requests.get(self.URL)
 
         soup = BeautifulSoup(page.content, 'html.parser')
         results = soup.find(class_='ideas-list')
 
         questions = results.find_all(class_='idea-item')
+        count = 0
         for card in questions:
             title = card.find('h3').text.strip(' \t\n\r')
             rawlocation = card.find(class_='gebied').text.strip(' \t\n\r')
             description = card.find(
                 'p').text.strip(' \t\n\r')
             link = card.find('a')['href']
-            db.session.add(Initiative(name=title,
+            self._db.session.add(InitiativeImport(name=title,
                                       description=description,
                                       group="unknown",
                                       source='https://wijamsterdam.nl' + link,
@@ -33,5 +36,8 @@ class WijAmsterdam:
                                       location=rawlocation,
                                       )
                            )
+            count += 1
+            if not self.should_continue(count):
+                break
 
-        db.session.commit()
+        self._db.session.commit()
