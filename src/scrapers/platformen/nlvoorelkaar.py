@@ -1,5 +1,4 @@
 import requests
-import json
 import datetime
 
 from bs4 import BeautifulSoup
@@ -10,14 +9,15 @@ from .scraper import Scraper
 
 class InitiativeGroupConfig:
 
-    def __init__(self, group, url, fieldmap):
+    def __init__(self, group, url, field_map):
         self.group = group
         self.url = url
-        self.fieldmap = fieldmap
+        self.field_map = field_map
 
     def get_marker_url(self, id):
-        markerurlsegment = 'hulpaanbod' if self.group == InitiativeGroup.SUPPLY else 'hulpvragen'
-        return 'https://www.nlvoorelkaar.nl/%s/%s' % (markerurlsegment, id)
+        markerurl_segment = 'hulpaanbod' if self.group == InitiativeGroup.SUPPLY else 'hulpvragen'
+        return 'https://www.nlvoorelkaar.nl/%s/%s' % (markerurl_segment, id)
+
 
 class NLvoorElkaar(Scraper):
     """NL Voor Elkaar scraper die zowel vraag als aanbod ophaalt"""
@@ -57,9 +57,9 @@ class NLvoorElkaar(Scraper):
 
         try:
             # run supply scraper
-            self.scrapegroup(self.configs[InitiativeGroup.SUPPLY], batch)
+            self.scrape_group(self.configs[InitiativeGroup.SUPPLY], batch)
             # run demand scraper
-            self.scrapegroup(self.configs[InitiativeGroup.DEMAND], batch)
+            self.scrape_group(self.configs[InitiativeGroup.DEMAND], batch)
         except Exception as e:
             batch.state = BatchImportState.FAILED
             print("Error while scraping: " + e.args[0])
@@ -67,12 +67,11 @@ class NLvoorElkaar(Scraper):
         else:
             batch.state = BatchImportState.IMPORTED
 
-
         batch.stopped_at = datetime.datetime.now(datetime.timezone.utc)
 
         self._db.session.commit()
 
-    def scrapegroup(self, config: InitiativeGroupConfig, batch: ImportBatch):
+    def scrape_group(self, config: InitiativeGroupConfig, batch: ImportBatch):
         print('scraping ' + config.group)
         page = requests.get(config.url)
         # TODO: Handle http error codes
@@ -85,6 +84,8 @@ class NLvoorElkaar(Scraper):
                 parsed_markers.append(marker['id'])
                 markerurl = config.get_marker_url(marker['id'])
                 print('scraping ' + markerurl)
+
+                initiative = None
                 try:
                     detail = requests.get(markerurl)
                     # TODO: Handle http error codes
@@ -93,7 +94,6 @@ class NLvoorElkaar(Scraper):
                     table = soup.find("dl")
                     records = table.findAll(["dd", "dt"])
                     description = soup.find("p").text.strip('\t\n\r')
-
                     initiative = InitiativeImport(description=description,
                                                 group=config.group,
                                                 source=markerurl,
@@ -101,10 +101,10 @@ class NLvoorElkaar(Scraper):
 
                     setcount = 0
                     for i in range(0, len(records), 2):
-                        #TODO: Error prevention
+                        # TODO: Error prevention
                         label = records[i].contents[1].strip("\":").lower()
-                        if label in config.fieldmap:
-                            setattr(initiative, config.fieldmap[label], records[i+1].contents[0])
+                        if label in config.field_map:
+                            setattr(initiative, config.field_map[label], records[i + 1].contents[0])
                             setcount += 1
 
                     if config.group == InitiativeGroup.DEMAND:

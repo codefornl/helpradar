@@ -7,11 +7,13 @@ from platformen import Scraper
 
 class TestScraperDb(TestCase):
 
+    def setUp(self):
+        self.scraper = Scraper("www.platform.url", "Test Platform", "tp")
+
     #@mock.patch('models.database.Db')
     def test_should_set_url(self):
         """Tests the loading of the platform information"""
-        scraper = Scraper("www.platform.url", "Test Platform", "tp")
-        assert scraper.platform_url == "www.platform.url"
+        assert self.scraper.platform_url == "www.platform.url"
 
     # def test_return_new_platform_if_none(self):
     #     with mock.patch('scrapers.models.Db') as db_mock:

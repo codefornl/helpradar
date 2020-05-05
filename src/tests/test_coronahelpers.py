@@ -3,94 +3,95 @@ from unittest import TestCase
 import context
 from platformen import CoronaHelpersScraper
 
+
 class TestCoronaHelpersScraper(TestCase):
+
+    def setUp(self):
+        self.scraper = CoronaHelpersScraper()
+
     def test_createScraperObject(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        self.assertEqual(type(coronaHelpersScraper), CoronaHelpersScraper)
-        self.assertIsNotNone(coronaHelpersScraper.domain)
+        self.assertEqual(type(self.scraper), CoronaHelpersScraper)
+        self.assertIsNotNone(self.scraper.domain)
 
     def test_getBaseURL(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        URL = coronaHelpersScraper.getBaseURL()
-        self.assertEqual(URL, "https://www.coronahelpers.nl")
+        url = self.scraper.getBaseURL()
+        self.assertEqual(url, "https://www.coronahelpers.nl")
 
     def test_checkConnectionToServer(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        hasConnectionToServer = coronaHelpersScraper.checkConnectionToServer()
-        self.assertTrue(hasConnectionToServer)
+        self.assertTrue(self.scraper.checkConnectionToServer())
 
     def test_getPageCountFromAPI(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        pageCount = coronaHelpersScraper.getPageCountFromAPI()
-        self.assertTrue(int(pageCount) > 1)
+        self.scraper = CoronaHelpersScraper()
+        page_count = self.scraper.getPageCountFromAPI()
+        self.assertTrue(int(page_count) > 1)
 
     def test_queryDeedsPageJSONFromAPI(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        deedsQueryResults = coronaHelpersScraper.queryDeedsPageJSONFromAPI(1)
-        self.assertTrue(len(deedsQueryResults) > 1)
+        self.scraper = CoronaHelpersScraper()
+        deeds_query_results = self.scraper.queryDeedsPageJSONFromAPI(1)
+        self.assertTrue(len(deeds_query_results) > 1)
 
     def test_getAPIDeedsURL(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        URL = coronaHelpersScraper.getAPIDeedsURL()
-        self.assertEqual(URL, "https://www.coronahelpers.nl/api/deeds")
+        self.scraper = CoronaHelpersScraper()
+        url = self.scraper.getAPIDeedsURL()
+        self.assertEqual(url, "https://www.coronahelpers.nl/api/deeds")
 
     def test_getAPIDeedDetailsURL(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        URL = coronaHelpersScraper.getAPIDeedDetailsURL(123)
-        self.assertEqual(URL, "https://www.coronahelpers.nl/api/deeds/123")
+        self.scraper = CoronaHelpersScraper()
+        url = self.scraper.getAPIDeedDetailsURL(123)
+        self.assertEqual(url, "https://www.coronahelpers.nl/api/deeds/123")
 
     def test_getDataFromJSON(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        testJSON = {"data": "foobar"}
-        data = coronaHelpersScraper.getDataFromJSON(testJSON)
+        self.scraper = CoronaHelpersScraper()
+        test_json = {"data": "foobar"}
+        data = self.scraper.getDataFromJSON(test_json)
         self.assertEqual(data, "foobar")
 
     def test_getStatusFromJSON(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        testJSON = {"status": "foobar"}
-        data = coronaHelpersScraper.getStatusFromJSON(testJSON)
+        self.scraper = CoronaHelpersScraper()
+        test_json = {"status": "foobar"}
+        data = self.scraper.getStatusFromJSON(test_json)
         self.assertEqual(data, "foobar")
 
     def test_getDeedDetailsFromJSON(self):
-        jsonTestData = {"status": 200, "error": None, "data": {"deed": {"title": "foobar"}}}
-        coronaHelpersScraper = CoronaHelpersScraper()
-        deedDetails = coronaHelpersScraper.getDeedDetailsFromJSON(jsonTestData)
-        self.assertEqual(deedDetails["title"], "foobar")
+        json_test_data = {"status": 200, "error": None, "data": {"deed": {"title": "foobar"}}}
+        self.scraper = CoronaHelpersScraper()
+        deed_details = self.scraper.getDeedDetailsFromJSON(json_test_data)
+        self.assertEqual(deed_details["title"], "foobar")
 
     def test_getDeedsFromPageJSON(self):
-        jsonTestData = {"status": 200, "error": None, "data": {"results": "foobar"}}
-        coronaHelpersScraper = CoronaHelpersScraper()
-        deedDetails = coronaHelpersScraper.getDeedsFromPageJSON(jsonTestData)
-        self.assertEqual(deedDetails, "foobar")
+        json_test_data = {"status": 200, "error": None, "data": {"results": "foobar"}}
+        self.scraper = CoronaHelpersScraper()
+        deed_details = self.scraper.getDeedsFromPageJSON(json_test_data)
+        self.assertEqual(deed_details, "foobar")
 
     def test_getDeedIDFromJSON(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        testJSON = {"id": "foobar"}
-        data = coronaHelpersScraper.getDeedIDFromJSON(testJSON)
+        self.scraper = CoronaHelpersScraper()
+        test_json = {"id": "foobar"}
+        data = self.scraper.getDeedIDFromJSON(test_json)
         self.assertEqual(data, "foobar")
 
     def test_getPageCountFromPageJSON(self):
-        jsonTestData = {"status": 200, "error": None, "data": {"results": [{}], "pagination": {"page": 1, "pageSize": 2, "rowCount": 826, "pageCount": 413}}}
-        coronaHelpersScraper = CoronaHelpersScraper()
-        pageCount = coronaHelpersScraper.getPageCountFromPageJSON(jsonTestData)
-        self.assertEqual(pageCount, 413)
+        json_test_data = {"status": 200, "error": None, "data": {"results": [{}], "pagination": {"page": 1, "pageSize": 2, "rowCount": 826, "pageCount": 413}}}
+        self.scraper = CoronaHelpersScraper()
+        page_count = self.scraper.getPageCountFromPageJSON(json_test_data)
+        self.assertEqual(page_count, 413)
 
     def test_getCoordinatesFromDeedDetails(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        jsonTestData = {"coordinates": None}
-        coordinates = coronaHelpersScraper.getCoordinatesFromDeedDetails(jsonTestData)
+        self.scraper = CoronaHelpersScraper()
+        json_test_data = {"coordinates": None}
+        coordinates = self.scraper.getCoordinatesFromDeedDetails(json_test_data)
         self.assertEqual(coordinates["lat"], None)
         self.assertEqual(coordinates["lng"], None)
 
-        jsonTestData = {"coordinates": {"lat": 123, "lng": 321}}
-        coordinates = coronaHelpersScraper.getCoordinatesFromDeedDetails(jsonTestData)
+        json_test_data = {"coordinates": {"lat": 123, "lng": 321}}
+        coordinates = self.scraper.getCoordinatesFromDeedDetails(json_test_data)
         self.assertEqual(coordinates["lat"], 123)
         self.assertEqual(coordinates["lng"], 321)
 
     def test_getHTTPParametersForPageQuery(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        HTTPParametersResult = coronaHelpersScraper.getHTTPParametersForPageQuery(123, 321)
-        HTTPParametersShouldBe = {
+        self.scraper = CoronaHelpersScraper()
+        http_parameters_result = self.scraper.getHTTPParametersForPageQuery(123, 321)
+        http_parameters_should_be = {
             'query': '',
             'page': '123',
             'causes': '',
@@ -98,18 +99,18 @@ class TestCoronaHelpersScraper(TestCase):
             'date': '',
             'pageSize': '321',
             'withOrganization': 'true'}
-        self.assertEqual(HTTPParametersResult, HTTPParametersShouldBe)
+        self.assertEqual(http_parameters_result, http_parameters_should_be)
 
     def test_createInitiativeFromDeedDetails(self):
-        coronaHelpersScraper = CoronaHelpersScraper()
-        testFeedDetails = {
+        self.scraper = CoronaHelpersScraper()
+        test_feed_details = {
             "id": 1337,
             "fullType": "volunteering_long",
             "summary": "test",
             "address": "someplace",
             "coordinates": {"lat": 52.2, "lng": 6.2}
         }
-        initiative = coronaHelpersScraper.createInitiativeFromDeedDetails(testFeedDetails)
+        initiative = self.scraper.createInitiativeFromDeedDetails(test_feed_details)
         self.assertEqual(initiative.source, "https://www.coronahelpers.nl/api/deeds/1337")
         self.assertEqual(initiative.category, "volunteering_long")
         self.assertEqual(initiative.description, "test")

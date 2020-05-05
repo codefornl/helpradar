@@ -36,6 +36,7 @@ class Scraper:
 
         return platform
 
+
 class ScraperConcept(Scraper):
     """This is conceptual code for discussion purposes to go in Scraper class"""
     def start_scrape(self):
