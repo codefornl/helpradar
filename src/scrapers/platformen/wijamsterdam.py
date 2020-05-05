@@ -2,9 +2,9 @@ import requests
 import json
 
 from bs4 import BeautifulSoup
-from models.database import Db
-from models.initiatives import InitiativeBase, Platform, ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
+from models.initiatives import InitiativeImport
 from .scraper import Scraper
+
 
 class WijAmsterdam(Scraper):
     """A simple example class"""

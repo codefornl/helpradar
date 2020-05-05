@@ -3,9 +3,10 @@ import json
 import datetime
 
 from bs4 import BeautifulSoup
-from models.database import Db
-from models.initiatives import InitiativeBase, Platform, ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
+
+from models.initiatives import ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
 from .scraper import Scraper
+
 
 class InitiativeGroupConfig:
 

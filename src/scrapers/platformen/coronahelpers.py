@@ -4,7 +4,7 @@ import requests
 from time import sleep
 
 from models.database import Db
-from models.initiatives import InitiativeBase, Platform, ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
+from models.initiatives import InitiativeImport
 from .scraper import Scraper
 
 class WebScraper(Scraper):

@@ -7,7 +7,6 @@ install:
   - "pip install -r src/requirements.txt"
   - "pip install -r src/requirements_test.txt"
 script:
-  - "coverage run src/tests/runUnitTests.py"
-  - "coverage xml -o coverage.xml"
+  - "pytest"
 after_success:
   - "coveralls"

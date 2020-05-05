@@ -3,6 +3,7 @@ import sys
 from models.database import Db
 from models.initiatives import Platform, BatchImportState
 
+
 class Scraper:
     """
     Concept for a base class that defines and deals basic setup of a scraper 

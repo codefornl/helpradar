@@ -1,9 +1,9 @@
-import unittest
+from unittest import TestCase
 
-from scrapers.platformen import CoronaHelpersScraper
+from platformen import CoronaHelpersScraper
 
 
-class TestCoronaHelpersScraper(unittest.TestCase):
+class TestCoronaHelpersScraper(TestCase):
     def test_createScraperObject(self):
         coronaHelpersScraper = CoronaHelpersScraper()
         self.assertEqual(type(coronaHelpersScraper), CoronaHelpersScraper)

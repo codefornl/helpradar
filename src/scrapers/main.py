@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 
-from platformen import  NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper\
+from platformen import NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper\
     # HeldNodig, MensenDieWillenHelpen, \
     # Zorgheldenauto, PuurPapendrecht, NijmegenOost
 from tools import Geocoder

@@ -17,4 +17,3 @@ class Db:
         #Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
         self.session = Session()
-        
