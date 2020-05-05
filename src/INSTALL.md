@@ -22,3 +22,7 @@ So downgrading usually doesn't work then.
 * Always test the downgrade before committing.
 * Sqlite doesn't support a lot alter statement requiring changes to be made in 
 [batch mode](https://alembic.sqlalchemy.org/en/latest/batch.html?highlight=batch%20mode) which moves and copies the whole table.
+
+## Tests
+Simply run pytest from the command line.
+

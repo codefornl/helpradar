@@ -1,7 +1,7 @@
 from unittest import TestCase
 
+import context
 from platformen import CoronaHelpersScraper
-
 
 class TestCoronaHelpersScraper(TestCase):
     def test_createScraperObject(self):
