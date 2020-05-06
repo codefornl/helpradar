@@ -4,13 +4,15 @@ venv/
 .coverage
 coverage.xml
 
+# Editors
+.vscode
+.vs
+.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-.vscode
-.vs
 crawler.py
 
 # Created by https://www.gitignore.io/api/linux,macos,windows

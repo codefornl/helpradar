@@ -1,2 +1,0 @@
-coverage==5.1
-coveralls==2.0.0
