@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/codefornl/helpradar/badge.svg?branch=master)](https://coveralls.io/github/codefornl/helpradar?branch=master) [![Build Status](https://travis-ci.org/codefornl/helpradar.svg?branch=master)](https://travis-ci.org/codefornl/helpradar)
+
 # Wat is helpradar?
 Helpradar is een digitaal platform waar initiatieven in de samenleving, waarin mensen en bedrijven hulp aan elkaar bieden en elkaar om hulp vragen, in beeld worden gebracht. Helpradar is een platform waarin bestaande online platformen "aan elkaar worden geknoopt" en worden aangevuld met locatie, contactgegevens, verzorgingsgebied, schaal, capaciteit en andere indicatoren die informatie over de initiatieven bruikbaar maken in bredere zin.
 
