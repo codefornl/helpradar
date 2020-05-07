@@ -1,23 +1,64 @@
 import sys
 
 from models.database import Db
-from models.initiatives import Platform, BatchImportState, ImportBatch
+from models.initiatives import Platform, BatchImportState, ImportBatch, InitiativeImport
+
+
+class ScrapeException(Exception):
+    pass
+
+
+class PlatformSource(object):
+    """
+    Implementations should this class should are doing the real
+    scraping of data.
+    """
+
+    def __iter__(self) -> InitiativeImport:
+        """
+        Lists bare initiatives from an Api or web page.
+        """
+        yield None
+
+    def complete(self, initiative):
+        """
+        Completes the initiative provided by the iterator.
+        This leaves errorhandling and completion strategy
+        to the caller.
+        """
+        pass
 
 
 class Scraper:
     """
     Concept for a base class that defines and deals basic setup of a scraper 
     """
-    def __init__(self, platform_url: str, name: str, code: str):
+    _source: PlatformSource
+
+    limit: int = 5
+    """Limits the iteration if a debugger is attached"""
+
+    def __init__(self, platform_url: str, name: str, code: str, source: PlatformSource) -> object:
         self._batch = None
         self.platform_url = platform_url
         self.name = name
         self.code = code
+        self._source = source
         self._db = Db()
 
     def scrape(self):
+        """
+        Starts the scraping of given platform.
+        """
         print(f"starting {self.name} ({self.code}) scraper")
         self._batch = self._start_batch()
+
+        try:
+            for initiative in self._source:
+                self._source.complete(initiative)
+                self._batch.initiatives.append(initiative)
+        except ScrapeException as e:
+            self._batch.state = BatchImportState.FAILED
 
     def _start_batch(self):
         platform = self.load_platform()
@@ -27,8 +68,11 @@ class Scraper:
         return batch
 
     def should_continue(self, count):
+        """
+        Method for debugging purposes only
+        """
         if sys.gettrace() is not None:
-            return count <= 5
+            return count < self.limit
         else:
             return True
 

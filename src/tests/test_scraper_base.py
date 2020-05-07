@@ -2,14 +2,16 @@ from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
 import context
-from models import Platform, ImportBatch
+from models import Platform, ImportBatch, InitiativeImport, BatchImportState
 from platformen import Scraper
+from platformen.scraper import ScrapeException
 
 
 class TestScraperDb(TestCase):
 
     def setUp(self):
-        self.scraper = Scraper("www.platform.url", "Test Platform", "tp")
+        self.pf_source_mock = MagicMock()
+        self.scraper = Scraper("www.platform.url", "Test Platform", "tp", self.pf_source_mock)
 
         # don't know how to mock properly yet so mocking out db
         # operations using partial mock.
@@ -31,3 +33,29 @@ class TestScraperDb(TestCase):
         assert started_batch is not None
         assert started_batch.platform == self.db_platform
         assert started_batch.state == "running"
+
+    def test_should_iterate_platform_source(self):
+        first_import = InitiativeImport()
+        self.pf_source_mock.__iter__ = MagicMock(return_value=iter([first_import]))
+
+        self.scraper.scrape()
+
+        self.pf_source_mock.complete.assert_called_once_with(first_import)
+
+    def test_should_add_completed_initiative_to_batch(self):
+        first_import = InitiativeImport()
+        self.pf_source_mock.__iter__ = MagicMock(return_value=iter([first_import]))
+
+        self.scraper.scrape()
+
+        assert self.scraper.get_current_batch().initiatives[0] == first_import
+
+    def test_should_handle_scrape_exception(self):
+        self.pf_source_mock.__iter__ = \
+            MagicMock(side_effect=ScrapeException("Failed loading the list"))
+
+        self.scraper.scrape()
+
+        assert self.scraper.get_current_batch().state == BatchImportState.FAILED
+
+
