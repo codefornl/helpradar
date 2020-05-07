@@ -47,28 +47,22 @@ class NLvoorElkaar(Scraper):
             }
 
     def scrape(self):
+        # Could better use template method on base class instead of require super call
         super().scrape()
-
-        platform = self.load_platform()
-        # create batch
-        batch = ImportBatch.start_new(platform)
-        self._db.session.add(batch)
-        self._db.session.commit()
 
         try:
             # run supply scraper
-            self.scrape_group(self.configs[InitiativeGroup.SUPPLY], batch)
+            self.scrape_group(self.configs[InitiativeGroup.SUPPLY], self._batch)
             # run demand scraper
-            self.scrape_group(self.configs[InitiativeGroup.DEMAND], batch)
+            self.scrape_group(self.configs[InitiativeGroup.DEMAND], self._batch)
         except Exception as e:
-            batch.state = BatchImportState.FAILED
+            self._batch.state = BatchImportState.FAILED
             print("Error while scraping: " + e.args[0])
             # TODO: Should do logging here
         else:
-            batch.state = BatchImportState.IMPORTED
+            self._batch.state = BatchImportState.IMPORTED
 
-        batch.stopped_at = datetime.datetime.now(datetime.timezone.utc)
-
+        self._batch.stopped_at = datetime.datetime.now(datetime.timezone.utc)
         self._db.session.commit()
 
     def scrape_group(self, config: InitiativeGroupConfig, batch: ImportBatch):

@@ -1,7 +1,7 @@
 import sys
 
 from models.database import Db
-from models.initiatives import Platform, BatchImportState
+from models.initiatives import Platform, BatchImportState, ImportBatch
 
 
 class Scraper:
@@ -9,6 +9,7 @@ class Scraper:
     Concept for a base class that defines and deals basic setup of a scraper 
     """
     def __init__(self, platform_url: str, name: str, code: str):
+        self._batch = None
         self.platform_url = platform_url
         self.name = name
         self.code = code
@@ -16,6 +17,14 @@ class Scraper:
 
     def scrape(self):
         print(f"starting {self.name} ({self.code}) scraper")
+        self._batch = self._start_batch()
+
+    def _start_batch(self):
+        platform = self.load_platform()
+        batch = ImportBatch.start_new(platform)
+        self._db.session.add(batch)
+        self._db.session.commit()
+        return batch
 
     def should_continue(self, count):
         if sys.gettrace() is not None:
@@ -25,7 +34,7 @@ class Scraper:
 
     def load_platform(self):
         """ retrieve platform instance or create it """
-        platform = self._db.session.query(Platform).filter(Platform.url.like('%'+self.platform_url+'%')).first()
+        platform = self.get_platform()
         if platform is None:
             platform = Platform(name=self.name,
                                 url=self.platform_url,
@@ -36,6 +45,12 @@ class Scraper:
 
         return platform
 
+    def get_platform(self):
+        return self._db.session.query(Platform).filter(Platform.url.like('%' + self.platform_url + '%')).first()
+
+    def get_current_batch(self) -> ImportBatch:
+        return self._batch
+
 
 class ScraperConcept(Scraper):
     """This is conceptual code for discussion purposes to go in Scraper class"""
@@ -44,8 +59,8 @@ class ScraperConcept(Scraper):
             platform = self.load_platform()
             # start batch
             batch = ImportBatch.start_new(platform)
-            self.db.session.add(batch)
-            self.db.session.commit()
+            self._db.session.add(batch)
+            self._db.session.commit()
         except Exception as e:
             print("Error while scraping: " + e.args[0])
             # TODO: Log and raise wrapped exception
@@ -53,17 +68,17 @@ class ScraperConcept(Scraper):
         try:
             # This is not perfect given the NL voor Elkaar also uses a configuration object
             # because actually runs two separate scraping sessions for supply and demand
-            self.scrape_list(batch)
+            self.scrape_list(self._batch)
         except Exception as e:
-            batch.state = BatchImportState.FAILED
+            self._batch.state = BatchImportState.FAILED
             print("Error while scraping: " + e.args[0])
             # TODO: Should do logging here
         else:
-            batch.state = BatchImportState.IMPORTED
+            self._batch.state = BatchImportState.IMPORTED
 
-        batch.stopped_at = datetime.datetime.now(datetime.timezone.utc)
+        self._batch.stopped_at = datetime.datetime.now(datetime.timezone.utc)
 
-        self.db.session.commit()
+        self._db.session.commit()
 
     def scrape_list(self, batch):
         """

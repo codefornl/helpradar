@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.DEBUG)
 #NijmegenOost().scrape()
 scrapers = [NLvoorElkaar(), WijAmsterdam(), CoronaHelpersScraper()]
 
-if sys.argv[1] == '/?':
+if sys.argv[1] == '--help':
     print('If not argument given, runs all scrapers')
     print('Use one or more codes as arguments to specify the scrapers to run:')
     print('{: <16}{}'.format("Code", "Name"))

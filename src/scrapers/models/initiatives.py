@@ -6,6 +6,7 @@ import datetime
 
 Base = declarative_base()
 
+
 # Base class for both platforms and helpinitiatives
 class InitiativeBase(Base):
     __tablename__ = 'initiatives'
@@ -18,12 +19,14 @@ class InitiativeBase(Base):
     discriminator = Column('type', String(50))
     __mapper_args__ = {'polymorphic_on': discriminator}
 
+
 # so far only a basic definition of platforms.
 class Platform(InitiativeBase):
     __tablename__ = 'platforms'
     __mapper_args__ = {'polymorphic_identity': 'platform'}
     id = Column(Integer, ForeignKey('initiatives.id'), primary_key=True)
     place = Column(Text)
+
 
 class BatchImportState(Enum):
     RUNNING = "running"
@@ -32,9 +35,11 @@ class BatchImportState(Enum):
     PROCESSED = "processed"
     PROCESSING_ERROR = "processing_error"
 
+
 class InitiativeGroup(Enum):
     SUPPLY = "supply"
     DEMAND = 'demand'
+
 
 class InitiativeImport(Base):
     __tablename__ = 'initiative_imports'
@@ -61,6 +66,7 @@ class InitiativeImport(Base):
     scraped_at = Column(DateTime)
     state = Column(Enum("imported", "processed", "processing_error"), nullable=False, server_default='imported')
 
+
 # Group each import run in a batch for later importing.
 class ImportBatch(Base):
     __tablename__ = 'importbatches'
@@ -76,9 +82,8 @@ class ImportBatch(Base):
     @staticmethod
     def start_new(platform):
         return ImportBatch(
-                platform=platform,
-                started_at=datetime.datetime.now(datetime.timezone.utc),
-                # This is because I made the stopped_at not nullable.
-                stopped_at=datetime.datetime.now(datetime.timezone.utc),
-                state=BatchImportState.RUNNING)
-        
+            platform=platform,
+            started_at=datetime.datetime.now(datetime.timezone.utc),
+            # This is because I made the stopped_at not nullable.
+            stopped_at=datetime.datetime.now(datetime.timezone.utc),
+            state=BatchImportState.RUNNING)

@@ -1,7 +1,8 @@
-from unittest import TestCase
+from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
 import context
+from models import Platform, ImportBatch
 from platformen import Scraper
 
 
@@ -10,16 +11,23 @@ class TestScraperDb(TestCase):
     def setUp(self):
         self.scraper = Scraper("www.platform.url", "Test Platform", "tp")
 
-    #@mock.patch('models.database.Db')
+        # don't know how to mock properly yet so mocking out db
+        # operations using partial mock.
+        self.scraper.get_platform = MagicMock(name="get_platform")
+        self.db_platform = Platform()
+        self.scraper.get_platform.return_value = self.db_platform
+
     def test_should_set_url(self):
         """Tests the loading of the platform information"""
         assert self.scraper.platform_url == "www.platform.url"
 
-    # def test_return_new_platform_if_none(self):
-    #     with mock.patch('scrapers.models.Db') as db_mock:
-    #         scraper = Scraper("www.platform.url")
-    #
-    #         session_mock = MagicMock()
-    #         session_mock.query = MagicMock(return_value=None)
-    #         db_mock.session.return_value = session_mock
-    #         scraper.load_plaform()
+    def test_return_platform(self):
+        actual = self.scraper.load_platform()
+        assert actual == self.db_platform
+
+    def test_should_start_batch_with_platform(self):
+        self.scraper.scrape()
+        started_batch = self.scraper.get_current_batch()
+        assert started_batch is not None
+        assert started_batch.platform == self.db_platform
+        assert started_batch.state == "running"
