@@ -7,6 +7,7 @@ from models.database import Db
 from models.initiatives import InitiativeImport
 from .scraper import Scraper
 
+
 class WebScraper(Scraper):
     """ General scraper class """
 

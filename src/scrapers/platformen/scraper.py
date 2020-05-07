@@ -39,9 +39,10 @@ class Scraper:
     limit: int = 5
     """Limits the iteration if a debugger is attached"""
 
-    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource]) -> object:
-        if len(sources) == 0:
-            raise ValueError("Expecting at least one source!")
+    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = []) -> object:
+        # Leave out until full conversion of scrapers.
+        # if len(sources) == 0:
+        #    raise ValueError("Expecting at least one source!")
 
         self._batch = None
         self.platform_url = platform_url
