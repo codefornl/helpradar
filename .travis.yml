@@ -6,6 +6,7 @@ python:
 install:
   - "pip install -r src/requirements.txt"
   - "pip install -r src/requirements_test.txt"
+  - "mkdir -p reports"
 script:
   - "pytest"
 after_success:
