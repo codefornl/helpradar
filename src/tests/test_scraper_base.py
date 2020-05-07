@@ -19,6 +19,9 @@ class TestScraper(TestCase):
         self.db_platform = Platform()
         self.scraper.get_platform.return_value = self.db_platform
 
+        self.save_mock = MagicMock(name="save_batch")
+        self.scraper.save_batch = self.save_mock
+
     def test_should_set_url(self):
         """Tests the loading of the platform information"""
         assert self.scraper.platform_url == "www.platform.url"
@@ -74,10 +77,7 @@ class TestScraper(TestCase):
         assert self.scraper.get_current_batch().state == BatchImportState.FAILED
 
     def test_should_save_batch_on_completion(self):
-        save_mock = MagicMock(name="save_batch")
-        self.scraper.save_batch = save_mock
-
         self.scraper.scrape()
 
-        assert save_mock.call_count == 2
+        assert self.save_mock.call_count == 2
 
