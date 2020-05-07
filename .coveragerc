@@ -1,5 +1,5 @@
 [run]
-source = src/scrapers
+source = src/tests
 omit =
     src/scrapers/tests/*
 
