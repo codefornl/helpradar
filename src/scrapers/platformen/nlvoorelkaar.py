@@ -4,8 +4,7 @@ import datetime
 from bs4 import BeautifulSoup
 
 from models.initiatives import ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
-from .scraper import Scraper
-
+from .scraper import Scraper, PlatformSource
 
 class InitiativeGroupConfig:
 
@@ -17,6 +16,26 @@ class InitiativeGroupConfig:
     def get_marker_url(self, id):
         markerurl_segment = 'hulpaanbod' if self.group == InitiativeGroup.SUPPLY else 'hulpvragen'
         return 'https://www.nlvoorelkaar.nl/%s/%s' % (markerurl_segment, id)
+
+
+class NLvoorElkaarSource(PlatformSource):
+
+    def __init__(self, config: InitiativeGroupConfig):
+        self.config = config
+
+    def __iter__(self) -> InitiativeImport:
+        page = requests.get(self.config.url)
+        # TODO: Handle http error codes
+        result = page.json()
+
+        for marker in result['markers']:
+            yield InitiativeImport(
+                source_id=marker['id'],
+                source_uri=self.config.get_marker_url(marker['id'])
+            )
+
+    def complete(self, initiative: InitiativeImport):
+        pass
 
 
 class NLvoorElkaar(Scraper):
@@ -119,17 +138,3 @@ class NLvoorElkaar(Scraper):
                     break
 
         self._db.session.commit()
-
-    # def load_platform(self):
-    #     """ retrieve platform instance or create it """
-    #     platform = self.db.session.query(Platform).filter(Platform.url.like('%www.nlvoorelkaar.nl%')).first()
-    #
-    #     if platform is None:
-    #         platform = Platform(name=self.name,
-    #             description='In moeilijke tijden is het belangrijk om elkaar kracht te geven. Om te laten zien dat we samen, zelfs als we afstand moeten houden, sterker zijn dan welke crisis ook.',
-    #             url=self.platform_url,
-    #             place='Nederland')
-    #         self.db.session.add(platform)
-    #
-    #     return platform
-

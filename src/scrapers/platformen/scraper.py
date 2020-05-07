@@ -1,4 +1,5 @@
 import sys
+from typing import List
 
 from models.database import Db
 from models.initiatives import Platform, BatchImportState, ImportBatch, InitiativeImport
@@ -20,10 +21,10 @@ class PlatformSource(object):
         """
         yield None
 
-    def complete(self, initiative):
+    def complete(self, initiative: InitiativeImport):
         """
         Completes the initiative provided by the iterator.
-        This leaves errorhandling and completion strategy
+        This leaves error handling and completion strategy
         to the caller.
         """
         pass
@@ -33,39 +34,47 @@ class Scraper:
     """
     Concept for a base class that defines and deals basic setup of a scraper 
     """
-    _source: PlatformSource
+    _sources: List[PlatformSource]
 
     limit: int = 5
     """Limits the iteration if a debugger is attached"""
 
-    def __init__(self, platform_url: str, name: str, code: str, source: PlatformSource) -> object:
+    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource]) -> object:
+        if len(sources) == 0:
+            raise ValueError("Expecting at least one source!")
+
         self._batch = None
         self.platform_url = platform_url
         self.name = name
         self.code = code
-        self._source = source
+        self._sources = sources
         self._db = Db()
 
     def scrape(self):
         """
         Starts the scraping of given platform.
+        This is all synchronous. Although this does help not flooding
+        a web server even faster is does make it all a lot slower.
         """
         print(f"starting {self.name} ({self.code}) scraper")
-        self._batch = self._start_batch()
+        self._start_batch()
 
         try:
-            for initiative in self._source:
-                self._source.complete(initiative)
-                self._batch.initiatives.append(initiative)
-        except ScrapeException as e:
+            for source in self._sources:
+                for initiative in source:
+                    source.complete(initiative)
+                    self._batch.initiatives.append(initiative)
+        except ScrapeException:
             self._batch.state = BatchImportState.FAILED
+        else:
+            self._batch.state = BatchImportState.IMPORTED
+
+        self.save_batch()
 
     def _start_batch(self):
         platform = self.load_platform()
-        batch = ImportBatch.start_new(platform)
-        self._db.session.add(batch)
-        self._db.session.commit()
-        return batch
+        self._batch = ImportBatch.start_new(platform)
+        self.save_batch()
 
     def should_continue(self, count):
         """
@@ -94,6 +103,20 @@ class Scraper:
 
     def get_current_batch(self) -> ImportBatch:
         return self._batch
+
+    def add_source(self, source: PlatformSource):
+        if source is None:
+            raise ValueError("source is None")
+        self._sources.append(source)
+
+    def save_batch(self):
+        if self._batch is None:
+            return
+
+        if self._batch.id is None:
+            self._db.session.add(self._batch)
+
+        self._db.session.commit()
 
 
 class ScraperConcept(Scraper):
