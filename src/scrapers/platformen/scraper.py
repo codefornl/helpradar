@@ -1,6 +1,12 @@
-import datetime
+"""
+@author: Ferry de Boer
+
+Defines abstract base class scraper for handling database operations,
+error handling and other control logic that should be separated from
+the scraping itself.
+"""
+
 import logging
-import sys
 from abc import ABC
 from typing import List
 
@@ -12,6 +18,11 @@ from models.initiatives import Platform, BatchImportState, ImportBatch, Initiati
 
 
 class ScrapeException(Exception):
+    """
+    Wrapper exception to ease exception handling to single type.
+    Should be used by implementers of these base classes to wrap
+    other exception types.
+    """
     pass
 
 
@@ -57,7 +68,8 @@ class PlatformSource(object):
         """
         pass
 
-    def get(self, uri):
+    @staticmethod
+    def get(uri):
         try:
             response = requests.get(uri)
             response.raise_for_status()
@@ -74,7 +86,7 @@ class ScraperExceptionRecoveryStrategy:
     """
 
     def __init__(self, max_tries: int):
-        self.max_tries:int = max_tries
+        self.max_tries: int = max_tries
 
     def should_raise(self, ex: Exception):
         self._count += 1
@@ -141,9 +153,11 @@ class Scraper(ABC):
             source.complete(initiative)
             self.add_initiative(initiative)
         except ScrapeException as e:
-            self.get_logger().exception(f"Error while collecting initiative {initiative.source_uri}")
+            self.get_logger()\
+                .exception(f"Error while collecting initiative {initiative.source_uri}")
             # There's maybe no point in doing this unless it's saved or at least counted.
-            initiative.state = "processing_error" # this is actually indicating error with down the line processing.
+            # this is actually indicating error with down the line processing.
+            initiative.state = "processing_error"
             if self._collect_recovery.should_raise(e):
                 raise e
         # Not handling db errors, that is allowed to break execution!

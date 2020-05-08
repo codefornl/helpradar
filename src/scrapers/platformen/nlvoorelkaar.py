@@ -32,7 +32,7 @@ class NLvoorElkaarSource(PlatformSource):
 
     def initiatives(self) -> InitiativeImport:
         url = self.config.get_list_url()
-        page = self.get(url)
+        page = PlatformSource.get(url)
         result = page.json()
 
         for marker in result['markers']:
@@ -48,7 +48,7 @@ class NLvoorElkaarSource(PlatformSource):
         initiative_url = self.config.get_initiative_url(initiative.source_id)
 
         try:
-            detail = self.get(initiative_url)
+            detail = PlatformSource.get(initiative_url)
 
             soup = BeautifulSoup(detail.content, 'html.parser')
 
