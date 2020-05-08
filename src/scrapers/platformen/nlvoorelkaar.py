@@ -1,15 +1,24 @@
+import logging
+
 import requests
 import datetime
 
 from bs4 import BeautifulSoup
 
 from models.initiatives import ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
-from .scraper import Scraper, PlatformSource
+from .scraper import Scraper, PlatformSource, PlatformSourceConfig, ScrapeException
 
 
-class InitiativeGroupConfig:
+class NLvoorElkaarSourceConfig(PlatformSourceConfig):
+    # Category 45 is the one for Corona
+    _LIST_ENDPOINT = "/update/resultmarkers.json?categories[]=45"
 
     def __init__(self, group, url, field_map):
+        super().__init__(
+            url,
+            '/hulpaanbod' + self._LIST_ENDPOINT if group == InitiativeGroup.SUPPLY else "/hulpvragen" + self._LIST_ENDPOINT,
+            '/hulpaanbod/' if group == InitiativeGroup.SUPPLY else "/hulpvragen/"
+        )
         self.group = group
         self.url = url
         self.field_map = field_map
@@ -21,121 +30,90 @@ class InitiativeGroupConfig:
 
 class NLvoorElkaarSource(PlatformSource):
 
-    def __init__(self, config: InitiativeGroupConfig):
-        self.config = config
+    def __init__(self, config: NLvoorElkaarSourceConfig):
+        super().__init__(config)
 
-    def __iter__(self) -> InitiativeImport:
-        page = requests.get(self.config.url)
-        # TODO: Handle http error codes
+    def initiatives(self) -> InitiativeImport:
+        url = self.config.get_list_url()
+        page = self.get(url)
         result = page.json()
 
+        count = 0
         for marker in result['markers']:
-            yield InitiativeImport(
+            if count > 5: #not self.should_continue(count):
+                break
+
+            initiative = InitiativeImport(
                 source_id=marker['id'],
-                source_uri=self.config.get_marker_url(marker['id'])
+                source_uri=self.config.get_marker_url(marker['id']),
+                latitude=marker['lat'],
+                longitude=marker['lon'],
             )
+            count += 1
+            yield initiative
 
     def complete(self, initiative: InitiativeImport):
-        pass
+        initiative_url = self.config.get_initiative_url(initiative.source_id)
+
+        try:
+            detail = self.get(initiative_url)
+
+            soup = BeautifulSoup(detail.content, 'html.parser')
+
+            table = soup.find("dl")
+            records = table.findAll(["dd", "dt"])
+            initiative.description = soup.find("p").text.strip('\t\n\r')
+            initiative.group = self.config.group
+            initiative.source = initiative_url
+
+            setcount = 0
+            for i in range(0, len(records), 2):
+                # TODO: Error prevention
+                label = records[i].contents[1].strip("\":").lower()
+                if label in self.config.field_map:
+                    setattr(initiative, self.config.field_map[label], records[i + 1].contents[0])
+                    setcount += 1
+
+            if self.config.group == InitiativeGroup.DEMAND:
+                title = soup.find("h2", "result__title")
+                initiative.organiser = title.contents[0]
+
+            # TODO: Logging is no values are assigned
+        except ScrapeException as e:
+            # should not catch
+            # ('error scraping ' + initiative_url + ':' + e.args[0])
+            if initiative is not None:
+                initiative.state = "processing_error"
 
 
 class NLvoorElkaar(Scraper):
     """NL Voor Elkaar scraper die zowel vraag als aanbod ophaalt"""
 
     def __init__(self):
-        super().__init__("www.nlvoorelkaar.nl", 'NL Voor Elkaar', "nlve")
-        # Category 45 is the one for Corona
-        self.configs = {
-            InitiativeGroup.SUPPLY: InitiativeGroupConfig(
+        super().__init__("https://www.nlvoorelkaar.nl", 'NL Voor Elkaar', "nlve")
+        self.add_source(NLvoorElkaarSource(
+            NLvoorElkaarSourceConfig(
                 InitiativeGroup.SUPPLY,
-                'https://www.nlvoorelkaar.nl/hulpaanbod/update/resultmarkers.json?page=&sectors[]=2&categories[]=45',
+                self.platform_url,
                 {
                     "titel": "name",
                     "plaats": "location",
                     "categorie": "category",
                     "aangeboden door": "organisation_kind",
-                })
-            ,
-            InitiativeGroup.DEMAND: InitiativeGroupConfig(
+                })))
+        self.add_source(NLvoorElkaarSource(
+            NLvoorElkaarSourceConfig(
                 InitiativeGroup.DEMAND,
-                'https://www.nlvoorelkaar.nl/hulpvragen/update/resultmarkers.json?categories[]=45',
+                self.platform_url,
                 {
                     "plaats": "location",
                     "categorie": "category",
                     "beschikbaarheid": "frequency",
-                })
-            }
+                })))
 
     def scrape(self):
         # Could better use template method on base class instead of require super call
         super().scrape()
 
-        try:
-            # run supply scraper
-            self.scrape_group(self.configs[InitiativeGroup.SUPPLY], self._batch)
-            # run demand scraper
-            self.scrape_group(self.configs[InitiativeGroup.DEMAND], self._batch)
-        except Exception as e:
-            self._batch.state = BatchImportState.FAILED
-            print("Error while scraping: " + e.args[0])
-            # TODO: Should do logging here
-        else:
-            self._batch.state = BatchImportState.IMPORTED
-
-        self._batch.stopped_at = datetime.datetime.now(datetime.timezone.utc)
-        self._db.session.commit()
-
-    def scrape_group(self, config: InitiativeGroupConfig, batch: ImportBatch):
-        print('scraping ' + config.group)
-        page = requests.get(config.url)
-        # TODO: Handle http error codes
-        result = page.json()
-        parsed_markers = []
-
-        for marker in result['markers']:
-            if marker['id'] not in parsed_markers:
-                # TODO: Error handling and possibly a retry
-                parsed_markers.append(marker['id'])
-                markerurl = config.get_marker_url(marker['id'])
-                print('scraping ' + markerurl)
-
-                initiative = None
-                try:
-                    detail = requests.get(markerurl)
-                    # TODO: Handle http error codes
-                    soup = BeautifulSoup(detail.content, 'html.parser')
-
-                    table = soup.find("dl")
-                    records = table.findAll(["dd", "dt"])
-                    description = soup.find("p").text.strip('\t\n\r')
-                    initiative = InitiativeImport(description=description,
-                                                group=config.group,
-                                                source=markerurl,
-                                                source_id=marker['id'])
-
-                    setcount = 0
-                    for i in range(0, len(records), 2):
-                        # TODO: Error prevention
-                        label = records[i].contents[1].strip("\":").lower()
-                        if label in config.field_map:
-                            setattr(initiative, config.field_map[label], records[i + 1].contents[0])
-                            setcount += 1
-
-                    if config.group == InitiativeGroup.DEMAND:
-                        title = soup.find("h2", "result__title");
-                        name = title.contents[0]
-
-                    # TODO: Logging is no values are assigned
-                except Exception as e:
-                    print('error scraping ' + markerurl + ':' + e.args[0])
-                    if initiative is not None:
-                        initiative.state = "processing_error"
-                
-                if initiative is not None:
-                    batch.initiatives.append(initiative)
-
-                # debugging
-                if not self.should_continue(len(parsed_markers)):
-                    break
-
-        self._db.session.commit()
+    def get_logger(self) -> logging.Logger:
+        return logging.getLogger("platformen.nlvoorelkaar")

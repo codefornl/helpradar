@@ -28,7 +28,7 @@ class PlatformSourceConfig(object):
         return '%s%s' % (self.platform_url, self.list_endpoint)
 
     def get_initiative_url(self, initiative_id):
-        return '%s%s%s' % (self.platform_url, self.details_endpoint, id)
+        return '%s%s%s' % (self.platform_url, self.details_endpoint, initiative_id)
 
 
 class PlatformSource(object):
@@ -41,7 +41,7 @@ class PlatformSource(object):
     def __init__(self, config: PlatformSourceConfig):
         self.config = config
 
-    def __iter__(self) -> InitiativeImport:
+    def initiatives(self) -> InitiativeImport:
         """
         Implementations will differ.
         Lists bare initiatives from an Api or web page.
@@ -64,6 +64,20 @@ class PlatformSource(object):
         except HTTPError as e:
             # is the the right way to wrap?
             raise ScrapeException(f"Error while requesting {uri}") from e
+
+
+class ScraperExceptionRecoveryStrategy:
+    _count = 0
+    """
+    counts the times should raise is called
+    """
+
+    def __init__(self, max_tries: int):
+        self.max_tries:int = max_tries
+
+    def should_raise(self, ex: Exception):
+        self._count += 1
+        return self._count == self.max_tries
 
 
 class Scraper:
@@ -89,6 +103,7 @@ class Scraper:
         self.code = code
         self._sources = sources
         self._db = Db()
+        self._collect_recovery = ScraperExceptionRecoveryStrategy(3)
 
     def scrape(self):
         """
@@ -102,7 +117,7 @@ class Scraper:
 
         try:
             for source in self._sources:
-                for initiative in source:
+                for initiative in source.initiatives():
                     self._collect_initiative(initiative, source)
 
         except ScrapeException as e:
@@ -113,12 +128,20 @@ class Scraper:
 
         self.save_batch()
 
-    def _collect_initiative(self, initiative, source):
+    def _collect_initiative(self, initiative: InitiativeImport, source):
+        if initiative is None:
+            raise ValueError("Expecting an initiative instance!")
+
         try:
             source.complete(initiative)
             self.add_initiative(initiative)
         except ScrapeException as e:
             self.get_logger().exception(f"Error while collecting initiative {initiative.source_uri}")
+            # There's maybe no point in doing this unless it's saved or at least counted.
+            initiative.state = "processing_error" # this is actually indicating error with down the line processing.
+            if self._collect_recovery.should_raise(e):
+                raise e
+        # Not handling db errors, that is allowed to break execution!
 
     def _start_batch(self):
         platform = self.load_platform()

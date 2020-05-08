@@ -34,7 +34,7 @@ class TestScraper(TestCase):
         assert actual == self.db_platform
 
     def test_should_start_batch_with_platform(self):
-        self.pf_source_mock.__iter__ = MagicMock(
+        self.pf_source_mock.initiatives = MagicMock(
             side_effect=self.assert_running_batch_on_iter)
 
         self.scraper.scrape()
@@ -49,7 +49,7 @@ class TestScraper(TestCase):
 
     def test_should_iterate_platform_source(self):
         first_import = InitiativeImport()
-        self.pf_source_mock.__iter__ = MagicMock(return_value=iter([first_import]))
+        self.pf_source_mock.initiatives = MagicMock(return_value=iter([first_import]))
 
         self.scraper.scrape()
 
@@ -57,7 +57,7 @@ class TestScraper(TestCase):
 
     def test_should_add_completed_initiative_to_batch(self):
         first_import = InitiativeImport()
-        self.pf_source_mock.__iter__ = MagicMock(return_value=iter([first_import]))
+        self.pf_source_mock.initiatives = MagicMock(return_value=iter([first_import]))
 
         self.scraper.scrape()
 
@@ -65,14 +65,14 @@ class TestScraper(TestCase):
 
     def test_should_flag_batch_imported_on_success(self):
         first_import = InitiativeImport()
-        self.pf_source_mock.__iter__ = MagicMock(return_value=iter([first_import]))
+        self.pf_source_mock.initiatives = MagicMock(return_value=iter([first_import]))
 
         self.scraper.scrape()
 
         assert self.scraper.get_current_batch().state == BatchImportState.IMPORTED
 
     def test_should_handle_scrape_exception(self):
-        self.pf_source_mock.__iter__ = \
+        self.pf_source_mock.initiatives = \
             MagicMock(side_effect=ScrapeException("Failed loading the list"))
 
         self.scraper.scrape()
@@ -80,7 +80,7 @@ class TestScraper(TestCase):
         assert self.scraper.get_current_batch().state == BatchImportState.FAILED
 
     def test_should_set_batch_stopped_time(self):
-        self.pf_source_mock.__iter__ = MagicMock(return_value=iter([InitiativeImport()]))
+        self.pf_source_mock.initiatives = MagicMock(return_value=iter([InitiativeImport()]))
 
         self.scraper.scrape()
 
@@ -99,7 +99,7 @@ class TestScraper(TestCase):
         self.logger_mock.info.assert_called_once_with("Starting Test Platform (tp) scraper")
 
     def test_should_log_listing_exception(self):
-        self.pf_source_mock.__iter__ = \
+        self.pf_source_mock.initiatives = \
             MagicMock(side_effect=ScrapeException("Failed loading the list"))
 
         self.scraper.scrape()
@@ -107,7 +107,7 @@ class TestScraper(TestCase):
         self.logger_mock.exception.assert_called_once_with("Error while reading list of initiatives")
 
     def test_should_log_item_exception(self):
-        self.pf_source_mock.__iter__ = MagicMock(return_value=iter([InitiativeImport(
+        self.pf_source_mock.initiatives = MagicMock(return_value=iter([InitiativeImport(
             source_uri="test/123"
         )]))
         self.pf_source_mock.complete = \
