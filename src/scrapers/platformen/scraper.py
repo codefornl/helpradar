@@ -1,3 +1,4 @@
+import datetime
 import sys
 from typing import List
 
@@ -36,15 +37,18 @@ class Scraper:
     """
     _sources: List[PlatformSource]
 
+    _batch: ImportBatch
+    """
+    The current batch.
+    """
+
     limit: int = 5
     """Limits the iteration if a debugger is attached"""
 
-    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = []) -> object:
+    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = []):
         # Leave out until full conversion of scrapers.
         # if len(sources) == 0:
         #    raise ValueError("Expecting at least one source!")
-
-        self._batch = None
         self.platform_url = platform_url
         self.name = name
         self.code = code
@@ -64,11 +68,12 @@ class Scraper:
             for source in self._sources:
                 for initiative in source:
                     source.complete(initiative)
-                    self._batch.initiatives.append(initiative)
+                    self.add_initiative(initiative)
+
         except ScrapeException:
-            self._batch.state = BatchImportState.FAILED
+            self._batch.stop(BatchImportState.FAILED)
         else:
-            self._batch.state = BatchImportState.IMPORTED
+            self._batch.stop(BatchImportState.IMPORTED)
 
         self.save_batch()
 
@@ -118,6 +123,9 @@ class Scraper:
             self._db.session.add(self._batch)
 
         self._db.session.commit()
+
+    def add_initiative(self, initiative):
+        self._batch.initiatives.append(initiative)
 
 
 class ScraperConcept(Scraper):

@@ -1,3 +1,6 @@
+#from __future__ import annotations
+
+from typing import Type
 from sqlalchemy import Column, ForeignKey, Integer, String, Text, Float, DateTime, Enum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -80,10 +83,19 @@ class ImportBatch(Base):
     initiatives = relationship(InitiativeImport, lazy='dynamic')
 
     @staticmethod
-    def start_new(platform):
+    def start_new(platform) -> 'ImportBatch':
         return ImportBatch(
             platform=platform,
             started_at=datetime.datetime.now(datetime.timezone.utc),
             # This is because I made the stopped_at not nullable.
             stopped_at=datetime.datetime.now(datetime.timezone.utc),
             state=BatchImportState.RUNNING)
+
+    def stop(self, state):
+        if state != BatchImportState.IMPORTED and state != BatchImportState.FAILED:
+            raise ValueError(f"Invalid stop state: {state}. "
+                             f"Can only stop a batch in valid stop states imported or failed")
+
+        self.state = state
+        self.stopped_at = datetime.datetime.now(datetime.timezone.utc)
+

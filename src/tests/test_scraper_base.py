@@ -76,8 +76,18 @@ class TestScraper(TestCase):
 
         assert self.scraper.get_current_batch().state == BatchImportState.FAILED
 
+    def test_should_set_batch_stopped_time(self):
+        self.pf_source_mock.__iter__ = MagicMock(return_value=iter([InitiativeImport()]))
+
+        self.scraper.scrape()
+
+        batch = self.scraper.get_current_batch()
+        assert batch.started_at < batch.stopped_at
+
     def test_should_save_batch_on_completion(self):
         self.scraper.scrape()
 
         assert self.save_mock.call_count == 2
+
+
 
