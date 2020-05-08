@@ -49,7 +49,7 @@ class WebScraper(Scraper):
 
 class CoronaHelpersScraper(WebScraper):
     def __init__(self):
-        super().__init__("www.coronahelpers.nl", "Corona Helpers", "chlp")
+        super().__init__("www.coronahelpers.nl", "Corona Helpers", "cohe")
 
         self.APIDeedsEndpoint = 'api/deeds'
         self.HTTPRequestHeaders = {

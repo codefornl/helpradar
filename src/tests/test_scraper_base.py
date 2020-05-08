@@ -1,5 +1,5 @@
 from unittest import TestCase, mock
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch, Mock
 
 import context
 from models import Platform, ImportBatch, InitiativeImport, BatchImportState
@@ -21,6 +21,10 @@ class TestScraper(TestCase):
 
         self.save_mock = MagicMock(name="save_batch")
         self.scraper.save_batch = self.save_mock
+
+        self.logger_mock = Mock()
+        get_logger_mock = Mock(return_value=self.logger_mock)
+        self.scraper.get_logger = get_logger_mock
 
     def test_should_set_url(self):
         """Tests the loading of the platform information"""
@@ -88,6 +92,32 @@ class TestScraper(TestCase):
         self.scraper.scrape()
 
         assert self.save_mock.call_count == 2
+
+    # At the moment I don't understand why the assert fails.
+    def test_should_log_start(self):
+        self.scraper.scrape()
+
+        self.logger_mock.info.assert_called_once_with("Starting Test Platform (tp) scraper")
+
+    def test_should_log_listing_exception(self):
+        self.pf_source_mock.__iter__ = \
+            MagicMock(side_effect=ScrapeException("Failed loading the list"))
+
+        self.scraper.scrape()
+
+        self.logger_mock.exception.assert_called_once_with("Error while reading list of initiatives")
+
+    def test_should_log_item_exception(self):
+        self.pf_source_mock.__iter__ = MagicMock(return_value=iter([InitiativeImport(
+            source_uri="test/123"
+        )]))
+        self.pf_source_mock.complete = \
+            MagicMock(side_effect=ScrapeException("Failed loading item"))
+
+        self.scraper.scrape()
+
+        self.logger_mock.exception.assert_called_once_with("Error while collecting initiative test/123")
+
 
 
 

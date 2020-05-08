@@ -1,4 +1,5 @@
 import datetime
+import logging
 import sys
 from typing import List
 
@@ -61,21 +62,29 @@ class Scraper:
         This is all synchronous. Although this does help not flooding
         a web server even faster is does make it all a lot slower.
         """
-        print(f"starting {self.name} ({self.code}) scraper")
+        logger = self.get_logger()
+        logger.info(f"Starting {self.name} ({self.code}) scraper")
         self._start_batch()
 
         try:
             for source in self._sources:
                 for initiative in source:
-                    source.complete(initiative)
-                    self.add_initiative(initiative)
+                    self._collect_initiative(initiative, source)
 
-        except ScrapeException:
+        except ScrapeException as e:
+            self.get_logger().exception("Error while reading list of initiatives")
             self._batch.stop(BatchImportState.FAILED)
         else:
             self._batch.stop(BatchImportState.IMPORTED)
 
         self.save_batch()
+
+    def _collect_initiative(self, initiative, source):
+        try:
+            source.complete(initiative)
+            self.add_initiative(initiative)
+        except ScrapeException as e:
+            self.get_logger().exception(f"Error while collecting initiative {initiative.source_uri}")
 
     def _start_batch(self):
         platform = self.load_platform()
@@ -126,6 +135,9 @@ class Scraper:
 
     def add_initiative(self, initiative):
         self._batch.initiatives.append(initiative)
+
+    def get_logger(self) -> logging.Logger:
+        raise NotImplementedError("Should be implemented by derived scraper")
 
 
 class ScraperConcept(Scraper):
