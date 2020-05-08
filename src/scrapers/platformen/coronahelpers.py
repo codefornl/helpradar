@@ -7,6 +7,7 @@ from models.database import Db
 from models.initiatives import InitiativeImport
 from .scraper import Scraper
 
+
 class WebScraper(Scraper):
     """ General scraper class """
 
@@ -48,7 +49,7 @@ class WebScraper(Scraper):
 
 class CoronaHelpersScraper(WebScraper):
     def __init__(self):
-        super().__init__("www.coronahelpers.nl", "Corona Helpers", "chlp")
+        super().__init__("www.coronahelpers.nl", "Corona Helpers", "cohe")
 
         self.APIDeedsEndpoint = 'api/deeds'
         self.HTTPRequestHeaders = {

@@ -12,7 +12,6 @@ class Db:
         # sqlalchemy_example.db file.
         
         path = PurePath(os.path.dirname(__file__))
-        print(path.parent)
         engine = create_engine('sqlite:///' + str(path.parent) + '//helpradar.db')
         #Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)

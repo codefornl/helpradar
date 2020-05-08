@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.DEBUG)
 #NijmegenOost().scrape()
 scrapers = [NLvoorElkaar(), WijAmsterdam(), CoronaHelpersScraper()]
 
-if sys.argv[1] == '/?':
+if sys.argv[1] == '--help':
     print('If not argument given, runs all scrapers')
     print('Use one or more codes as arguments to specify the scrapers to run:')
     print('{: <16}{}'.format("Code", "Name"))
@@ -26,7 +26,10 @@ if sys.argv[1] == '/?':
 else:
     print(f'Running {len(sys.argv)} scrapers. Use /? to see all individual scrapers')
     for scraper in scrapers:
-        test = scraper.code in sys.argv
+        # should be commandline option
+        scraper.limit = 5
+
+        # preferably each scraper runs in it's own thread.
         if len(sys.argv) == 1:
             scraper.scrape()
         elif len(sys.argv) > 1 and scraper.code in sys.argv:
