@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from models.initiatives import ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
 from .scraper import Scraper, PlatformSource
 
+
 class InitiativeGroupConfig:
 
     def __init__(self, group, url, field_map):

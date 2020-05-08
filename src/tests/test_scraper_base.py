@@ -1,8 +1,7 @@
-from unittest import TestCase, mock
-from unittest.mock import MagicMock, patch, Mock
+from unittest import TestCase
+from unittest.mock import MagicMock, Mock
 
-import context
-from models import Platform, ImportBatch, InitiativeImport, BatchImportState
+from models import Platform, InitiativeImport, BatchImportState
 from platformen import Scraper
 from platformen.scraper import ScrapeException
 

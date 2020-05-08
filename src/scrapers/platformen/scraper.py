@@ -3,6 +3,9 @@ import logging
 import sys
 from typing import List
 
+import requests
+from requests import HTTPError
+
 from models.database import Db
 from models.initiatives import Platform, BatchImportState, ImportBatch, InitiativeImport
 
@@ -11,14 +14,36 @@ class ScrapeException(Exception):
     pass
 
 
+class PlatformSourceConfig(object):
+    """
+    Container to hold standard items usually required for a platform source
+    to operate.
+    """
+    def __init__(self, platform_url, list_endpoint, details_endpoint):
+        self.platform_url = platform_url
+        self.list_endpoint = list_endpoint
+        self.details_endpoint = details_endpoint
+
+    def get_list_url(self):
+        return '%s%s' % (self.platform_url, self.list_endpoint)
+
+    def get_initiative_url(self, initiative_id):
+        return '%s%s%s' % (self.platform_url, self.details_endpoint, id)
+
+
 class PlatformSource(object):
     """
     Implementations should this class should are doing the real
-    scraping of data.
+    scraping of data. Offers basic functionality for http response
+    / error handling.
     """
+    
+    def __init__(self, config: PlatformSourceConfig):
+        self.config = config
 
     def __iter__(self) -> InitiativeImport:
         """
+        Implementations will differ.
         Lists bare initiatives from an Api or web page.
         """
         yield None
@@ -30,6 +55,15 @@ class PlatformSource(object):
         to the caller.
         """
         pass
+
+    def get(self, uri):
+        try:
+            response = requests.get(uri)
+            response.raise_for_status()
+            return response
+        except HTTPError as e:
+            # is the the right way to wrap?
+            raise ScrapeException(f"Error while requesting {uri}") from e
 
 
 class Scraper:
