@@ -1,15 +1,19 @@
 **/*.code-workspace
 venv/
 **/venv/
+.coverage
+coverage.xml
 
+# Editors
+.vscode
+.vs
+.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-.vscode
 crawler.py
-
 
 # Created by https://www.gitignore.io/api/linux,macos,windows
 # Edit at https://www.gitignore.io/?templates=linux,macos,windows
@@ -84,3 +88,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/linux,macos,windows
+*.db
