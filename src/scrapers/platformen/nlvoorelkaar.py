@@ -1,11 +1,8 @@
 import logging
 
-import requests
-import datetime
-
 from bs4 import BeautifulSoup
 
-from models.initiatives import ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
+from models.initiatives import InitiativeImport, InitiativeGroup
 from .scraper import Scraper, PlatformSource, PlatformSourceConfig, ScrapeException
 
 
@@ -38,18 +35,13 @@ class NLvoorElkaarSource(PlatformSource):
         page = self.get(url)
         result = page.json()
 
-        count = 0
         for marker in result['markers']:
-            if count > 5: #not self.should_continue(count):
-                break
-
             initiative = InitiativeImport(
                 source_id=marker['id'],
                 source_uri=self.config.get_marker_url(marker['id']),
                 latitude=marker['lat'],
                 longitude=marker['lon'],
             )
-            count += 1
             yield initiative
 
     def complete(self, initiative: InitiativeImport):
