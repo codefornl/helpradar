@@ -78,3 +78,17 @@ class TestWijAmsterdamPlatformSource(TestCase):
         for i, actual in enumerate(self.actual_result):
             assert self.response_objects[i].extraData.isOrganiserWebsite == actual.url
 
+    def test_should_use_theme_as_category(self):
+        for i, actual in enumerate(self.actual_result):
+            assert self.response_objects[i].extraData.theme == actual.category
+
+    def test_should_use_organiser(self):
+        for i, actual in enumerate(self.actual_result):
+            assert self.response_objects[i].extraData.isOrganiserName == actual.organiser
+
+    def test_should_use_extra_fields_for_original_json(self):
+        for i, actual in enumerate(self.actual_result):
+            try:
+                _ = json.loads(actual.extra_fields)
+            except json.JSONDecodeError:
+                assert False

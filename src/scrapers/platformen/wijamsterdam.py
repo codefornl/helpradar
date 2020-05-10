@@ -37,8 +37,13 @@ class WijAmsterdamSource(PlatformSource):
                 description=f"{item.summary}"
                             f"\n--------\n"
                             f"{item.description}",
+                organiser=item.extraData.isOrganiserName,
                 group=InitiativeGroup.SUPPLY,
-                url=item.extraData.isOrganiserWebsite
+                category=item.extraData.theme,
+                url=item.extraData.isOrganiserWebsite,
+                extra_fields=response.content.decode("utf-8")
+                # Probably better to leave email / phone empty
+                # name is already tricky maybe albeit open data.
             )
             if hasattr(item, "position"):
                 initiative.latitude = item.position.lat
