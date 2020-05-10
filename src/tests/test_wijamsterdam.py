@@ -16,7 +16,8 @@ class TestWijAmsterdamPlatformSource(TestCase):
 
     @requests_mock.Mocker()
     def setUp(self, request_mock):
-        file_path = os.path.join(os.getcwd(), "wijams.json")
+        test_path = os.path.dirname(__file__)
+        file_path = os.path.join(test_path, "wijams.json")
         with open(file_path, 'r') as data_file:
             self.response = data_file.read()
             self.response_objects = \
@@ -32,36 +33,20 @@ class TestWijAmsterdamPlatformSource(TestCase):
         self.actual_result = [item for item in self.source.initiatives()]
 
     def test_should_return_initiatives(self):
-        with requests_mock.Mocker() as request_mock:
-            request_mock.get(self.url, text=self.response, status_code=200)
-
-            assert len([i for i in self.source.initiatives()]) == 2
+        assert len(self.actual_result) == 2
 
     def test_should_set_dates(self):
-        with requests_mock.Mocker() as request_mock:
-            request_mock.get(self.url, text=self.response, status_code=200)
-
-            gen =  self.source.initiatives()
-            init = next(gen)
-            assert init.created_at == self.response_objects[0].createdAt
+        for i, actual in enumerate(self.actual_result):
+            assert self.response_objects[i].createdAt == actual.created_at
 
     def test_should_not_write_lat_lon_if_exist(self):
-        with requests_mock.Mocker() as request_mock:
-            request_mock.get(self.url, text=self.response, status_code=200)
-
-            gen = self.source.initiatives()
-            actual = next(gen)
-            assert None is actual.latitude
-            assert None is actual.longitude
+        assert None is self.actual_result[0].latitude
+        assert None is self.actual_result[0].longitude
 
     def test_should_write_lat_lon_if_exist(self):
-        with requests_mock.Mocker() as request_mock:
-            request_mock.get(self.url, text=self.response, status_code=200)
-
-            result = [i for i in self.source.initiatives()]
-            expected = self.response_objects[1]
-            assert result[1].latitude == expected.position.lat
-            assert result[1].longitude == expected.position.lng
+        expected = self.response_objects[1]
+        assert expected.position.lat == self.actual_result[1].latitude
+        assert expected.position.lng == self.actual_result[1].longitude
 
     def test_should_set_title(self):
         assert self.response_objects[0].title == self.actual_result[0].name
