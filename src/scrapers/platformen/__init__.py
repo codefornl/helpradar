@@ -4,7 +4,7 @@ from .coronahelpers import CoronaHelpersScraper
 #from .nijmegenoost import NijmegenOost
 from .nlvoorelkaar import NLvoorElkaar
 #from .puurpapendrecht import PuurPapendrecht
-from .wijamsterdam import WijAmsterdam
+from .wijamsterdam import WijAmsterdamSource
 #from .zorgheldenauto import Zorgheldenauto
 from .scraper import Scraper
 

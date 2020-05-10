@@ -1,43 +1,63 @@
+import logging
+from collections import namedtuple
+from typing import Generator
+
 import requests
 import json
 
-from bs4 import BeautifulSoup
-from models.initiatives import InitiativeImport
-from .scraper import Scraper
+from models.initiatives import InitiativeImport, InitiativeGroup
+from .scraper import Scraper, PlatformSource, PlatformSourceConfig
+
+
+class WijAmsterdamSource(PlatformSource):
+    """
+    Very trivial source. Reads all ideas from Wij Amsterdam open api
+    and returns them immediately
+    """
+    def __init__(self):
+        super().__init__(PlatformSourceConfig(
+            "https://www.wijamsterdam.nl",
+            "https://api2.openstad.amsterdam/api/site/197/idea",
+            None
+        ))
+
+    def initiatives(self) -> Generator[InitiativeImport, None, None]:
+        response = self.get(self.config.list_endpoint)
+
+        data = json.loads(
+            response.content,
+            object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+
+        for item in data:
+            initiative = InitiativeImport(
+                source_id=item.id,
+                source_uri=f"https://wijamsterdam.nl/initiatief/{item.id}",
+                created_at=item.createdAt,
+                name=item.title,
+                description=f"{item.summary}"
+                            f"\n--------\n"
+                            f"{item.description}",
+                group=InitiativeGroup.SUPPLY,
+                url=item.extraData.isOrganiserWebsite
+            )
+            if hasattr(item, "position"):
+                initiative.latitude = item.position.lat
+                initiative.longitude = item.position.lng
+            yield initiative
+
+    def complete(self, initiative: InitiativeImport):
+        pass
 
 
 class WijAmsterdam(Scraper):
-    """A simple example class"""
 
     def __init__(self):
-        super().__init__("www.wijamsterdam.nl", "Wij Amsterdam", "wijams")
-        self.URL = 'https://wijamsterdam.nl/initiatieven'
+        source = WijAmsterdamSource()
+        super().__init__(
+            source.config.platform_url,
+            "Wij Amsterdam",
+            "wams",
+            [source])
 
-    def scrape(self):
-        super().scrape()
-        page = requests.get(self.URL)
-
-        soup = BeautifulSoup(page.content, 'html.parser')
-        results = soup.find(class_='ideas-list')
-
-        questions = results.find_all(class_='idea-item')
-        count = 0
-        for card in questions:
-            title = card.find('h3').text.strip(' \t\n\r')
-            rawlocation = card.find(class_='gebied').text.strip(' \t\n\r')
-            description = card.find(
-                'p').text.strip(' \t\n\r')
-            link = card.find('a')['href']
-            self._db.session.add(InitiativeImport(name=title,
-                                      description=description,
-                                      group="unknown",
-                                      source='https://wijamsterdam.nl' + link,
-                                      source_id=link.strip('/initiatief/'),
-                                      location=rawlocation,
-                                      )
-                           )
-            count += 1
-            if not self.should_continue(count):
-                break
-
-        self._db.session.commit()
+    def get_logger(self) -> logging.Logger:
+        return logging.getLogger(__name__)

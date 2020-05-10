@@ -1,4 +1,5 @@
 import logging
+from typing import Generator
 
 from bs4 import BeautifulSoup
 
@@ -30,7 +31,7 @@ class NLvoorElkaarSource(PlatformSource):
     def __init__(self, config: NLvoorElkaarSourceConfig):
         super().__init__(config)
 
-    def initiatives(self) -> InitiativeImport:
+    def initiatives(self) -> Generator[InitiativeImport, None, None]:
         url = self.config.get_list_url()
         page = PlatformSource.get(url)
         result = page.json()

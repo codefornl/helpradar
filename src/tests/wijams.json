@@ -1,0 +1,110 @@
+[
+  {
+    "startDateHumanized": "24 maart 2020 15:29",
+    "endDate": "2020-06-22T13:29:36.000Z",
+    "endDateHumanized": "22 juni 2020 15:29",
+    "duration": 3703791963,
+    "posterImageUrl": null,
+    "extraData": {
+      "theme": "Eenzaamheid en kwetsbare groepen",
+      "area": "Amsterdam Algemeen",
+      "isOrganiserQuestion": "isOrganiserFalse",
+      "isOrganiserName": "Voedselbank Amsterdam",
+      "isOrganiserWebsite": "https://amsterdam.voedselbank.org/",
+      "helpNeededQuestion": "helpNeededTrue",
+      "helpNeededDescription": "Financiële donaties - door het hamsteren hebben vooral supermarkten geen voorraden meer over. “We zien daarom geen andere mogelijkheid dan zelf voedsel in te kopen”",
+      "helpNeededApply": "We hebben de hulp hard nodig van alle Amsterdammers die wèl met volle keukenkastjes zitten. Via de website van de Voedselbank Amsterdam kan gedoneerd worden. \r\n",
+      "isOrganiserPhone": "",
+      "isOrganiserEmail": "",
+      "images": [
+        "https://image-server2.openstadsdeel.nl/image/cca7e6fb8fe7ae0ea4d1e6c200fea953"
+      ],
+      "phone": ""
+    },
+    "createDateHumanized": "24 maart 2020 15:29",
+    "id": 15182,
+    "siteId": 197,
+    "meetingId": null,
+    "userId": 82627,
+    "startDate": "2020-03-24T14:29:36.000Z",
+    "sort": 1,
+    "status": "OPEN",
+    "title": "Hamsterdammers! Help onze voedselbank!!",
+    "summary": "‘Hamsterdammers! Help onze voedselbank,’ Kom in actie en doneer al je gehamsterde producten via de website!",
+    "description": "<h1>Grote tekorten bij Amsterdamse voedselbanken door hamsterwoede</h1><div>Amsterdamse voedselbanken luiden de noodklok omdat ze snel door hun voorraden heen raken. De oorzaak? Het massale hamstergedrag van de supermarktconsument.<br /><br /></div><div><a href=\"https://www.parool.nl/auteur/Jesper%20Roele\" target=\"_blank\" rel=\"noreferrer noopener\"><strong>Jesper Roele</strong></a>22 maart 2020, 14:56</div><div><br /></div><div><figure class=\"attachment attachment-preview\" data-trix-attachment=\"{&quot;contentType&quot;:&quot;image&quot;,&quot;height&quot;:509,&quot;url&quot;:&quot;https://images4.persgroep.net/rcs/IyEYODVrzPD8dNdtxrvm02Qm-Yc/diocontent/168682785/_fitwidth/763?appId=93a17a8fd81db0de025c8abd1cca1279&amp;quality=0.8&quot;,&quot;width&quot;:763}\" data-trix-content-type=\"image\"><img src=\"https://images4.persgroep.net/rcs/IyEYODVrzPD8dNdtxrvm02Qm-Yc/diocontent/168682785/_fitwidth/763?appId=93a17a8fd81db0de025c8abd1cca1279&amp;quality=0.8\" width=\"763\" height=\"509\" /><figcaption class=\"caption\"></figcaption></figure>Beeld ANP</div><div><br />Voedselbanken zijn afhankelijk van restpartijen van supermarkten en groothandels, maar op het moment blijft er bijna niets over. De voedselbank van Amsterdam roept daarom op om geld te doneren, zodat de Amsterdammers die afhankelijk zijn van de dagelijkse voedselhulp, niet in de problemen komen.<br /><br /></div><div>‘Hamsterdammers! Help onze voedselbank,’ schrijft de organisatie in een persbericht. Met het geld wil de voedselbank eten voor minderbedeelde Amsterdammers kopen.<br /><br /><br /></div><div><strong>Voedseldonaties<br /></strong><br /></div><div>De voedselbanken zijn afhankelijk van donaties van bedrijven met een voedseloverschot. Maar door het hamsteren hebben vooral supermarkten geen voorraden meer over. “We zien daarom geen andere mogelijkheid dan zelf voedsel in te kopen,” zegt Margje Polman Tuin van de Voedselbank Amsterdam. “Iets waarvoor we de hulp hard nodig hebben van alle Amsterdammers die wèl met volle keukenkastjes zitten.”<br /><br /></div><div>Amsterdammers die afhankelijk zijn van de voedselbank krijgen vaak lang houdbare producten zoals pasta, rijst en blikgroenten in hun wekelijkse voedselpakket. Juist deze producten worden door de hamsterwoede nauwelijks nog aangeleverd. Daarnaast ligt de inzamelingen die bedrijven, scholen en supermarkten normaal gesproken houden nu ook stil.<br /><br /></div><div>De Voedselbank Amsterdam verwacht dat er door de coronacrisis in de toekomst nog meer mensen afhankelijk zullen worden van de hulp van voedselpakketten. Ruim drieduizend huishoudens zijn in Amsterdam afhankelijk van de hulp van de voedselbanken. Vanuit twaalf uitgiftepunten wordt het voedsel verdeeld in de stad.<br /><br /></div><div>Via de <a href=\"https://amsterdam.voedselbank.org/kom-in-actie/doneren/\" target=\"_blank\" rel=\"noreferrer noopener\">website van de Voedselbank Amsterdam </a>kan gedoneerd worden. <br /><br /></div>",
+    "budget": null,
+    "location": null,
+    "modBreak": "",
+    "modBreakUserId": null,
+    "modBreakDate": null,
+    "createdAt": "2020-03-24T14:29:36.000Z",
+    "updatedAt": "2020-03-27T11:30:37.000Z",
+    "deletedAt": null,
+    "config": null,
+    "site": null,
+    "can": {},
+    "user": {
+      "isAdmin": false
+    },
+    "createdAtText": "24 maart 2020 15:29"
+  },
+  {
+    "startDateHumanized": "24 maart 2020 17:03",
+    "endDate": "2020-06-22T15:03:50.000Z",
+    "endDateHumanized": "22 juni 2020 17:03",
+    "duration": 3709445962,
+    "posterImageUrl": "https://maps.googleapis.com/maps/api/streetview?size=800x600&location=52.37224209701757,4.842169896392821&heading=151.78&pitch=-0.76&key=AIzaSyBUWkinf1yg1GpX71bv4zqx7icTxSX6oyU",
+    "extraData": {
+      "theme": "In de buurt en burenhulp",
+      "area": "Stadsdeel West",
+      "isOrganiserQuestion": "isOrganiserFalse",
+      "isOrganiserName": "De Westkrant - initiatieven en nieuws over corona",
+      "isOrganiserWebsite": "https://www.dewestkrant.nl/category/corona/",
+      "helpNeededQuestion": "helpNeededTrue",
+      "helpNeededDescription": "Tips, persberichten of advertenties voor De Westkrant? Of wil je zelf bijdragen aan dit veelgelezen buurtmedium? ",
+      "helpNeededApply": "Stuur een mail naar mail@dewestkrant.nl of bel 06-54241212 (Martine de Vente).",
+      "isOrganiserPhone": "",
+      "isOrganiserEmail": "",
+      "images": [
+        "https://image-server2.openstadsdeel.nl/image/381e2861501a04835fa25a4d0a06bd29"
+      ],
+      "phone": ""
+    },
+    "position": {
+      "lat": 52.37224209701757,
+      "lng": 4.842169896392821
+    },
+    "createDateHumanized": "24 maart 2020 17:03",
+    "id": 15183,
+    "siteId": 197,
+    "meetingId": null,
+    "userId": 82677,
+    "startDate": "2020-03-24T16:03:50.000Z",
+    "sort": 1,
+    "status": "OPEN",
+    "title": "De Westkrant- initiatieven en nieuws over Corona",
+    "summary": "De Westkrant - onafhankelijk nieuws uit Amsterdam-West en Nieuw-West",
+    "description": "<div>De Westkrant is een onafhankelijk nieuwsmedium voor Amsterdam-West. Initiatiefnemers zijn de journalisten én enthousiaste bewoners <a href=\"http://www.richardmooyman.nl\" target=\"_blank\" rel=\"noreferrer noopener\">Richard Mooyman</a> en <a href=\"http://www.martinedevente.com\" target=\"_blank\" rel=\"noreferrer noopener\">Martine de Vente</a>. Zij schrijven de meeste stukken en bouwen aan een netwerk van journalisten, fotografen en columnisten in West en Nieuw-West.<br /><br /></div><div>In het kader van de coronacrisis wordt het laatste coronanieuws uit West en Nieuw-West verzameld via deze site. Met tips over hardlopen op 1,5 meter afstand bijvoorbeeld, en het laatste nieuws over de lokale horeca en bovenal: persoonlijke verhalen uit de buurt.<br /><br /><br /><br /></div>",
+    "budget": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        52.37224209701757,
+        4.842169896392821
+      ]
+    },
+    "modBreak": "",
+    "modBreakUserId": null,
+    "modBreakDate": null,
+    "createdAt": "2020-03-24T16:03:50.000Z",
+    "updatedAt": "2020-03-27T14:29:22.000Z",
+    "deletedAt": null,
+    "config": null,
+    "site": null,
+    "can": {},
+    "user": {
+      "isAdmin": false
+    },
+    "createdAtText": "24 maart 2020 17:03"
+  }
+  ]

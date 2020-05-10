@@ -8,7 +8,7 @@ the scraping itself.
 
 import logging
 from abc import ABC
-from typing import List
+from typing import Generator, List
 
 import requests
 from requests import HTTPError
@@ -43,7 +43,7 @@ class PlatformSourceConfig(object):
         return '%s%s%s' % (self.platform_url, self.details_endpoint, initiative_id)
 
 
-class PlatformSource(object):
+class PlatformSource(ABC):
     """
     Implementations should this class should are doing the real
     scraping of data. Offers basic functionality for http response
@@ -53,7 +53,7 @@ class PlatformSource(object):
     def __init__(self, config: PlatformSourceConfig):
         self.config = config
 
-    def initiatives(self) -> InitiativeImport:
+    def initiatives(self) -> Generator[InitiativeImport, None, None]:
         """
         Implementations will differ.
         Lists bare initiatives from an Api or web page.
