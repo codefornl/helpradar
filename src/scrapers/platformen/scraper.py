@@ -131,14 +131,12 @@ class Scraper(ABC):
 
         try:
             for source in self._sources:
-                count = 0
-                for initiative in source.initiatives():
+                for count, initiative in enumerate(source.initiatives()):
                     if not self.should_continue(count):
                         break
                     self._collect_initiative(initiative, source)
-                    count += 1
 
-        except ScrapeException as e:
+        except ScrapeException:
             self.get_logger().exception("Error while reading list of initiatives")
             self._batch.stop(BatchImportState.FAILED)
         else:
