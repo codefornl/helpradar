@@ -8,6 +8,7 @@ the scraping itself.
 
 import logging
 from abc import ABC
+from datetime import datetime
 from typing import Generator, List
 
 import requests
@@ -151,6 +152,7 @@ class Scraper(ABC):
 
         try:
             source.complete(initiative)
+            initiative.scraped_at = datetime.utcnow()
             self.add_initiative(initiative)
         except ScrapeException as e:
             self.get_logger()\
@@ -158,6 +160,7 @@ class Scraper(ABC):
             # There's maybe no point in doing this unless it's saved or at least counted.
             # this is actually indicating error with down the line processing.
             initiative.state = "processing_error"
+            # Should probably do this very neat with a context manager.
             if self._collect_recovery.should_raise(e):
                 raise e
         # Not handling db errors, that is allowed to break execution!
