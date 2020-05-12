@@ -153,6 +153,7 @@ class Scraper(ABC):
             initiative.scraped_at = datetime.utcnow()
             initiative.source = self.platform_url
             self.add_initiative(initiative)
+            self.get_logger().debug(f"Scraped {initiative.source_uri}")
         except ScrapeException as e:
             self.get_logger()\
                 .exception(f"Error while collecting initiative {initiative.source_uri}")
