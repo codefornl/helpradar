@@ -52,6 +52,7 @@ class InitiativeImport(Base):
     group = Column(String(250))
     description = Column(Text)
     name = Column(String(250))
+    targetgroup = Column(String(250))
     source = Column(String(250))
     source_id = Column(String(250))
     frequency = Column(String(250))
@@ -67,7 +68,8 @@ class InitiativeImport(Base):
     source_uri = Column(String(500), nullable=False, server_default='http://unknown.org')
     created_at = Column(DateTime)
     scraped_at = Column(DateTime)
-    state = Column(Enum("imported", "processed", "processing_error"), nullable=False, server_default='imported')
+    state = Column(Enum("imported", "import_error", "processed", "processing_error"), nullable=False, server_default='imported')
+    error_reason = Column(String())
 
 
 # Group each import run in a batch for later importing.
