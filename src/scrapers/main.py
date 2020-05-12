@@ -31,7 +31,7 @@ else:
     print(f'Running {len(sys.argv)} scrapers. Use /? to see all individual scrapers')
     for scraper in scrapers:
         # should be commandline option
-        # scraper.limit = 5
+        scraper.limit = 5
 
         # preferably each scraper runs in it's own thread.
         if len(sys.argv) == 1:

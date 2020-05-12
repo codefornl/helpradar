@@ -1,7 +1,9 @@
+from datetime import datetime
 import json
 import os
 from collections import namedtuple
 
+from dateutil import parser
 import requests_mock
 
 from unittest import TestCase
@@ -37,7 +39,10 @@ class TestWijAmsterdamPlatformSource(TestCase):
 
     def test_should_set_dates(self):
         for i, actual in enumerate(self.actual_result):
-            assert self.response_objects[i].createdAt == actual.created_at
+            # using dateutil and not datetime because: https://stackoverflow.com/a/3908349/167131
+            assert isinstance(actual.created_at, datetime)
+            expected = parser.parse(self.response_objects[i].createdAt)
+            assert expected == actual.created_at
 
     def test_should_not_write_lat_lon_if_exist(self):
         assert None is self.actual_result[0].latitude
