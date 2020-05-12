@@ -4,7 +4,7 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 alembic upgrade head
-python scrapers/main.py
+python scrapers/main.py --help
 ```
 
 this will generate the `helpradar.db` sqlite file. No sqlite3? Don't worry, you can upload the database to https://sqliteonline.com/ and view it there!
