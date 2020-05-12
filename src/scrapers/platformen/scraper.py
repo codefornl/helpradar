@@ -151,6 +151,7 @@ class Scraper(ABC):
         try:
             source.complete(initiative)
             initiative.scraped_at = datetime.utcnow()
+            initiative.source = self.platform_url
             self.add_initiative(initiative)
         except ScrapeException as e:
             self.get_logger()\

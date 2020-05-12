@@ -82,3 +82,7 @@ class TestWijAmsterdamPlatformSource(TestCase):
                 _ = json.loads(actual.extra_fields)
             except json.JSONDecodeError:
                 assert False
+
+    def test_should_set_area_as_location(self):
+        for i, actual in enumerate(self.actual_result):
+            assert self.response_objects[i].extraData.area == actual.location

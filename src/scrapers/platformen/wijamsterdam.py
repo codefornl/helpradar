@@ -40,6 +40,7 @@ class WijAmsterdamSource(PlatformSource):
                 description=f"{item.summary}"
                             f"\n--------\n"
                             f"{item.description}",
+                location=item.extraData.area,
                 organiser=item.extraData.isOrganiserName,
                 group=InitiativeGroup.SUPPLY,
                 category=item.extraData.theme,
