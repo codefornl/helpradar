@@ -4,9 +4,6 @@ services:
 
   app:
     build: .
-    network_mode: bridge
-    links:
-      - postgresql
     volumes:
       - ./src:/usr/helpradar
     environment:
@@ -17,7 +14,6 @@ services:
 
   postgresql:
     image: postgres:12.2-alpine
-    network_mode: bridge
     volumes:
       - postgresql:/var/lib/postgresql
     environment:
