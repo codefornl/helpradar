@@ -13,7 +13,9 @@ class Geocoder:
 
     def geocode(self):
         db = Db()
-        locationset = db.session.query(InitiativeImport).filter(InitiativeImport.location.isnot(None)).with_for_update().all()
+        locationset = db.session.query(InitiativeImport)\
+            .filter(InitiativeImport.location.isnot(None))\
+            .with_for_update().all()
 
         # Regex voor postcode geschreven ls `9999XX`
         pattern = r'\d{4}[A-Z]{2}'
@@ -45,8 +47,10 @@ class Geocoder:
                 item.osm_address = "Niet gevonden"
             else:
                 item.osm_address = match.address
-                item.latitude = match.latitude
-                item.longitude = match.longitude
+                # Only write location if not already set.
+                if item.latitude is None:
+                    item.latitude = match.latitude
+                    item.longitude = match.longitude
                 db.session.add(item)
                 db.session.commit()
                 print("SUCCESS: " + match.address)

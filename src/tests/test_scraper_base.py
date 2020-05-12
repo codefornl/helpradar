@@ -131,6 +131,16 @@ class TestScraper(TestCase):
         datediff = now - actual
         assert datediff.seconds < 1
 
+    def test_should_set_platform_url_as_source(self):
+        self.pf_source_mock.initiatives = MagicMock(return_value=iter([InitiativeImport(
+            source_uri="test/123"
+        )]))
+
+        self.scraper.scrape()
+
+        actual = self.scraper.get_current_batch().initiatives[0]
+        assert self.scraper.platform_url == actual.source
+
 
 
 
