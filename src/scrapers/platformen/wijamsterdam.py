@@ -5,6 +5,8 @@ from typing import Generator
 import requests
 import json
 
+from dateutil import parser
+
 from models.initiatives import InitiativeImport, InitiativeGroup
 from .scraper import Scraper, PlatformSource, PlatformSourceConfig
 
@@ -32,11 +34,13 @@ class WijAmsterdamSource(PlatformSource):
             initiative = InitiativeImport(
                 source_id=item.id,
                 source_uri=f"https://wijamsterdam.nl/initiatief/{item.id}",
-                created_at=item.createdAt,
+                # using dateutil and not datetime because: https://stackoverflow.com/a/3908349/167131
+                created_at=parser.parse(item.createdAt),
                 name=item.title,
                 description=f"{item.summary}"
                             f"\n--------\n"
                             f"{item.description}",
+                location=item.extraData.area,
                 organiser=item.extraData.isOrganiserName,
                 group=InitiativeGroup.SUPPLY,
                 category=item.extraData.theme,
