@@ -1,4 +1,4 @@
-import os
+from os import environ, path
 from pathlib import PurePath
 
 from sqlalchemy.orm import relationship, sessionmaker
@@ -19,12 +19,14 @@ class Db:
 
     @staticmethod
     def get_db_url():
-        path = PurePath(os.path.dirname(__file__))
-        db_path = path.joinpath(str(path.parent), 'helpradar.db')
+
+        if environ.get("DB_HOST"):
+            return "postgres://%s:%s@%s/%s" % (
+                environ["DB_USER"],
+                environ["DB_PASSWORD"],
+                environ["DB_HOST"],
+                environ["DB_NAME"],
+            )
+        dir_path = PurePath(path.dirname(__file__))
+        db_path = path.join(str(dir_path.parent), 'helpradar.db')
         return f"sqlite:///{db_path}"
-        # return "postgres://%s:%s@%s/%s" % (
-        #     os.getenv("DB_USER", "dev"),
-        #     os.getenv("DB_PASSWORD", "dev"),
-        #     os.getenv("DB_HOST", "devdb"),
-        #     os.getenv("DB_NAME", "helpradar"),
-        # )
