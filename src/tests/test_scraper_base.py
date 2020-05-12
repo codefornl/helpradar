@@ -1,5 +1,6 @@
+from datetime import datetime, timezone
 from unittest import TestCase
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock, Mock, patch
 
 from models import Platform, InitiativeImport, BatchImportState
 from platformen import Scraper
@@ -116,6 +117,19 @@ class TestScraper(TestCase):
         self.scraper.scrape()
 
         self.logger_mock.exception.assert_called_once_with("Error while collecting initiative test/123")
+
+    def test_should_have_set_scraped_at(self):
+        self.pf_source_mock.initiatives = MagicMock(return_value=iter([InitiativeImport(
+            source_uri="test/123"
+        )]))
+
+        self.scraper.scrape()
+
+        now = datetime.utcnow()
+        actual = self.scraper.get_current_batch().initiatives[0].scraped_at
+        # can't mock datetime.utcnow so this is my workaround.
+        datediff = now - actual
+        assert datediff.seconds < 1
 
 
 
