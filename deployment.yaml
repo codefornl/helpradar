@@ -1,0 +1,29 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: helpradar-image
+spec:
+  selector:
+    app: helpradar-image
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpradar-image
+  labels:
+    app: helpradar-image
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helpradar-image
+  template:
+    metadata:
+      labels:
+        app: helpradar-image
+    spec:
+      imagePullSecrets:
+      - name: pipeline-docker-registry
+      containers:
+      - name: helpradar-python
+        image: ${CICD_IMAGE}:${CICD_EXECUTION_SEQUENCE}
