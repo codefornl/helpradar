@@ -25,5 +25,5 @@ spec:
       imagePullSecrets:
       - name: pipeline-docker-registry
       containers:
-      - name: helpradar-python
+      - name: data-pipeline
         image: ${CICD_IMAGE}:${CICD_EXECUTION_SEQUENCE}
