@@ -5,8 +5,8 @@ Created on Wed Apr 22 21:21:21 2020
 """
 import re
 
-from TreeParser import TreeParser  # class for scraping static website
-from helpers import format_group, format_organizer
+from .TreeParser import TreeParser  # class for scraping static website
+from .helpers import format_group, format_organizer
 
 # Step 1: 
 url='https://puurpapendrecht.nl/elkaar-helpen?format=fragment&page='

@@ -5,8 +5,8 @@ Created on Thu May  7 21:09:55 2020
 """
 
 import re
-from TreeParser import TreeParser  # class for scraping static website
-from helpers import format_group, format_organizer
+from .TreeParser import TreeParser  # class for scraping static website
+from .helpers import format_group, format_organizer
 
 # Step 1: 
 url = 'https://maasburen.nl/elkaar-helpen?theme%5B%5D=836&format=fragment&page='

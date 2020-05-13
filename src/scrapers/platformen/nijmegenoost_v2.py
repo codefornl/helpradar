@@ -3,8 +3,8 @@ Created on Mon May  4 16:28:05 2020
 
 @author: jskro
 """
-from TreeParser import TreeParser # class for scraping static website
-from helpers import format_group, format_organizer
+from .TreeParser import TreeParser # class for scraping static website
+from .helpers import format_group, format_organizer
 
 # Step 1: 
 url='https://nijmegen-oost.nl/elkaar-helpen?type%5B%5D=OFFERED&page='
