@@ -1,7 +1,7 @@
 language: python
 addons:
   sonarcloud:
-    organization: "codefornl_helpradar"
+    organization: "codefornl"
 python:
   - "3.6"
   - "3.7"
