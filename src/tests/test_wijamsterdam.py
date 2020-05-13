@@ -1,17 +1,14 @@
-import sys
-from datetime import datetime
 import json
 import os
 from collections import namedtuple
+from datetime import datetime
 from typing import Dict
-
-from parameterized import parameterized
-import pytest
-from dateutil import parser
-import requests_mock
-
 from unittest import TestCase
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock
+
+import requests_mock
+from dateutil import parser
+from parameterized import parameterized
 
 from models import InitiativeGroup
 from platformen.scraper import ScrapeException
