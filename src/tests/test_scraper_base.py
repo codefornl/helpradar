@@ -98,7 +98,7 @@ class TestScraper(TestCase):
     def test_should_log_start(self):
         self.scraper.scrape()
 
-        self.logger_mock.info.assert_called_once_with("Starting Test Platform (tp) scraper")
+        self.logger_mock.info.assert_any_call("Starting Test Platform (tp) scraper")
 
     def test_should_log_listing_exception(self):
         self.pf_source_mock.initiatives = \
