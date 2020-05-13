@@ -39,7 +39,8 @@ class WebScraper(Scraper):
         HTTPContent = self.getHTTPResponseContent(URL)
         return json.loads(HTTPContent)
 
-    def sleepForThottling(self):
+    @staticmethod
+    def sleepForThottling():
         sleep(0.1)
 
     def addInitiativeToDatabase(self, initiative):
@@ -112,10 +113,12 @@ class CoronaHelpersScraper(WebScraper):
     def getAPIDeedDetailsURL(self, deedID):
         return "%s/%s" % (self.getAPIDeedsURL(), deedID)
 
-    def getDataFromJSON(self, JSON):
+    @staticmethod
+    def getDataFromJSON(JSON):
         return JSON["data"]
 
-    def getStatusFromJSON(self, JSON):
+    @staticmethod
+    def getStatusFromJSON(JSON):
         return JSON["status"]
 
     def getDeedDetailsFromJSON(self, JSON):
@@ -126,7 +129,8 @@ class CoronaHelpersScraper(WebScraper):
         data = self.getDataFromJSON(JSON)
         return data["results"]
 
-    def getDeedIDFromJSON(self, JSON):
+    @staticmethod
+    def getDeedIDFromJSON(JSON):
         return JSON["id"]
 
     def getPageCountFromPageJSON(self, JSON):
@@ -135,7 +139,8 @@ class CoronaHelpersScraper(WebScraper):
 
         return pagination["pageCount"]
 
-    def getCoordinatesFromDeedDetails(self, deedDetails):
+    @staticmethod
+    def getCoordinatesFromDeedDetails(deedDetails):
 
         parsedCoordinates = {"lat": None, "lng": None}
 
@@ -146,7 +151,8 @@ class CoronaHelpersScraper(WebScraper):
 
         return parsedCoordinates
 
-    def getHTTPParametersForPageQuery(self, currentPage, pageSize):
+    @staticmethod
+    def getHTTPParametersForPageQuery(currentPage, pageSize):
 
         HTTPParameters = {
             'query': '',

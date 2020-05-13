@@ -10,7 +10,8 @@ class MensenDieWillenHelpen:
     def __init__(self):
         self.URL = 'https://www.gewoonmensendiemensenwillenhelpen.nl/ik-wil-helpen'
 
-    def scrape(self):
+    @staticmethod
+    def scrape():
         db = Db()
 
         # read data
