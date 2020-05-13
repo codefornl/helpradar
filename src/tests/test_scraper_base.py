@@ -3,6 +3,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
 from models import Platform, InitiativeImport, BatchImportState
+from models.initiatives import InitiativeImportState
 from platformen import Scraper
 from platformen.scraper import ScrapeException
 
@@ -97,7 +98,7 @@ class TestScraper(TestCase):
     def test_should_log_start(self):
         self.scraper.scrape()
 
-        self.logger_mock.info.assert_called_once_with("Starting Test Platform (tp) scraper")
+        self.logger_mock.info.assert_any_call("Starting Test Platform (tp) scraper")
 
     def test_should_log_listing_exception(self):
         self.pf_source_mock.initiatives = \
@@ -106,17 +107,6 @@ class TestScraper(TestCase):
         self.scraper.scrape()
 
         self.logger_mock.exception.assert_called_once_with("Error while reading list of initiatives")
-
-    def test_should_log_item_exception(self):
-        self.pf_source_mock.initiatives = MagicMock(return_value=iter([InitiativeImport(
-            source_uri="test/123"
-        )]))
-        self.pf_source_mock.complete = \
-            MagicMock(side_effect=ScrapeException("Failed loading item"))
-
-        self.scraper.scrape()
-
-        self.logger_mock.exception.assert_called_once_with("Error while collecting initiative test/123")
 
     def test_should_have_set_scraped_at(self):
         self.pf_source_mock.initiatives = MagicMock(return_value=iter([InitiativeImport(
@@ -140,6 +130,39 @@ class TestScraper(TestCase):
 
         actual = self.scraper.get_current_batch().initiatives[0]
         assert self.scraper.platform_url == actual.source
+
+    def scrape_collection_exception(self):
+        self.pf_source_mock.initiatives = MagicMock(return_value=iter([InitiativeImport(
+            source_uri="test/123"
+        )]))
+
+        self.pf_source_mock.complete = Mock(side_effect=ScrapeException("Test"))
+
+        self.scraper.scrape()
+
+    def test_should_log_item_exception(self):
+        self.scrape_collection_exception()
+        self.logger_mock.exception.assert_called_once_with("Error while collecting initiative test/123")
+
+    def test_collect_should_set_initiative_import_error(self):
+        self.scrape_collection_exception()
+
+        actual: InitiativeImport = self.scraper.get_current_batch().initiatives[0]
+        assert InitiativeImportState.IMPORT_ERROR == actual.state
+        assert actual.error_reason.endswith("ScrapeException: Test\n")
+
+    def test_collect_should_always_add_initiative(self):
+        self.scrape_collection_exception()
+
+        try:
+            _ = self.scraper.get_current_batch().initiatives[0]
+            assert True
+        except IndexError:
+            assert False
+
+
+
+
 
 
 

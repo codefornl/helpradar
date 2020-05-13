@@ -1,4 +1,5 @@
 import logging
+import sys
 from collections import namedtuple
 from typing import Generator
 
@@ -8,7 +9,7 @@ import json
 from dateutil import parser
 
 from models.initiatives import InitiativeImport, InitiativeGroup
-from .scraper import Scraper, PlatformSource, PlatformSourceConfig
+from .scraper import Scraper, PlatformSource, PlatformSourceConfig, ScrapeException
 
 
 class WijAmsterdamSource(PlatformSource):
@@ -16,6 +17,7 @@ class WijAmsterdamSource(PlatformSource):
     Very trivial source. Reads all ideas from Wij Amsterdam open api
     and returns them immediately
     """
+
     def __init__(self):
         super().__init__(PlatformSourceConfig(
             "https://www.wijamsterdam.nl",
@@ -26,33 +28,48 @@ class WijAmsterdamSource(PlatformSource):
     def initiatives(self) -> Generator[InitiativeImport, None, None]:
         response = self.get(self.config.list_endpoint)
 
-        data = json.loads(
-            response.content,
-            object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+        try:
+            data = json.loads(
+                response.content,
+                object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
 
-        for item in data:
-            initiative = InitiativeImport(
-                source_id=item.id,
-                source_uri=f"https://wijamsterdam.nl/initiatief/{item.id}",
-                # using dateutil and not datetime because: https://stackoverflow.com/a/3908349/167131
-                created_at=parser.parse(item.createdAt),
-                name=item.title,
-                description=f"{item.summary}"
-                            f"\n--------\n"
-                            f"{item.description}",
-                location=item.extraData.area,
-                organiser=item.extraData.isOrganiserName,
-                group=InitiativeGroup.SUPPLY,
-                category=item.extraData.theme,
-                url=item.extraData.isOrganiserWebsite,
-                extra_fields=response.content.decode("utf-8")
-                # Probably better to leave email / phone empty
-                # name is already tricky maybe albeit open data.
-            )
-            if hasattr(item, "position"):
-                initiative.latitude = item.position.lat
-                initiative.longitude = item.position.lng
-            yield initiative
+            for item in data:
+                initiative = self.map_initiative(response, item)
+                yield initiative
+        except Exception as ex:
+            msg = f"Error reading contents from {self.config.list_endpoint}"
+            raise ScrapeException(msg) from ex
+
+    @staticmethod
+    def map_initiative(response, item):
+        initiative = InitiativeImport(
+            source_id=item.id,
+            source_uri=f"https://wijamsterdam.nl/initiatief/{item.id}",
+            # using dateutil and not datetime because: https://stackoverflow.com/a/3908349/167131
+            created_at=parser.parse(item.createdAt),
+            name=item.title,
+            description=f"{item.summary}"
+                        f"\n--------\n"
+                        f"{item.description}",
+            group=InitiativeGroup.SUPPLY,
+            extra_fields=response.content.decode("utf-8")
+            # Probably better to leave email / phone empty
+            # name is already tricky maybe albeit open data.
+        )
+
+        if hasattr(item.extraData, "area"):
+            initiative.location = item.extraData.area
+        if hasattr(item.extraData, "isOrganiserName"):
+            initiative.organiser = item.extraData.isOrganiserName
+        if hasattr(item.extraData, "theme"):
+            initiative.category = item.extraData.theme
+        if hasattr(item.extraData, "isOrganiserWebsite"):
+            initiative.url = item.extraData.isOrganiserWebsite
+        if hasattr(item, "position"):
+            initiative.latitude = item.position.lat
+            initiative.longitude = item.position.lng
+
+        return initiative
 
     def complete(self, initiative: InitiativeImport):
         pass
