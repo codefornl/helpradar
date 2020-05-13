@@ -7,6 +7,8 @@ the scraping itself.
 """
 
 import logging
+import sys
+import traceback
 from abc import ABC
 from datetime import datetime
 from typing import Generator, List
@@ -15,7 +17,7 @@ import requests
 from requests import HTTPError
 
 from models.database import Db
-from models.initiatives import Platform, BatchImportState, ImportBatch, InitiativeImport
+from models.initiatives import Platform, BatchImportState, ImportBatch, InitiativeImport, InitiativeImportState
 
 
 class ScrapeException(Exception):
@@ -98,26 +100,20 @@ class Scraper(ABC):
     """
     Concept for a base class that defines and deals basic setup of a scraper 
     """
-    _sources: List[PlatformSource]
-
-    _batch: ImportBatch
-    """
-    The current batch.
-    """
-
-    limit: int = 0
-    """Limits the iteration if a debugger is attached"""
 
     def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = []):
         # Leave out until full conversion of scrapers.
         # if len(sources) == 0:
         #    raise ValueError("Expecting at least one source!")
-        self.platform_url = platform_url
-        self.name = name
-        self.code = code
+        self.platform_url: str = platform_url
+        self.name: str = name
+        self.code: str = code
         self._sources = sources
         self._db = Db()
         self._collect_recovery = ScraperExceptionRecoveryStrategy(3)
+        self.limit: int = 0
+        """Limits the iteration if a debugger is attached"""
+        self._batch: ImportBatch
 
     def scrape(self):
         """
@@ -152,18 +148,24 @@ class Scraper(ABC):
             source.complete(initiative)
             initiative.scraped_at = datetime.utcnow()
             initiative.source = self.platform_url
-            self.add_initiative(initiative)
             self.get_logger().debug(f"Scraped {initiative.source_uri}")
         except ScrapeException as e:
             self.get_logger()\
                 .exception(f"Error while collecting initiative {initiative.source_uri}")
             # There's maybe no point in doing this unless it's saved or at least counted.
             # this is actually indicating error with down the line processing.
-            initiative.state = "processing_error"
+            initiative.state = InitiativeImportState.IMPORT_ERROR
+            ex_info = sys.exc_info()
+            initiative.error_reason = "".join(traceback.format_exception(*ex_info))
             # Should probably do this very neat with a context manager.
             if self._collect_recovery.should_raise(e):
                 raise e
+        finally:
+            # Always store initiative for traceability.
+            self.add_initiative(initiative)
+
         # Not handling db errors, that is allowed to break execution!
+
 
     def _start_batch(self):
         platform = self.load_platform()

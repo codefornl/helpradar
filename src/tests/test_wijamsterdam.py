@@ -1,8 +1,12 @@
+import sys
 from datetime import datetime
 import json
 import os
 from collections import namedtuple
+from typing import Dict
 
+from parameterized import parameterized
+import pytest
 from dateutil import parser
 import requests_mock
 
@@ -10,6 +14,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
 from models import InitiativeGroup
+from platformen.scraper import ScrapeException
 from platformen.wijamsterdam import WijAmsterdamSource
 
 
@@ -25,7 +30,8 @@ class TestWijAmsterdamPlatformSource(TestCase):
             self.response_objects = \
                 json.loads(
                     self.response,
-                    object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+                    object_hook=lambda d: namedtuple('X', d.keys())(*d.values())
+                )
 
         self.url = "https://api2.openstad.amsterdam/api/site/197/idea"
         self.source = WijAmsterdamSource()
@@ -86,3 +92,33 @@ class TestWijAmsterdamPlatformSource(TestCase):
     def test_should_set_area_as_location(self):
         for i, actual in enumerate(self.actual_result):
             assert self.response_objects[i].extraData.area == actual.location
+
+    def test_should_wrap_any_exception(self):
+        cause = Exception("Test Error")
+        self.source.map_initiative = Mock(side_effect=cause)
+
+        try:
+            [item for item in self.source.initiatives()]
+        except ScrapeException as ex:
+            assert cause == ex.__cause__
+
+    @parameterized.expand([
+        "area",
+        "isOrganiserName",
+        "theme"
+    ])
+    def test_should_check_extra_data_area(self, attr):
+        stripped_initiative = json.loads(
+            self.response,
+            object_hook=lambda d: namedtuple(
+                'X', self.remove(attr, d).keys())(*self.remove(attr, d).values())
+        )
+
+        response_json = json.dumps([stripped_initiative])
+        self.request_mock.get(self.url, text=response_json, status_code=200)
+
+        self.actual_result = [item for item in self.source.initiatives()]
+
+    @staticmethod
+    def remove(key, from_dict) -> Dict:
+        return {k: v for (k, v) in from_dict.items() if k != key}

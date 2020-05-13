@@ -31,17 +31,16 @@ class Platform(InitiativeBase):
     place = Column(Text)
 
 
-class BatchImportState(Enum):
-    RUNNING = "running"
-    IMPORTED = "imported"
-    FAILED = "failed"
-    PROCESSED = "processed"
-    PROCESSING_ERROR = "processing_error"
-
-
 class InitiativeGroup(Enum):
     SUPPLY = "supply"
     DEMAND = 'demand'
+
+
+class InitiativeImportState(Enum):
+    IMPORTED = "imported"
+    IMPORT_ERROR = "import_error"
+    PROCESSED = "processed"
+    PROCESSING_ERROR = "processing_error"
 
 
 class InitiativeImport(Base):
@@ -70,6 +69,14 @@ class InitiativeImport(Base):
     scraped_at = Column(DateTime)
     state = Column(Enum("imported", "import_error", "processed", "processing_error"), nullable=False, server_default='imported')
     error_reason = Column(String())
+
+
+class BatchImportState(Enum):
+    RUNNING = "running"
+    IMPORTED = "imported"
+    FAILED = "failed"
+    PROCESSED = "processed"
+    PROCESSING_ERROR = "processing_error"
 
 
 # Group each import run in a batch for later importing.
