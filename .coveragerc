@@ -1,7 +1,7 @@
 [run]
-source = src/tests
+source = src/scrapers
 omit =
-    src/scrapers/tests/*
+    src/tests/*
 
 [xml]
 output = reports/coverage.xml
