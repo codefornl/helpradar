@@ -21,7 +21,7 @@ while counter<100:
              'transform':lambda elements: [e.attrib['href'] for e in elements  ]}}
     # initialize TreeParser using url and schemas, returns html tree
     TreeParser0=TreeParser(url0,None,schemas)  
-    if TreeParser0.tree==None:
+    if TreeParser0.tree is None:
         break
     output=TreeParser0.apply_schemas()
     outputs.append(output)
@@ -36,7 +36,7 @@ for o in outputs:
 schemas={'name':{'xpath':'//title'},
          'orig_group':{'xpath':'//span[@class="mb-help-request meta-item-icon"]/following-sibling::span[1]/text()'},
          'group':{'xpath':'//span[@class="mb-help-request meta-item-icon"]/following-sibling::span[1]/text()','transform':format_group},
-         'description':{'xpath':'//*[@class="content-section"]/p','all':True,'transform': lambda elements: '\n'.join([e.text for e in elements if e.text != None])},
+         'description':{'xpath':'//*[@class="content-section"]/p','all':True,'transform': lambda elements: '\n'.join([e.text for e in elements if e.text is not None])},
          'organizer':{'xpath':'//a[@class="entity" and contains(@href, "deelnemers")]/@href','transform':format_organizer},
          'theme':{'xpath':'//span[@class="meta-item-content" and contains(text(),"Thema:")]'}}
 ppScraper=TreeParser(None,None,schemas)
