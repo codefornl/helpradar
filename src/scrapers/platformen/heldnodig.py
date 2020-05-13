@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from .database import Initiative, Db
+from models import InitiativeImport, Db
 
 
 class HeldNodig:
@@ -27,12 +27,14 @@ class HeldNodig:
             description = card.find(
                 'p', class_='card-text').text.strip(' \t\n\r')
 
-            db.session.add(Initiative(category=title,
-                                      description=description,
-                                      group="demand",
-                                      source=self.URL,
-                                      location=rawlocation,
-                                      )
-                           )
+            db.session.add(
+                InitiativeImport(
+                    category=title,
+                    description=description,
+                    group="demand",
+                    source=self.URL,
+                    location=rawlocation,
+                )
+            )
 
         db.session.commit()

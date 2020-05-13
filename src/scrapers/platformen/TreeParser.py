@@ -75,7 +75,8 @@ class TreeParser:
                 logging.error(error_msg)
         return tree
 
-    def __serialize__(self, html_element):
+    @staticmethod
+    def __serialize__(html_element):
         """ serialize element to value """
         # body
         if type(html_element) in [etree._ElementUnicodeResult]:

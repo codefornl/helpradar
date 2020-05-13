@@ -21,9 +21,9 @@ class NLvoorElkaarSourceConfig(PlatformSourceConfig):
         self.url = url
         self.field_map = field_map
 
-    def get_marker_url(self, id):
+    def get_marker_url(self, url_id):
         markerurl_segment = 'hulpaanbod' if self.group == InitiativeGroup.SUPPLY else 'hulpvragen'
-        return 'https://www.nlvoorelkaar.nl/%s/%s' % (markerurl_segment, id)
+        return f"https://www.nlvoorelkaar.nl/{markerurl_segment}/{url_id}"
 
 
 class NLvoorElkaarSource(PlatformSource):
@@ -72,7 +72,7 @@ class NLvoorElkaarSource(PlatformSource):
                 initiative.organiser = title.contents[0]
 
             # TODO: Logging is no values are assigned
-        except ScrapeException as e:
+        except ScrapeException:
             # should not catch
             # ('error scraping ' + initiative_url + ':' + e.args[0])
             if initiative is not None:

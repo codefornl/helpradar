@@ -1,7 +1,7 @@
 import json
 import requests
 
-from .database import Initiative, Db
+from models import InitiativeImport, Db
 
 
 class MensenDieWillenHelpen:
@@ -10,7 +10,8 @@ class MensenDieWillenHelpen:
     def __init__(self):
         self.URL = 'https://www.gewoonmensendiemensenwillenhelpen.nl/ik-wil-helpen'
 
-    def scrape(self):
+    @staticmethod
+    def scrape():
         db = Db()
 
         # read data
@@ -21,16 +22,17 @@ class MensenDieWillenHelpen:
 
         questions = result['data']['tasks']
         for card in questions:
-            db.session.add(Initiative(name=card['firstName'],
-                                      category=card['TaskType']['name'],
-                                      description=card['description'],
-                                      group="demand",
-                                      source='https://www.gewoonmensendiemensenwillenhelpen.nl/ik-wil-helpen',
-                                      source_id=card['id'],
-                                      location=card['zipcode'] +
-                                               ' ' + card['city'],
-                                      frequency=card['when'],
-                                      )
-                           )
+            db.session.add(
+                InitiativeImport(
+                    name=card['firstName'],
+                    category=card['TaskType']['name'],
+                    description=card['description'],
+                    group="demand",
+                    source='https://www.gewoonmensendiemensenwillenhelpen.nl/ik-wil-helpen',
+                    source_id=card['id'],
+                    location=card['zipcode'] + ' ' + card['city'],
+                    frequency=card['when'],
+                )
+            )
 
         db.session.commit()

@@ -1,12 +1,8 @@
-import getopt
-import os
-import sys
 import logging
 from optparse import OptionParser
 
-from platformen import NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper\
-    # HeldNodig, MensenDieWillenHelpen, \
-    # Zorgheldenauto, PuurPapendrecht, NijmegenOost
+from platformen import NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper
+    # HeldNodig, MensenDieWillenHelpen, Zorgheldenauto, PuurPapendrecht, NijmegenOost
 from tools import Geocoder
 
 logging.basicConfig(level=logging.DEBUG)
@@ -16,11 +12,11 @@ parser.add_option("-h", "--help", help="show this help message and exit", action
 parser.add_option("-l", "--limit", help="LIM is the amount of items each scraper scrapes.", type="int", metavar="LIM")
 parser.add_option("-g", "--nogeo", help="Disables the geocoder", action="store_true", dest="nogeo")
 
-#HeldNodig().scrape()
-#MensenDieWillenHelpen().scrape()
-#Zorgheldenauto().scrape()
-#PuurPapendrecht().scrape()
-#NijmegenOost().scrape()
+# HeldNodig().scrape()
+# MensenDieWillenHelpen().scrape()
+# Zorgheldenauto().scrape()
+# PuurPapendrecht().scrape()
+# NijmegenOost().scrape()
 scrapers = [NLvoorElkaar(), WijAmsterdam(), CoronaHelpersScraper()]
 
 
