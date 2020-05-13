@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+
+  app:
+    build: .
+    volumes:
+      - ./src:/usr/helpradar
+    environment:
+      DB_HOST: postgresql
+      DB_USER: postgres
+      DB_PASSWORD: secret
+      DB_NAME: postgres
+
+  postgresql:
+    image: postgres:12.2-alpine
+    volumes:
+      - postgresql:/var/lib/postgresql
+    environment:
+      POSTGRES_PASSWORD: secret
+
+volumes:
+  postgresql: {}
