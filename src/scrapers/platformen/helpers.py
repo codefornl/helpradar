@@ -7,9 +7,9 @@ import re
 
 def format_group(str0): 
     if len(re.findall('Hulpvraag.*?',str0))>0: 
-        return('demand')
+        return 'demand'
     else:
-        return('supply')
+        return 'supply'
         
 def format_organizer(str0):
     if str0!=None:
@@ -21,4 +21,4 @@ def format_organizer(str0):
             organizer_name=organizer_name.split(' ')[0]
     else:
         organizer_name=None
-    return(organizer_name)
+    return organizer_name
