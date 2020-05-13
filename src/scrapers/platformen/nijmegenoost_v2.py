@@ -1,13 +1,8 @@
-# -*- coding: utf-8 -*-
 """
 Created on Mon May  4 16:28:05 2020
 
 @author: jskro
 """
-
-import requests
-import re, datetime as dt
-#from .database import Initiative, Db
 from TreeParser import TreeParser # class for scraping static website
 from helpers import format_group, format_organizer
 

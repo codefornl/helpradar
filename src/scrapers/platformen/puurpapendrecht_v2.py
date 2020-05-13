@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*-
 """
 Created on Wed Apr 22 21:21:21 2020
 
 @author: J.S. Kroodsma
 """
-import requests
-import re, datetime as dt
-#from .database import Initiative, Db
-from TreeParser import TreeParser # class for scraping static website
+import re
+
+from TreeParser import TreeParser  # class for scraping static website
 from helpers import format_group, format_organizer
 
 # Step 1: 
@@ -66,4 +64,3 @@ for url in initiative_urls[:50]:
     session_metadata=ppScraper.get_session_metadata(url)
     output=ppScraper.apply_schemas(metadata=session_metadata,url=url)
     records.append(output)   
-
