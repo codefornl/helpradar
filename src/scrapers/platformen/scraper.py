@@ -126,19 +126,22 @@ class Scraper(ABC):
         self._start_batch()
 
         try:
+            total = 0
             for source in self._sources:
                 for count, initiative in enumerate(source.initiatives()):
                     if not self.should_continue(count):
                         break
                     self._collect_initiative(initiative, source)
+                    total = count
 
         except ScrapeException:
             self.get_logger().exception("Error while reading list of initiatives")
             self._batch.stop(BatchImportState.FAILED)
         else:
             self._batch.stop(BatchImportState.IMPORTED)
-
-        self.save_batch()
+        finally:
+            self.get_logger().info(f"Saving {total} scraped initiatives from {self._batch.platform.name}")
+            self.save_batch()
 
     def _collect_initiative(self, initiative: InitiativeImport, source):
         if initiative is None:
