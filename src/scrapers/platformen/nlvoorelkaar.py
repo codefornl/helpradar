@@ -72,7 +72,7 @@ class NLvoorElkaarSource(PlatformSource):
                 initiative.organiser = title.contents[0]
 
             # TODO: Logging is no values are assigned
-        except ScrapeException as e:
+        except ScrapeException:
             # should not catch
             # ('error scraping ' + initiative_url + ':' + e.args[0])
             if initiative is not None:
