@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Generator
 
 from bs4 import BeautifulSoup
@@ -34,49 +35,73 @@ class NLvoorElkaarSource(PlatformSource):
     def initiatives(self) -> Generator[InitiativeImport, None, None]:
         url = self.config.get_list_url()
         page = PlatformSource.get(url)
-        result = page.json()
 
-        for marker in result['markers']:
-            initiative = InitiativeImport(
-                source_id=marker['id'],
-                source_uri=self.config.get_marker_url(marker['id']),
-                latitude=marker['lat'],
-                longitude=marker['lon'],
-            )
-            yield initiative
+        try:
+            result = page.json()
+            for marker in result['markers']:
+                initiative = InitiativeImport(
+                    source_id=marker['id'],
+                    source_uri=self.config.get_marker_url(marker['id']),
+                    latitude=marker['lat'],
+                    longitude=marker['lon'],
+                )
+                yield initiative
+        except Exception as ex:
+            msg = f"Error reading contents from {url}"
+            raise ScrapeException(msg) from ex
 
     def complete(self, initiative: InitiativeImport):
         initiative_url = self.config.get_initiative_url(initiative.source_id)
+        # This already raises ScrapeExceptions
+        detail = PlatformSource.get(initiative_url)
 
         try:
-            detail = PlatformSource.get(initiative_url)
-
             soup = BeautifulSoup(detail.content, 'html.parser')
 
             table = soup.find("dl")
             records = table.findAll(["dd", "dt"])
-            initiative.description = soup.find("p").text.strip('\t\n\r')
+            initiative.description = soup.find("p").text.strip('\t\n\r ')
             initiative.group = self.config.group
             initiative.source = initiative_url
 
-            setcount = 0
-            for i in range(0, len(records), 2):
-                # TODO: Error prevention
-                label = records[i].contents[1].strip("\":").lower()
-                if label in self.config.field_map:
-                    setattr(initiative, self.config.field_map[label], records[i + 1].contents[0])
-                    setcount += 1
+            set_count = self.extract_details_table(initiative, records)
 
             if self.config.group == InitiativeGroup.DEMAND:
                 title = soup.find("h2", "result__title")
                 initiative.organiser = title.contents[0]
 
-            # TODO: Logging is no values are assigned
-        except ScrapeException:
-            # should not catch
-            # ('error scraping ' + initiative_url + ':' + e.args[0])
-            if initiative is not None:
-                initiative.state = "processing_error"
+            if not initiative.location:
+                self.try_alternative_place(soup, initiative)
+        except Exception as ex:
+            msg = f"Error reading contents from {initiative_url}"
+            raise ScrapeException(msg) from ex
+
+        if set_count == 0:
+            raise ScrapeException("Failed to load field map details table")
+
+    def extract_details_table(self, initiative, records):
+        set_count = 0
+        for i in range(0, len(records), 2):
+            label = records[i].contents[1].strip("\":").lower()
+            if label in self.config.field_map:
+                has_value = len(records[i + 1].contents) > 0
+                if has_value:
+                    value = records[i + 1].contents[0]
+                    setattr(initiative, self.config.field_map[label], value)
+                    set_count += 1
+        return set_count
+
+    @staticmethod
+    def try_alternative_place(soup, initiative):
+        """
+        Looks to see if it can strip the place name from [placename]voorelkaar
+        <li> Deze persoon staat ingeschreven op Amstelveenvoorelkaar</li>
+        """
+        checks = soup.find("li", text=re.compile("voorelkaar$"))
+        if checks is not None:
+            match = re.search("([a-zA-Z0-9]+)voorelkaar$", checks.text)
+            if match:
+                initiative.location = match.group(1)
 
 
 class NLvoorElkaar(Scraper):
