@@ -1,9 +1,20 @@
+import os
 from unittest import TestCase, main
+from unittest.mock import patch, Mock
 
 from platformen import CoronaHelpersScraper
 
 
 class TestCoronaHelpersScraper(TestCase):
+    @staticmethod
+    def deeds_test_response_mock():
+        mock = Mock()
+        test_path = os.path.dirname(__file__)
+        file_path = os.path.join(test_path, "test_responses", "coronahelpers_deeds.json")
+        with open(file_path, 'r', encoding='utf8') as data_file:
+            response = data_file.read()
+        mock.content = response
+        return mock
 
     def setUp(self):
         self.scraper = CoronaHelpersScraper()
@@ -17,16 +28,19 @@ class TestCoronaHelpersScraper(TestCase):
         self.assertEqual(url, "https://www.coronahelpers.nl")
 
     def test_check_connection_to_server(self):
-        self.assertTrue(self.scraper.check_connection_to_server())
+        with patch('requests.get', return_value=self.deeds_test_response_mock()):
+            self.assertTrue(self.scraper.check_connection_to_server())
 
     def test_get_page_count_from_api(self):
         self.scraper = CoronaHelpersScraper()
-        page_count = self.scraper.get_page_count_from_api()
+        with patch('requests.get', return_value=self.deeds_test_response_mock()):
+            page_count = self.scraper.get_page_count_from_api()
         self.assertTrue(int(page_count) > 1)
 
     def test_query_deeds_page_json_from_api(self):
         self.scraper = CoronaHelpersScraper()
-        deeds_query_results = self.scraper.query_deeds_page_json_from_api(1)
+        with patch('requests.get', return_value=self.deeds_test_response_mock()):
+            deeds_query_results = self.scraper.query_deeds_page_json_from_api(1)
         self.assertTrue(len(deeds_query_results) > 1)
 
     def test_get_api_deeds_url(self):
