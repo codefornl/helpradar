@@ -21,7 +21,7 @@ class TestWijAmsterdamPlatformSource(TestCase):
     @requests_mock.Mocker()
     def setUp(self, request_mock):
         test_path = os.path.dirname(__file__)
-        file_path = os.path.join(test_path, "wijams.json")
+        file_path = os.path.join(test_path, "test_responses", "wijamsterdam_api_site_idea.json")
         with open(file_path, 'r', encoding='utf8') as data_file:
             self.response = data_file.read()
             self.response_objects = \
