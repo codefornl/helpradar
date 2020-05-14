@@ -1,14 +1,15 @@
-import re
 from unittest import TestCase
 
 import pytest
+from bs4 import BeautifulSoup
 
 from models import InitiativeImport
 from platformen.nlvoorelkaar import NLvoorElkaarSource, NLvoorElkaar
 
 
-@pytest.mark.skip(reason="Test methods for debugging specific items")
 class TestNLvoorElkaarPlatformSource(TestCase):
+
+    @pytest.mark.skip(reason="Test methods for debugging specific items")
     def test_missing_plaats(self):
         scraper = NLvoorElkaar()
         item = scraper._sources[0].complete(InitiativeImport(
@@ -17,7 +18,13 @@ class TestNLvoorElkaarPlatformSource(TestCase):
         ))
 
     def test_alternative_place_regex(self):
-        text = " Deze persoon staat ingeschreven op Amstelveenvoorelkaar"
-        match = re.search(r"([a-zA-Z0-9]+)voorelkaar", text)
-        g = match.group(1)
-        assert match is not None
+        html = '<ul class="list list--checked">'\
+               '<li>Het hulpaanbod van Joeri is bekeken door de helpdesk</li>'\
+               '<li> Deze persoon staat ingeschreven op Amstelveenvoorelkaar</li>'\
+               '</ul>"'
+        soup = BeautifulSoup(html, 'html.parser')
+
+        initiative = InitiativeImport()
+        NLvoorElkaarSource.try_alternative_place(soup, initiative)
+
+        assert initiative.location == "Amstelveen"
