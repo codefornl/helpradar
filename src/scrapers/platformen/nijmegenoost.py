@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from .database import Initiative, Db
+from models import InitiativeImport, Db
 
 
 class NijmegenOost:
@@ -31,13 +31,15 @@ class NijmegenOost:
                         final_link = link['href']
                         source_id = final_link.split('/')[-2]
 
-                        db.session.add(Initiative(name=name + " - " + title,
-                                                  description=description,
-                                                  group=rawtheme,
-                                                  source=final_link,
-                                                  source_id=source_id,
-                                                  )
-                                       )
+                        db.session.add(
+                            InitiativeImport(
+                                name=name + " - " + title,
+                                description=description,
+                                group=rawtheme,
+                                source=final_link,
+                                source_id=source_id,
+                            )
+                        )
                     except:
                         print(card)
                         pass

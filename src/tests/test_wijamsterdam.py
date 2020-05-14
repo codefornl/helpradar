@@ -22,7 +22,7 @@ class TestWijAmsterdamPlatformSource(TestCase):
     def setUp(self, request_mock):
         test_path = os.path.dirname(__file__)
         file_path = os.path.join(test_path, "wijams.json")
-        with open(file_path, 'r') as data_file:
+        with open(file_path, 'r', encoding='utf8') as data_file:
             self.response = data_file.read()
             self.response_objects = \
                 json.loads(

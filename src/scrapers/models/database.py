@@ -1,8 +1,7 @@
 from os import environ, path
 from pathlib import PurePath
-
-from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 
 class Db:
@@ -13,13 +12,12 @@ class Db:
 
         url = Db.get_db_url()
         engine = create_engine(url)
-        #Base.metadata.create_all(engine)
+        # Base.metadata.create_all(engine)
         session = sessionmaker(bind=engine)
         self.session = session()
 
     @staticmethod
     def get_db_url():
-
         if environ.get("DB_HOST"):
             return "postgres://%s:%s@%s/%s" % (
                 environ["DB_USER"],

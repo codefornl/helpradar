@@ -7,7 +7,7 @@ import datetime as dt
 import re
 
 from .TreeParser import TreeParser  # class for scraping static website
-from .database import Initiative, Db
+from models import InitiativeImport, Db
 
 # initialize Db
 db = Db()
@@ -73,4 +73,4 @@ for url in initiatief_urls:
 # Step 3 insert into db
 for r in records:
     # TODO: determine which fields are inserted into DB
-    db.session.add(Initiative())
+    db.session.add(InitiativeImport())

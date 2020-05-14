@@ -3,6 +3,7 @@ venv/
 **/venv/
 .coverage
 coverage.xml
+/reports
 
 # Editors
 .vscode

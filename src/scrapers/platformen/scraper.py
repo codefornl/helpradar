@@ -91,6 +91,7 @@ class ScraperExceptionRecoveryStrategy:
     def __init__(self, max_tries: int):
         self.max_tries: int = max_tries
 
+    # noinspection PyUnusedLocal
     def should_raise(self, ex: Exception):
         self._count += 1
         return self._count == self.max_tries

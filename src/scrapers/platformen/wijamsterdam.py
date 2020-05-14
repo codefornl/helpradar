@@ -1,12 +1,8 @@
-import logging
-import sys
-from collections import namedtuple
-from typing import Generator
-
-import requests
 import json
-
+import logging
+from collections import namedtuple
 from dateutil import parser
+from typing import Generator
 
 from models.initiatives import InitiativeImport, InitiativeGroup
 from .scraper import Scraper, PlatformSource, PlatformSourceConfig, ScrapeException
@@ -76,7 +72,6 @@ class WijAmsterdamSource(PlatformSource):
 
 
 class WijAmsterdam(Scraper):
-
     def __init__(self):
         source = WijAmsterdamSource()
         super().__init__(

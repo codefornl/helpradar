@@ -1,11 +1,7 @@
-#from __future__ import annotations
-
-from typing import Type
+import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, Text, Float, DateTime, Enum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-
-import datetime
 
 Base = declarative_base()
 
@@ -107,4 +103,3 @@ class ImportBatch(Base):
 
         self.state = state
         self.stopped_at = datetime.datetime.now(datetime.timezone.utc)
-

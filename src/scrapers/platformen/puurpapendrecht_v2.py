@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
 """
 Created on Wed Apr 22 21:21:21 2020
 
 @author: J.S. Kroodsma
 """
-import requests
-import re, datetime as dt
-#from .database import Initiative, Db
-from TreeParser import TreeParser # class for scraping static website
-from helpers import format_group, format_organizer
+import re
+
+from .TreeParser import TreeParser  # class for scraping static website
+from .helpers import format_group, format_organizer
 
 # Step 1: 
 url='https://puurpapendrecht.nl/elkaar-helpen?format=fragment&page='
@@ -25,7 +23,7 @@ while counter<100:
              'transform':lambda elements: [e.attrib['href'] for e in elements if len(re.findall('https://puurpapendrecht.nl/elkaar-helpen/\\d{4,5}',e.attrib['href']))>0 ]}}
     # initialize TreeParser using url and schemas, returns html tree
     TreeParser0=TreeParser(url0,None,schemas)  
-    if TreeParser0.tree==None:
+    if TreeParser0.tree is None:
         break
     output=TreeParser0.apply_schemas() 
     outputs.append(output)
@@ -57,7 +55,7 @@ En heeft het veld 'notes' de waarde ''
 schemas={'name':{'xpath':'//title'},
          'orig_group':{'xpath':'//span[@class="mb-help-request meta-item-icon"]/following-sibling::span[1]/text()'},
          'group':{'xpath':'//span[@class="mb-help-request meta-item-icon"]/following-sibling::span[1]/text()','transform':format_group},
-         'description':{'xpath':'//*[@class="content-section"]/p','all':True,'transform': lambda elements: '\n'.join([e.text for e in elements if e.text != None])},
+         'description':{'xpath':'//*[@class="content-section"]/p','all':True,'transform': lambda elements: '\n'.join([e.text for e in elements if e.text is not None])},
          'organizer':{'xpath':'//a[@class="entity" and contains(@href, "deelnemers")]/@href','transform':format_organizer},
          'theme':{'xpath':'//span[@class="meta-item-content" and contains(text(),"Thema:")]'},}
 ppScraper=TreeParser(None,None,schemas)
@@ -66,4 +64,3 @@ for url in initiative_urls[:50]:
     session_metadata=ppScraper.get_session_metadata(url)
     output=ppScraper.apply_schemas(metadata=session_metadata,url=url)
     records.append(output)   
-
