@@ -1,6 +1,6 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from unittest import TestCase
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, Mock
 
 from models import Platform, InitiativeImport, BatchImportState
 from models.initiatives import InitiativeImportState
@@ -89,6 +89,14 @@ class TestScraper(TestCase):
         batch = self.scraper.get_current_batch()
         assert batch.started_at < batch.stopped_at
 
+    def test_invalid_stop_throws_error(self):
+        self.pf_source_mock.initiatives = MagicMock(return_value=iter([InitiativeImport()]))
+        self.scraper.scrape()
+
+        batch = self.scraper.get_current_batch()
+        with self.assertRaises(ValueError):
+            batch.stop(BatchImportState.PROCESSED)
+
     def test_should_save_batch_on_completion(self):
         self.scraper.scrape()
 
@@ -159,11 +167,3 @@ class TestScraper(TestCase):
             assert True
         except IndexError:
             assert False
-
-
-
-
-
-
-
-
