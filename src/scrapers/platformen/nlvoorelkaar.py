@@ -60,19 +60,11 @@ class NLvoorElkaarSource(PlatformSource):
 
             table = soup.find("dl")
             records = table.findAll(["dd", "dt"])
-            initiative.description = soup.find("p").text.strip('\t\n\r')
+            initiative.description = soup.find("p").text.strip('\t\n\r ')
             initiative.group = self.config.group
             initiative.source = initiative_url
 
-            set_count = 0
-            for i in range(0, len(records), 2):
-                label = records[i].contents[1].strip("\":").lower()
-                if label in self.config.field_map:
-                    has_value = len(records[i + 1].contents) > 0
-                    if has_value:
-                        value = records[i + 1].contents[0]
-                        setattr(initiative, self.config.field_map[label], value)
-                        set_count += 1
+            set_count = self.extract_details_table(initiative, records)
 
             if self.config.group == InitiativeGroup.DEMAND:
                 title = soup.find("h2", "result__title")
@@ -86,6 +78,18 @@ class NLvoorElkaarSource(PlatformSource):
 
         if set_count == 0:
             raise ScrapeException("Failed to load field map details table")
+
+    def extract_details_table(self, initiative, records):
+        set_count = 0
+        for i in range(0, len(records), 2):
+            label = records[i].contents[1].strip("\":").lower()
+            if label in self.config.field_map:
+                has_value = len(records[i + 1].contents) > 0
+                if has_value:
+                    value = records[i + 1].contents[0]
+                    setattr(initiative, self.config.field_map[label], value)
+                    set_count += 1
+        return set_count
 
     @staticmethod
     def try_alternative_place(soup, initiative):
