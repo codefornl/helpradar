@@ -7,6 +7,7 @@ from models import Platform, InitiativeImport, BatchImportState, Db
 from models.initiatives import InitiativeImportState
 from platformen import Scraper
 from platformen.scraper import ScrapeException
+from tools import Geocoder
 
 
 class TestDatabase(TestCase):
@@ -19,6 +20,14 @@ class TestDatabase(TestCase):
         with patch.dict(os.environ, testie):
             test_db = Db()
             assert test_db.get_db_url().startswith("postgres")
+
+
+class TestGeocoder(TestCase):
+    def setUp(self):
+        self.geocoder = Geocoder()
+
+    def test_user_agent_set(self):
+        assert self.geocoder.geolocator.headers.get('User-Agent') is not None
 
 
 class TestScraper(TestCase):
