@@ -45,8 +45,8 @@ class TreeParser:
         # initialize logger, write logs to datestamped LOG_FILE_NAME
         self.LOG_FILE_PATH = nvl(os.getenv('LOG_FILE_PATH'), os.getcwd())
         datestr = dt.datetime.strftime(dt.datetime.now(), '%Y%m%d')
-        LOG_FILE_NAME = datestr + '_' + self.LOG_FILE_NAME
-        logging.basicConfig(filename=self.LOG_FILE_PATH + '/' + LOG_FILE_NAME, level=logging.DEBUG)
+        log_file_name = datestr + '_' + self.LOG_FILE_NAME
+        logging.basicConfig(filename=self.LOG_FILE_PATH + '/' + log_file_name, level=logging.DEBUG)
 
         # GET website html        
         if url is None and tree is None and schemas is None:
@@ -95,7 +95,7 @@ class TreeParser:
             error_msg = 'element_transform_function is not callable {0}'.format(element_transform_function)
             if not callable(element_transform_function):
                 if self.RAISE_ERROR:
-                    raise NOT_FUNCTION_ERROR(error_msg)
+                    raise NotFunctionError(error_msg)
                 else:
                     logging.error(error_msg)
                 v = None
@@ -139,7 +139,7 @@ class TreeParser:
                 except Exception as e:
                     error_msg = "apply failed to parse field {0} using xpath {1}. error: {2}".format(ky, xpath, e)
                     if self.RAISE_ERROR:
-                        raise HTML_PARSE_ERROR(error_msg)
+                        raise HtmlParseError(error_msg)
                     else:
                         logging.error(error_msg)
                 # get first element
@@ -202,13 +202,13 @@ def from_kwargs(kwargs, *args):
 
 
 # custom error classes
-class NOT_FUNCTION_ERROR(Exception):
+class NotFunctionError(Exception):
     def __init__(self, message=None, errors=None):
         super().__init__(message)
         self.errors = errors
 
 
-class HTML_PARSE_ERROR(Exception):
+class HtmlParseError(Exception):
     def __init__(self, message=None, errors=None):
         super().__init__(message)
         self.errors = errors

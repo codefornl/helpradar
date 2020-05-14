@@ -12,7 +12,7 @@ base class is TreeParser, scraper subclasses. schemas to use is defined in the c
 from .TreeParser import TreeParser
 
 
-class ppScraper(TreeParser):
+class PpScraper(TreeParser):
     """
     #class variables: same for all instances of class 
     """
