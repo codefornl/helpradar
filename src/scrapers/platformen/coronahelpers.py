@@ -23,6 +23,9 @@ class WebScraper(Scraper):
     def scrape(self):
         return "Not implemented"
 
+    def get_logger(self) -> logging.Logger:
+        return logging.getLogger(__name__)
+
     def get_base_url(self):
         return "https://%s" % self.domain
 
