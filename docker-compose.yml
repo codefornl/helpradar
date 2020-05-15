@@ -4,6 +4,10 @@ services:
 
   app:
     build: .
+    networks:
+      - helpradar
+    depends_on:
+      - postgresql
     volumes:
       - ./src:/usr/helpradar
     environment:
@@ -14,6 +18,8 @@ services:
 
   postgresql:
     image: postgres:12.2-alpine
+    networks:
+      - helpradar
     volumes:
       - postgresql:/var/lib/postgresql
     environment:
@@ -21,3 +27,7 @@ services:
 
 volumes:
   postgresql: {}
+
+networks:
+  helpradar:
+    driver: bridge
