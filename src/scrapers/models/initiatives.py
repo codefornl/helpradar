@@ -63,7 +63,7 @@ class InitiativeImport(Base):
     source_uri = Column(String(500), nullable=False, server_default='http://unknown.org')
     created_at = Column(DateTime)
     scraped_at = Column(DateTime)
-    state = Column(Enum("imported", "import_error", "processed", "processing_error"), nullable=False, server_default='imported')
+    state = Column(Enum("imported", "import_error", "processed", "processing_error", name="initiative_imports_state_enum"), nullable=False, server_default='imported')
     error_reason = Column(String())
 
 
