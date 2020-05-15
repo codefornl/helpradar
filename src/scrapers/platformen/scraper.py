@@ -255,7 +255,7 @@ class Scraper(ABC):
         to one group. Return none to indicate when it has the possibility to filter
         but still has to scrape all items.
         """
-        return False
+        return None
 
     def get_group(self):
         return self._group

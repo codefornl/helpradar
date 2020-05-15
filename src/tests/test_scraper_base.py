@@ -213,4 +213,4 @@ class TestScraper(TestCase):
         self.scraper.supports_group = support_mock
 
         self.scraper.set_group(InitiativeGroup.SUPPLY)
-        self.logger_mock.error.assert_called_with("Test Platform can't pre-filter on groups!")
+        self.logger_mock.warning.assert_called_with("Test Platform does not support restricting on groups!")
