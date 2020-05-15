@@ -4,7 +4,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
 from models import Platform, InitiativeImport, BatchImportState, Db
-from models.initiatives import InitiativeImportState
+from models.initiatives import InitiativeImportState, InitiativeGroup
 from platformen import Scraper
 from platformen.scraper import ScrapeException
 from tools import Geocoder
@@ -189,3 +189,28 @@ class TestScraper(TestCase):
             assert True
         except IndexError:
             assert False
+
+    def test_set_supported_group(self):
+        support_mock = Mock(return_value=True)
+        self.scraper.supports_group = support_mock
+
+        self.scraper.set_group(InitiativeGroup.SUPPLY)
+        assert InitiativeGroup.SUPPLY == self.scraper.get_group()
+
+    def test_set_unsupported_group(self):
+        support_mock = Mock(return_value=False)
+        self.scraper.supports_group = support_mock
+        # I was finding parameterized tests slow!
+        with self.subTest():
+            self.scraper.set_group(InitiativeGroup.SUPPLY)
+            self.logger_mock.error.assert_called_with("Test Platform does not support supply!")
+        with self.subTest():
+            self.scraper.set_group(InitiativeGroup.DEMAND)
+            self.logger_mock.error.assert_called_with("Test Platform does not support demand!")
+
+    def test_set_support_not_possible(self):
+        support_mock = Mock(return_value=None)
+        self.scraper.supports_group = support_mock
+
+        self.scraper.set_group(InitiativeGroup.SUPPLY)
+        self.logger_mock.error.assert_called_with("Test Platform can't pre-filter on groups!")
