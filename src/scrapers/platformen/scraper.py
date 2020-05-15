@@ -212,6 +212,14 @@ class Scraper(ABC):
             raise ValueError("source is None")
         self._sources.append(source)
 
+    def remove_sources(self, source: PlatformSource):
+        if source is None:
+            raise ValueError("source is None")
+        self._sources.remove(source)
+
+    def sources(self) -> List[PlatformSource]:
+        return self._sources
+
     def save_batch(self):
         if self._batch is None:
             return
@@ -240,7 +248,6 @@ class Scraper(ABC):
                 self.get_logger().error(f"{self.name} does not support {group}!")
         else:
             self._group = group
-
 
     def supports_group(self, group):
         """

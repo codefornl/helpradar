@@ -5,7 +5,7 @@ import pytest
 import requests_mock
 from bs4 import BeautifulSoup
 
-from models import InitiativeImport
+from models import InitiativeImport, InitiativeGroup
 from platformen.nlvoorelkaar import NLvoorElkaarSource, NLvoorElkaar
 
 
@@ -51,3 +51,18 @@ class TestNLvoorElkaarPlatformSource(TestCase):
             source_id=179582,
             source_uri="https://www.nlvoorelkaar.nl/hulpaanbod/179582"
         ))
+
+
+class TestNLvoorElkaarPlatform(TestCase):
+
+    def setUp(self):
+        self.scraper = NLvoorElkaar()
+
+    def test_should_support_group_restricting(self):
+        assert self.scraper.supports_group(InitiativeGroup.SUPPLY)
+        assert self.scraper.supports_group(InitiativeGroup.DEMAND)
+
+    def test_should_have_deleted_other_source(self):
+        self.scraper.set_group(InitiativeGroup.DEMAND)
+        assert 1 == len(self.scraper.sources())
+        assert InitiativeGroup.DEMAND == self.scraper.sources()[0].config.group
