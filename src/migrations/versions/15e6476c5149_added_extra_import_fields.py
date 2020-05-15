@@ -26,7 +26,7 @@ def upgrade():
         batch_op.add_column(sa.Column('phone', sa.String(length=30), nullable=True))
         batch_op.add_column(sa.Column('scraped_at', sa.DateTime(), nullable=True))
         batch_op.add_column(sa.Column('source_uri', sa.String(length=500), server_default='http://unknown.org', nullable=False))
-        batch_op.add_column(sa.Column('state', sa.Enum('imported', 'processed', 'processing_error'), server_default='imported', nullable=False))
+        batch_op.add_column(sa.Column('state', sa.Enum('imported', 'processed', 'processing_error', name="initiative_state_enum", native_enum=False), server_default='imported', nullable=False))
         batch_op.add_column(sa.Column('url', sa.String(length=500), nullable=True))
     # ### end Alembic commands ###
 
