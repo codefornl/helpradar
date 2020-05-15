@@ -2,6 +2,6 @@
 @reboot root /usr/helpradar/docker-entrypoint.sh > /proc/1/fd/1 2>/proc/1/fd/2
 * * * * * root echo "cron still ok." > /proc/1/fd/1 2>/proc/1/fd/2
 0 * * * * root python /usr/helpradar/scrapers/main.py wams > /proc/1/fd/1 2>/proc/1/fd/2
-* 0 1 * * root python /usr/helpradar/scrapers/main.py --group=SUPPLY nlve > /proc/1/fd/1 2>/proc/1/fd/2
-30 * * * * root python /usr/helpradar/scrapers/main.py --group=DEMAND nlve > /proc/1/fd/1 2>/proc/1/fd/2
+#0 23 * * * root python /usr/helpradar/scrapers/main.py --group=SUPPLY nlve > /proc/1/fd/1 2>/proc/1/fd/2
+#30 * * * * root python /usr/helpradar/scrapers/main.py --group=DEMAND nlve > /proc/1/fd/1 2>/proc/1/fd/2
 45 * * * * root python /usr/helpradar/scrapers/main.py cohe > /proc/1/fd/1 2>/proc/1/fd/2
