@@ -1,7 +1,7 @@
+from unittest import TestCase
+
 import pytest
 import requests_mock
-
-from unittest import TestCase
 
 from platformen.scraper import PlatformSourceConfig, PlatformSource, ScrapeException
 

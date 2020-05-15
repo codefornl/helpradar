@@ -4,10 +4,9 @@ from unittest import TestCase
 
 import pytest
 import requests_mock
-from bs4 import BeautifulSoup
 
 from models import InitiativeImport, InitiativeGroup
-from platformen.nlvoorelkaar import NLvoorElkaarSource, NLvoorElkaar
+from platformen.nlvoorelkaar import NLvoorElkaar
 
 
 class TestNLvoorElkaarPlatformSource(TestCase):

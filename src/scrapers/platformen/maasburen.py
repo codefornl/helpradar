@@ -5,6 +5,7 @@ Created on Thu May  7 21:09:55 2020
 """
 
 import re
+
 from .TreeParser import TreeParser  # class for scraping static website
 from .helpers import format_group, format_organizer
 

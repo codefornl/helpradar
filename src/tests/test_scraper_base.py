@@ -1,9 +1,8 @@
-import os
 from datetime import datetime
 from unittest import TestCase
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, Mock
 
-from models import Platform, InitiativeImport, BatchImportState, Db
+from models import Platform, InitiativeImport, BatchImportState
 from models.initiatives import InitiativeImportState, InitiativeGroup
 from platformen import Scraper
 from platformen.scraper import ScrapeException

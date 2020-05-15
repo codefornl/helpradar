@@ -1,7 +1,8 @@
 import json
 import logging
-import requests
 from time import sleep
+
+import requests
 
 from models.database import Db
 from models.initiatives import InitiativeImport

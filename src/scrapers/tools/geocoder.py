@@ -1,5 +1,6 @@
 import re
 import time
+
 from geopy.geocoders import Nominatim
 
 from models.database import Db
