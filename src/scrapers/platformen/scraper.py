@@ -243,7 +243,7 @@ class Scraper(ABC):
         supports_group = self.supports_group(group)
         if not supports_group:
             if supports_group is None:
-                self.get_logger().error(f"{self.name} can't pre-filter on group!")
+                self.get_logger().warning(f"{self.name} does not support restricting on groups!")
             else:
                 self.get_logger().error(f"{self.name} does not support {group}!")
         else:
