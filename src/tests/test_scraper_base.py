@@ -7,19 +7,6 @@ from models import Platform, InitiativeImport, BatchImportState, Db
 from models.initiatives import InitiativeImportState, InitiativeGroup
 from platformen import Scraper
 from platformen.scraper import ScrapeException
-from tools import Geocoder
-
-
-class TestDatabase(TestCase):
-    def test_default_sqlite(self):
-        test_db = Db()
-        assert test_db.get_db_url().startswith("sqlite")
-
-    def test_postgres_from_env(self):
-        testie = {"DB_USER": "klaas", "DB_PASSWORD": "vaak", "DB_HOST": "thuis", "DB_NAME": "1"}
-        with patch.dict(os.environ, testie):
-            test_db = Db()
-            assert test_db.get_db_url().startswith("postgres")
 
 
 class TestScraper(TestCase):
