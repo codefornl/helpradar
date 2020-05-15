@@ -1,11 +1,33 @@
-from datetime import datetime, timezone
+import os
+from datetime import datetime
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
-from models import Platform, InitiativeImport, BatchImportState
+from models import Platform, InitiativeImport, BatchImportState, Db
 from models.initiatives import InitiativeImportState
 from platformen import Scraper
 from platformen.scraper import ScrapeException
+from tools import Geocoder
+
+
+class TestDatabase(TestCase):
+    def test_default_sqlite(self):
+        test_db = Db()
+        assert test_db.get_db_url().startswith("sqlite")
+
+    def test_postgres_from_env(self):
+        testie = {"DB_USER": "klaas", "DB_PASSWORD": "vaak", "DB_HOST": "thuis", "DB_NAME": "1"}
+        with patch.dict(os.environ, testie):
+            test_db = Db()
+            assert test_db.get_db_url().startswith("postgres")
+
+
+class TestGeocoder(TestCase):
+    def setUp(self):
+        self.geocoder = Geocoder()
+
+    def test_user_agent_set(self):
+        assert self.geocoder.geolocator.headers.get('User-Agent') is not None
 
 
 class TestScraper(TestCase):
@@ -89,6 +111,14 @@ class TestScraper(TestCase):
         batch = self.scraper.get_current_batch()
         assert batch.started_at < batch.stopped_at
 
+    def test_invalid_stop_throws_error(self):
+        self.pf_source_mock.initiatives = MagicMock(return_value=iter([InitiativeImport()]))
+        self.scraper.scrape()
+
+        batch = self.scraper.get_current_batch()
+        with self.assertRaises(ValueError):
+            batch.stop(BatchImportState.PROCESSED)
+
     def test_should_save_batch_on_completion(self):
         self.scraper.scrape()
 
@@ -159,11 +189,3 @@ class TestScraper(TestCase):
             assert True
         except IndexError:
             assert False
-
-
-
-
-
-
-
-
