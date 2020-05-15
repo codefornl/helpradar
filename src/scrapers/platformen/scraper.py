@@ -102,7 +102,7 @@ class Scraper(ABC):
     Concept for a base class that defines and deals basic setup of a scraper 
     """
 
-    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = []):
+    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = None):
         # Leave out until full conversion of scrapers.
         # if len(sources) == 0:
         #    raise ValueError("Expecting at least one source!")
@@ -110,7 +110,7 @@ class Scraper(ABC):
         self.platform_url: str = platform_url
         self.name: str = name
         self.code: str = code
-        self._sources = sources
+        self._sources = sources if sources else []
         self._db = Db()
         self._collect_recovery = ScraperExceptionRecoveryStrategy(3)
         self.limit: int = 0
