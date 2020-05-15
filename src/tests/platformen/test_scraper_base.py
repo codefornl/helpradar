@@ -22,14 +22,6 @@ class TestDatabase(TestCase):
             assert test_db.get_db_url().startswith("postgres")
 
 
-class TestGeocoder(TestCase):
-    def setUp(self):
-        self.geocoder = Geocoder()
-
-    def test_user_agent_set(self):
-        assert self.geocoder.geolocator.headers.get('User-Agent') is not None
-
-
 class TestScraper(TestCase):
 
     def setUp(self):
