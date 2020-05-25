@@ -1,5 +1,5 @@
 import os
-from unittest import TestCase
+from unittest import TestCase, skip
 
 import pytest
 import requests_mock
@@ -44,7 +44,7 @@ class TestNLvoorElkaarPlatformSource(TestCase):
     def test_alternative_place_regex(self):
         assert self.actual.location == "Amstelveen"
 
-    @pytest.mark.skip(reason="Test methods for debugging specific items")
+    @skip("Test methods for debugging specific items")
     def test_missing_plaats(self):
         scraper = NLvoorElkaar()
         item = scraper._sources[0].complete(InitiativeImport(
