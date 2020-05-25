@@ -102,14 +102,14 @@ class Scraper(ABC):
     Concept for a base class that defines and deals basic setup of a scraper 
     """
 
-    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = []):
+    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = None):
         # Leave out until full conversion of scrapers.
         # if len(sources) == 0:
         #    raise ValueError("Expecting at least one source!")
         self.platform_url: str = platform_url
         self.name: str = name
         self.code: str = code
-        self._sources = sources
+        self._sources = sources if sources else []
         self._db = Db()
         self._collect_recovery = ScraperExceptionRecoveryStrategy(3)
         self.limit: int = 0
@@ -134,11 +134,11 @@ class Scraper(ABC):
                         break
                     self._collect_initiative(initiative, source)
                     total = count
-
         except ScrapeException:
             self.get_logger().exception("Error while reading list of initiatives")
             self._batch.stop(BatchImportState.FAILED)
         else:
+            # now this treats any other exception as valid!
             self._batch.stop(BatchImportState.IMPORTED)
         finally:
             self.get_logger().info(f"Saving {total} scraped initiatives from {self._batch.platform.name}")

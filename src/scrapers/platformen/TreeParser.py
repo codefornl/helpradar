@@ -112,8 +112,7 @@ class TreeParser:
         source_url = source_url[0] if len(source_url) > 0 else None
         metadata = {'source_url': source_url,
                     'source_uri': url,
-                    'scraped_at': str(dt.datetime.now()),
-                    'created_at': dt.datetime.strftime(dt.datetime.now(), '%Y-%m-%d')}
+                    'scraped_at': str(dt.datetime.now())}
         return metadata
 
     def set_schema(self, schemas):

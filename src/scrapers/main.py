@@ -3,6 +3,7 @@ from optparse import OptionParser
 
 from platformen import NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper
     # HeldNodig, MensenDieWillenHelpen, Zorgheldenauto, PuurPapendrecht, NijmegenOost
+from platformen.puurpapendrecht import PuurPapendrecht
 from tools import Geocoder
 
 logging.basicConfig(level=logging.DEBUG)
@@ -15,9 +16,12 @@ parser.add_option("-g", "--nogeo", help="Disables the geocoder", action="store_t
 # HeldNodig().scrape()
 # MensenDieWillenHelpen().scrape()
 # Zorgheldenauto().scrape()
-# PuurPapendrecht().scrape()
 # NijmegenOost().scrape()
-scrapers = [NLvoorElkaar(), WijAmsterdam(), CoronaHelpersScraper()]
+scrapers = [
+    NLvoorElkaar(),
+    WijAmsterdam(),
+    CoronaHelpersScraper(),
+    PuurPapendrecht()]
 
 
 def docs():
