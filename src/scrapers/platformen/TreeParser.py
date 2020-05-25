@@ -108,9 +108,9 @@ class TreeParser:
     def get_session_metadata(self, url=None):
         """ utility returing scraping session metadata """
         url = nvl(url, self.url)
-        source_url = re.findall('https:\/\/([A-Z,a-z,0-9,\.]+)\/', str(url))
+        source_url = re.findall('https:\/\/([A-Z,a-z,0-9,\-\.]+)\/', str(url))
         source_url = source_url[0] if len(source_url) > 0 else None
-        metadata = {'source_url': source_url,
+        metadata = {'source': source_url,
                     'source_uri': url,
                     'scraped_at': str(dt.datetime.now())}
         return metadata

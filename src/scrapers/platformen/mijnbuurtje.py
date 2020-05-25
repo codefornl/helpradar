@@ -8,6 +8,19 @@ from platformen.TreeParser import TreeParser
 from platformen.scraper import PlatformSource, PlatformSourceConfig, ScrapeException
 
 
+class MijnBuurtjeSourceConfig(PlatformSourceConfig):
+    def __init__(self, platform_url, list_endpoint, details_endpoint, location: str = None):
+        """
+         Parameters
+        ----------
+        location : str
+            The name of the main region this mijn buurtje instance is about.
+        """
+
+        super().__init__(platform_url, list_endpoint, details_endpoint)
+        self.location = location
+
+
 class MijnBuurtjeSource(PlatformSource):
     ITEM_SCHEMA = {'name': {'xpath': '//title'},
                    # 'orig_group': {
@@ -26,9 +39,8 @@ class MijnBuurtjeSource(PlatformSource):
                    'created_at': {'xpath': '//div[@class="heading3 heading3--semibold"]/text()',
                                   'transform': lambda text: MijnBuurtjeSource.format_date(text)}}
 
-    def __init__(self, config: PlatformSourceConfig):
+    def __init__(self, config: MijnBuurtjeSourceConfig):
         super().__init__(config)
-        self.config = config
         self.item_parser = TreeParser(None, None, self.ITEM_SCHEMA)
 
     def initiatives(self) -> Generator[InitiativeImport, None, None]:
@@ -39,7 +51,7 @@ class MijnBuurtjeSource(PlatformSource):
                 # schemas: defines fields to be scraped
                 # schema: fieldname:{xpath,all,cast,transform}
                 schemas = {'initiatives':
-                               {'xpath': '//a[@href]',
+                               {'xpath': '//a[@href and @class="postpreview-content"]',
                                 'all': True,
                                 'transform': lambda elements: [e.attrib['href'] for e in elements if len(
                                     re.findall(self.config.details_endpoint + "\\d{4,5}", e.attrib['href'])) > 0]}}
@@ -59,10 +71,11 @@ class MijnBuurtjeSource(PlatformSource):
 
     def complete(self, initiative: InitiativeImport):
         session_metadata = self.item_parser.get_session_metadata(initiative.source_uri)
-        full_initiative = self.item_parser.apply_schemas(metadata=session_metadata, url=initiative.source_uri)
-        for key, value in full_initiative:
+        full_initiative = self.item_parser.apply_schemas(metadata=session_metadata,
+                                                         url=initiative.source_uri)
+        for key, value in full_initiative.items():
             setattr(initiative, key, value)
-        init = initiative
+        initiative.location = self.config.location
 
     @staticmethod
     def format_group(original_group: str):
