@@ -25,10 +25,10 @@ Wij denken dat het goed is als de "professionele organisaties" weten wat de "ini
 Vanuit de Community van Code For NL is het initiatief gestart. In onze ogen valt een systeem als helpradar onder de [commons](https://en.wikipedia.org/wiki/Digital_commons_(economics)) en is het zaak dat dit een product is van de samenleving dat niet door de overheid, bedrijven of personen economisch of anderszins kan worden uitgebaat. De regie over een database met helpbieders en hulpvragers dient uiterst zorgvuldig te worden georganiseerd. Wij werken dan ook samen met onafhankelijke partijen die een duidelijke visie hebben met betrekking tot privacy en commons en kunnen faciliteren in een veilige en goed beveiligde omgeving die desondanks de samenleving en individuele personen regie geeft over de eigen en de gemeenschappelijke informatie.
 
 ## Help Helpradar!
-We kunnen zeker wel wat handjes gebruiken op de korte en lange termijn. We zijn hard aan het werk een simpel systeem met Ushahidi neer te zetten zodat we bijdrages van burgers kunnen organiseren en ook onze eigen eerste bevindingen kunnen tonen. De contouren voor de lange worden gaandeweg ook duidelijker.
+We kunnen zeker wel wat handjes gebruiken op de korte en lange termijn. Voor ontwikkelaars die willen helpen:
+zie de [Contribution Guidelines](CONTRIBUTING.md).
 
 We kunnen sowieso al hulp gebruiken van:
-* **Marketeer(s)** Om organisaties en burgers actief via mail & social media te bewegen input te leveren op het platform.
 * **Developers & Data scientists** Om zoveel mogelijk data van online & social media platformen binnen te halen en te analyseren.
 * **Designers** Voor een logo, simpele website maar vooral een visueel concept neer te zetten wat dit kan worden.
 
@@ -60,8 +60,9 @@ Begeleiding en aansturing vanuit de behoeftestelling door:
 
 
 # Specificaties
-* Lees voor de technische en functionele specificaties en wensen de [roadmap](docs/roadmap.md)
-* Wat wij proberen te onderzoeken wordt beschreven in de [Research & Development phases & goals](docs/phases_goals.md)
-* De lijst met online platformen staat in [bronnen](bronnen.md)
-* Hoe wij denken dat de organisatie rondom het platform kan worden ingeregeld staat in [Stroomschema](docs/Stroomschema.svg)
-* Een ruwe schets van ons [concept](docs/concept.svg) toont aan hoe dit in het grote geheel past.
+Een wijziging in de strategie heeft er toe geleid dat we nu met name focussen op meer data 
+verzamelen van verschillende platformen en middels een iteratief proces met het LOT-C 
+bepalen of/wanneer kwaliteit van data belangrijker wordt dat de kwantiteit. Veel va de 
+documenten in de docs folder zijn dan ook niet meer helemaal actueel. De focus ligt nu 
+op de specificaties in de issues in het Mining Project: https://github.com/codefornl/helpradar/projects/2
+en de milestone: https://github.com/codefornl/helpradar/milestone/3
