@@ -3,6 +3,7 @@ from optparse import OptionParser
 
 from platformen import NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper
     # HeldNodig, MensenDieWillenHelpen, Zorgheldenauto, PuurPapendrecht, NijmegenOost
+from platformen.maasburen import Maasburen
 from platformen.nijmegenoost import NijmegenOost
 from platformen.puurpapendrecht import PuurPapendrecht
 from tools import Geocoder
@@ -22,7 +23,8 @@ scrapers = [
     WijAmsterdam(),
     CoronaHelpersScraper(),
     PuurPapendrecht(),
-    NijmegenOost()]
+    NijmegenOost(),
+    Maasburen()]
 
 
 def docs():

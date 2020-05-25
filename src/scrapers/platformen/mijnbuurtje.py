@@ -37,7 +37,10 @@ class MijnBuurtjeSource(PlatformSource):
                    #               'transform': lambda text: text.replace("Vraag vanuit: ", "")},
                    'category': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Thema:")]'},
                    'created_at': {'xpath': '//div[@class="heading3 heading3--semibold"]/text()',
-                                  'transform': lambda text: MijnBuurtjeSource.format_date(text)}}
+                                  'transform': lambda text: MijnBuurtjeSource.format_date(text)},
+                   'location': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Dorp: ")]/text()',
+                                'transform': lambda text: text.replace("Dorp: ", "")},
+                   }
 
     def __init__(self, config: MijnBuurtjeSourceConfig):
         super().__init__(config)
@@ -62,8 +65,8 @@ class MijnBuurtjeSource(PlatformSource):
                     break
 
                 output = initiative_parser.apply_schemas()
-                for o in output['initiatives']:
-                    yield InitiativeImport(source_uri=o)
+                for uri in output['initiatives']:
+                    yield InitiativeImport(source_uri=uri)
 
                 page_counter = page_counter + 1
         except Exception as ex:
@@ -75,7 +78,9 @@ class MijnBuurtjeSource(PlatformSource):
                                                          url=initiative.source_uri)
         for key, value in full_initiative.items():
             setattr(initiative, key, value)
-        initiative.location = self.config.location
+
+        if not initiative.location:
+            initiative.location = self.config.location
 
     @staticmethod
     def format_group(original_group: str):

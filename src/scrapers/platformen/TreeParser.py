@@ -111,8 +111,7 @@ class TreeParser:
         source_url = re.findall('https:\/\/([A-Z,a-z,0-9,\-\.]+)\/', str(url))
         source_url = source_url[0] if len(source_url) > 0 else None
         metadata = {'source': source_url,
-                    'source_uri': url,
-                    'scraped_at': str(dt.datetime.now())}
+                    'source_uri': url}
         return metadata
 
     def set_schema(self, schemas):

@@ -6,7 +6,7 @@ from platformen.mijnbuurtje import MijnBuurtjeSource, MijnBuurtjeSourceConfig
 
 class NijmegenOost(Scraper):
     def __init__(self):
-        super().__init__("https://www.nijmegenoost.nl", 'Nijmegen Oost', "mbno")
+        super().__init__("https://nijmegen-oost.nl", "Nijmegen Oost", "mbno")
         cfg = MijnBuurtjeSourceConfig(
             "https://nijmegen-oost.nl",
             "https://nijmegen-oost.nl/elkaar-helpen?theme%5B%5D=836&format=fragment",

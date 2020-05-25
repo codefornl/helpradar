@@ -126,8 +126,8 @@ class Scraper(ABC):
         logger.info(f"Starting {self.name} ({self.code}) scraper")
         self._start_batch()
 
+        total = 0
         try:
-            total = 0
             for source in self._sources:
                 for count, initiative in enumerate(source.initiatives()):
                     if not self.should_continue(count):
