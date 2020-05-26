@@ -9,6 +9,16 @@ from platformen import Scraper
 from platformen.scraper import ScrapeException, PlatformSource, PlatformSourceConfig
 
 
+class Temp:
+    _field = None
+
+    def __init__(self, field):
+        self._field = field
+
+    def get_field(self):
+        return self._field
+
+
 class TestScraper(TestCase):
 
     def setUp(self):
@@ -200,4 +210,3 @@ class TestScraper(TestCase):
 
         with self.assertRaises(ValueError):
             self.scraper.add_source(source)
-

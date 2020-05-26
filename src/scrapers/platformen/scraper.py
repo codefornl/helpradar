@@ -102,19 +102,23 @@ class Scraper(ABC):
     Concept for a base class that defines and deals basic setup of a scraper 
     """
 
+    _group = None
+    """An optional supply/demand group limitation"""
+
+    limit: int = 0
+    """Limits the iteration of scraping initiatives to the given value if greater than 0"""
+
     def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = None):
         # Leave out until full conversion of scrapers.
         # if len(sources) == 0:
         #    raise ValueError("Expecting at least one source!")
-        self._group = None
         self.platform_url: str = platform_url
         self.name: str = name
         self.code: str = code
         self._sources = sources if sources else []
         self._db = Db()
         self._collect_recovery = ScraperExceptionRecoveryStrategy(3)
-        self.limit: int = 0
-        """Limits the iteration if a debugger is attached"""
+
         self._batch: ImportBatch
 
     def scrape(self):
