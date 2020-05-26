@@ -1,3 +1,4 @@
+
 from datetime import datetime
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock
@@ -5,7 +6,7 @@ from unittest.mock import MagicMock, Mock
 from models import Platform, InitiativeImport, BatchImportState
 from models.initiatives import InitiativeImportState, InitiativeGroup
 from platformen import Scraper
-from platformen.scraper import ScrapeException
+from platformen.scraper import ScrapeException, PlatformSource, PlatformSourceConfig
 
 
 class TestScraper(TestCase):
@@ -187,8 +188,16 @@ class TestScraper(TestCase):
             self.logger_mock.error.assert_called_with("Test Platform does not support demand!")
 
     def test_set_support_not_possible(self):
-        support_mock = Mock(return_value=None)
+        support_mock = Mock(side_effect=NotImplementedError)
         self.scraper.supports_group = support_mock
 
         self.scraper.set_group(InitiativeGroup.SUPPLY)
         self.logger_mock.warning.assert_called_with("Test Platform does not support restricting on groups!")
+
+    def test_should_not_allow_duplicate_source(self):
+        source = PlatformSource(PlatformSourceConfig("", "", ""))
+        self.scraper.add_source(source)
+
+        with self.assertRaises(ValueError):
+            self.scraper.add_source(source)
+

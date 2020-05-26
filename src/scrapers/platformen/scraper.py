@@ -210,9 +210,12 @@ class Scraper(ABC):
     def add_source(self, source: PlatformSource):
         if source is None:
             raise ValueError("source is None")
+        if source in self._sources:
+            raise ValueError("source already added")
+
         self._sources.append(source)
 
-    def remove_sources(self, source: PlatformSource):
+    def remove_source(self, source: PlatformSource):
         if source is None:
             raise ValueError("source is None")
         self._sources.remove(source)
@@ -240,22 +243,22 @@ class Scraper(ABC):
         Restricts the scraper to a certain group. If it's not supported it
         will only log an error message and be ignored this scraping will proceed!
         """
-        supports_group = self.supports_group(group)
-        if not supports_group:
-            if supports_group is None:
-                self.get_logger().warning(f"{self.name} does not support restricting on groups!")
-            else:
+        try:
+            supports_group = self.supports_group(group)
+            if not supports_group:
                 self.get_logger().error(f"{self.name} does not support {group}!")
-        else:
-            self._group = group
+            else:
+                self._group = group
+        except NotImplementedError:
+            self.get_logger().warning(f"{self.name} does not support restricting on groups!")
+
 
     def supports_group(self, group):
         """
         Implement this to indicate the scraper has support to restrict the scraping
-        to one group. Return none to indicate when it has the possibility to filter
-        but still has to scrape all items.
+        to one group.
         """
-        return None
+        raise NotImplementedError("Scraper has no implementation for filtering a specific group.")
 
     def get_group(self):
         return self._group

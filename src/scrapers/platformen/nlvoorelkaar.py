@@ -140,7 +140,7 @@ class NLvoorElkaar(Scraper):
         super(NLvoorElkaar, self).set_group(group)
         delete_source = next((g for g in self._sources if g.config.group is not group), None)
         if delete_source:
-            self.remove_sources(delete_source)
+            self.remove_source(delete_source)
 
     def supports_group(self, group):
         return True
