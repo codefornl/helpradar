@@ -55,10 +55,9 @@ class MijnBuurtjeSource(PlatformSource):
                 # schemas: defines fields to be scraped
                 # schema: fieldname:{xpath,all,cast,transform}
                 schemas = {'initiatives':
-                               {'xpath': '//a[@href and @class="postpreview-content"]',
+                               {'xpath': '//a[@href and contains(@class, "postpreview-content")]',
                                 'all': True,
-                                'transform': lambda elements: [e.attrib['href'] for e in elements if len(
-                                    re.findall(self.config.details_endpoint + "\\d{4,5}", e.attrib['href'])) > 0]}}
+                                'transform': lambda elements: self.find_initiative_links(elements)}}
 
                 # initialize TreeParser using url and schemas, returns html tree
                 initiative_parser = TreeParser(list_page_url, None, schemas)
@@ -82,6 +81,19 @@ class MijnBuurtjeSource(PlatformSource):
 
         if not initiative.location:
             initiative.location = self.config.location
+
+    def find_initiative_links(self, elements):
+        """
+        filters links. Input seems to be 1 on 1 now. Extracted to method for easier debugging.
+        """
+        initiatives = []
+        for e in elements:
+            links = re.findall(self.config.details_endpoint + "\\d{4,5}", e.attrib['href'])
+            if len(links) > 0:
+                initiatives.append(links)
+
+        return initiatives
+
 
     @staticmethod
     def strip_text(element, strip: str):
