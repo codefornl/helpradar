@@ -136,7 +136,7 @@ class NLvoorElkaar(Scraper):
     def get_logger(self) -> logging.Logger:
         return logging.getLogger("platformen.nlvoorelkaar")
 
-    def set_group(self, group):
+    def set_group(self, group: InitiativeGroup):
         super(NLvoorElkaar, self).set_group(group)
         delete_source = next((g for g in self._sources if g.config.group is not group), None)
         if delete_source:
