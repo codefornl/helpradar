@@ -35,11 +35,12 @@ class MijnBuurtjeSource(PlatformSource):
                                  'transform': lambda text: MijnBuurtjeSource.format_organizer(text)},
                    # 'organiser_kind': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Vraag vanuit:")]',
                    #               'transform': lambda text: text.replace("Vraag vanuit: ", "")},
-                   'category': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Thema:")]'},
+                   'category': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Thema:")]',
+                                'transform': lambda elem: MijnBuurtjeSource.strip_text(elem, "Thema: ")},
                    'created_at': {'xpath': '//div[@class="heading3 heading3--semibold"]/text()',
                                   'transform': lambda text: MijnBuurtjeSource.format_date(text)},
-                   'location': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Dorp: ")]/text()',
-                                'transform': lambda text: text.replace("Dorp: ", "")},
+                   'location': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Dorp:")]/text()',
+                                'transform': lambda elem: MijnBuurtjeSource.strip_text(elem, "Dorp: ")},
                    }
 
     def __init__(self, config: MijnBuurtjeSourceConfig):
@@ -81,6 +82,16 @@ class MijnBuurtjeSource(PlatformSource):
 
         if not initiative.location:
             initiative.location = self.config.location
+
+    @staticmethod
+    def strip_text(element, strip: str):
+        if element is None:
+            return None
+        if not element.text:
+            return None
+
+        stripped = element.text.replace(strip, "")
+        return stripped
 
     @staticmethod
     def format_group(original_group: str):
