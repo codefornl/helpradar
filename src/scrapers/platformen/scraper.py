@@ -115,10 +115,9 @@ class Scraper(ABC):
         self.platform_url: str = platform_url
         self.name: str = name
         self.code: str = code
-        self._sources = sources if sources else []
+        self._sources = sources or []
         self._db = Db()
         self._collect_recovery = ScraperExceptionRecoveryStrategy(3)
-
         self._batch: ImportBatch
 
     def scrape(self):

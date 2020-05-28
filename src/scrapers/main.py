@@ -42,11 +42,6 @@ if arguments.help:
     docs()
 else:
     print(f'Running {len(arguments.scrapers)} scrapers. Use --help to see all individual scrapers')
-    if arguments.group:
-        if arguments.group != InitiativeGroup.SUPPLY \
-                and arguments.group != InitiativeGroup.DEMAND:
-            print(f"Invalid group given {arguments.group}")
-            exit()
 
     run_scrapers = None
     if arguments.scrapers:
@@ -56,7 +51,7 @@ else:
         if arguments.limit:
             scraper.limit = arguments.limit
         if arguments.group:
-            scraper.set_group(InitiativeGroup.DEMAND if arguments.group == "demand" else InitiativeGroup.SUPPLY)
+            scraper.set_group(arguments.group)
 
         # preferably each scraper runs in it's own thread.
         if not run_scrapers:
