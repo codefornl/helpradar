@@ -57,7 +57,6 @@ class TreeParser:
     """property setters"""
 
     """class functions"""
-
     def __get_html_tree__(self, url):
         # body
         tree = None
@@ -143,20 +142,21 @@ class TreeParser:
                 # get first element
                 element = elements[0] if len(elements) > 0 else None
                 # transform + serialize
-                if all_elements == True:  # use the first result element
+                if all_elements:  # use the first result element
                     value_input = elements
                 else:
                     value_input = element
-                value = self.__serialize__(
-                    self.__transform_html_element_to_value__(value_input, transform))  # use all elements
+
+                transformed = self.__transform_html_element_to_value__(value_input, transform)
+                value = self.__serialize__(transformed)  # use all elements
                 # set as attributesL elements,element
                 self.elements = elements
                 self.element = element
                 outputs = {'value': value, 'elements': elements, 'element': element}
             self.outputs = outputs
         except Exception as e:
-            print('error in apply')
-            raise e
+            raise HtmlParseError(f"Error parsing {ky}") from e
+
         # return value
         return self.outputs
 

@@ -2,6 +2,8 @@ import re
 from datetime import date
 from typing import Generator
 
+from lxml import etree
+
 from models import InitiativeImport
 from platformen import Scraper
 from platformen.TreeParser import TreeParser
@@ -22,16 +24,18 @@ class MijnBuurtjeSourceConfig(PlatformSourceConfig):
 
 
 class MijnBuurtjeSource(PlatformSource):
-    ITEM_SCHEMA = {'name': {'xpath': '//title'},
+    ITEM_SCHEMA = {'name': {"xpath": "//div/h1[1]/text()"},
                    # 'orig_group': {
                    #     'xpath': '//span[@class="mb-help-request meta-item-icon"]/following-sibling::span[1]/text()'},
                    'group': {
                        'xpath': '//span[@class="mb-help-request meta-item-icon"]/following-sibling::span[1]/text()',
                        'transform': lambda text: MijnBuurtjeSource.format_group(text)},
-                   'description': {'xpath': '//*[@class="content-section"]/p', 'all': True,
-                                   'transform': lambda elements: '\n'.join(
-                                       [e.text for e in elements if e.text is not None])},
-                   'organiser': {'xpath': '//a[@class="entity" and contains(@href, "deelnemers")]/@href',
+                   'description': {"xpath": "//div[contains(@class, 'content-section')][3]/*/node()",
+                                   # 'xpath': '//*[@class="content-section"]/*',
+                                   'all': True,
+                                   'transform': lambda elements: MijnBuurtjeSource.recursive_text(elements)},
+                   'organiser': {'xpath': "//a[@class='entity']/div[contains(@class, 'entity-content')]/div[contains("
+                                          "@class, 'entity-content-title')]/text()",
                                  'transform': lambda text: MijnBuurtjeSource.format_organizer(text)},
                    # 'organiser_kind': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Vraag vanuit:")]',
                    #               'transform': lambda text: text.replace("Vraag vanuit: ", "")},
@@ -39,7 +43,7 @@ class MijnBuurtjeSource(PlatformSource):
                                 'transform': lambda elem: MijnBuurtjeSource.strip_text(elem, "Thema: ")},
                    'created_at': {'xpath': '//div[@class="heading3 heading3--semibold"]/text()',
                                   'transform': lambda text: MijnBuurtjeSource.format_date(text)},
-                   'location': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Dorp:")]/text()',
+                   'location': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Dorp:")]',
                                 'transform': lambda elem: MijnBuurtjeSource.strip_text(elem, "Dorp: ")},
                    }
 
@@ -94,7 +98,6 @@ class MijnBuurtjeSource(PlatformSource):
 
         return initiatives
 
-
     @staticmethod
     def strip_text(element, strip: str):
         if element is None:
@@ -106,6 +109,16 @@ class MijnBuurtjeSource(PlatformSource):
         return stripped
 
     @staticmethod
+    def recursive_text(elements):
+        texts = []
+        for e in elements:
+            if type(e) in [etree._ElementUnicodeResult]:
+                texts.append(f"{e.strip()}")
+            else:
+                texts.append(f"{e.text.strip()}")
+        return ' '.join(texts)
+
+    @staticmethod
     def format_group(original_group: str):
         if len(re.findall("Hulpvraag.*?", original_group)) > 0:
             return 'demand'
@@ -113,7 +126,7 @@ class MijnBuurtjeSource(PlatformSource):
             return 'supply'
 
     @staticmethod
-    def format_organizer(organizer: str):
+    def format_organizer(organizer):
         if organizer is not None:
             list0 = organizer.split('/')
             organizer_name = None if len(list0) == 0 else list0[len(list0) - 1]
