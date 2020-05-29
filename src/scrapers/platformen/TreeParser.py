@@ -7,8 +7,8 @@ import datetime as dt  # core modules
 import logging
 import os
 import re
-import requests
 
+import requests
 from lxml import etree
 
 
