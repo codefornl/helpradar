@@ -1,8 +1,7 @@
-import os
 from unittest import TestCase, main
 from unittest.mock import patch, Mock
 
-import testdata
+from data import responses
 from platformen import CoronaHelpersScraper
 
 
@@ -10,7 +9,7 @@ class TestCoronaHelpersScraper(TestCase):
     @staticmethod
     def deeds_test_response_mock():
         mock = Mock()
-        response = testdata.read("coronahelpers_deeds.json")
+        response = responses.read("coronahelpers_deeds.json")
         mock.content = response
         return mock
 

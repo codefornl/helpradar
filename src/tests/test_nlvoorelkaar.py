@@ -1,20 +1,17 @@
-import os
 from unittest import TestCase, skip
 
-import pytest
 import requests_mock
-from bs4 import BeautifulSoup
 
-import testdata
+from data import responses
 from models import InitiativeImport
-from platformen.nlvoorelkaar import NLvoorElkaarSource, NLvoorElkaar
+from platformen.nlvoorelkaar import NLvoorElkaar
 
 
 class TestNLvoorElkaarPlatformSource(TestCase):
 
     @requests_mock.Mocker()
     def setUp(self, request_mock):
-        self.response = testdata.read("nlvoorelkaar_supply.html")
+        self.response = responses.read("nlvoorelkaar_supply.html")
 
         scraper = NLvoorElkaar()
         self.source = scraper._sources[0]

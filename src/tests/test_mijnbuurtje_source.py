@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import requests_mock
 
-import testdata
+from data import responses
 from models import InitiativeImport
 from platformen.TreeParser import HtmlParseError, TreeParser
 from platformen.mijnbuurtje import MijnBuurtjeSource, MijnBuurtjeSourceConfig
@@ -17,9 +17,9 @@ class TestMijnBuurtjePlatformSource(TestCase):
 
     def __init__(self, method_name):
         super().__init__(method_name)
-        self.list_response = testdata.read("mijnbuurtje_list.html")
-        self.item_response = testdata.read("mijnbuurtje_item.html")
-        self.item_nolocation_response = testdata.read("mijnbuurtje_nolocation_item.html")
+        self.list_response = responses.read("mijnbuurtje_list.html")
+        self.item_response = responses.read("mijnbuurtje_item.html")
+        self.item_nolocation_response = responses.read("mijnbuurtje_nolocation_item.html")
 
     @requests_mock.Mocker()
     def setUp(self, request_mock):

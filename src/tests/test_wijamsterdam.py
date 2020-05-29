@@ -1,5 +1,4 @@
 import json
-import os
 from collections import namedtuple
 from datetime import datetime
 from typing import Dict
@@ -10,7 +9,7 @@ import requests_mock
 from dateutil import parser
 from parameterized import parameterized
 
-import testdata
+from data import responses
 from models import InitiativeGroup
 from platformen.scraper import ScrapeException
 from platformen.wijamsterdam import WijAmsterdamSource
@@ -21,7 +20,7 @@ class TestWijAmsterdamPlatformSource(TestCase):
 
     @requests_mock.Mocker()
     def setUp(self, request_mock):
-        self.response = testdata.read("wijamsterdam_api_site_idea.json")
+        self.response = responses.read("wijamsterdam_api_site_idea.json")
         self.response_objects = \
             json.loads(
                 self.response,
