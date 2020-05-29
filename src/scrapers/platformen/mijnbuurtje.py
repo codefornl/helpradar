@@ -1,3 +1,4 @@
+import json
 import re
 from datetime import date
 from typing import Generator
@@ -30,21 +31,27 @@ class MijnBuurtjeSource(PlatformSource):
                    'group': {
                        'xpath': '//span[@class="mb-help-request meta-item-icon"]/following-sibling::span[1]/text()',
                        'transform': lambda text: MijnBuurtjeSource.format_group(text)},
-                   'description': {"xpath": "//div[contains(@class, 'content-section')][3]/*/node()",
-                                   # 'xpath': '//*[@class="content-section"]/*',
-                                   'all': True,
-                                   'transform': lambda elements: MijnBuurtjeSource.recursive_text(elements)},
+                   'description': {
+                       "xpath": "//div[contains(@class, 'content-section')][3]/*/node()",
+                       'all': True,
+                       'transform': lambda elements: MijnBuurtjeSource.recursive_text(elements)},
                    'organiser': {'xpath': "//a[@class='entity']/div[contains(@class, 'entity-content')]/div[contains("
                                           "@class, 'entity-content-title')]/text()",
                                  'transform': lambda text: MijnBuurtjeSource.format_organizer(text)},
                    # 'organiser_kind': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Vraag vanuit:")]',
                    #               'transform': lambda text: text.replace("Vraag vanuit: ", "")},
-                   'category': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Thema:")]',
-                                'transform': lambda elem: MijnBuurtjeSource.strip_text(elem, "Thema: ")},
-                   'created_at': {'xpath': '//div[@class="heading3 heading3--semibold"]/text()',
-                                  'transform': lambda text: MijnBuurtjeSource.format_date(text)},
-                   'location': {'xpath': '//span[@class="meta-item-content" and contains(text(),"Dorp:")]',
-                                'transform': lambda elem: MijnBuurtjeSource.strip_text(elem, "Dorp: ")},
+                   'category': {
+                       'xpath': '//span[@class="meta-item-content" and contains(text(),"Thema:")]',
+                       'transform': lambda elem: MijnBuurtjeSource.strip_text(elem, "Thema: ")},
+                   'frequency': {
+                       "xpath": "//span[@class='mb-calendar meta-item-icon']/following-sibling::span[1]/text()",
+                       "transform": lambda elem: MijnBuurtjeSource.json_frequency(elem)},
+                   'created_at': {
+                       'xpath': '//div[@class="heading3 heading3--semibold"]/text()',
+                       'transform': lambda text: MijnBuurtjeSource.format_date(text)},
+                   'location': {
+                       'xpath': '//span[@class="meta-item-content" and contains(text(),"Dorp:")]',
+                       'transform': lambda elem: MijnBuurtjeSource.strip_text(elem, "Dorp: ")},
                    }
 
     def __init__(self, config: MijnBuurtjeSourceConfig):
@@ -131,14 +138,13 @@ class MijnBuurtjeSource(PlatformSource):
     @staticmethod
     def format_organizer(organizer):
         if organizer is not None:
-            list0 = organizer.split('/')
-            organizer_name = None if len(list0) == 0 else list0[len(list0) - 1]
+            name_segments = organizer.split()
+            organizer_name = None if len(name_segments) == 0 else name_segments[len(name_segments) - 1]
             # get the first name of the organizer:
             if organizer_name is not None:
                 organizer_name = re.sub('-', ' ', organizer_name)
                 organizer_name = organizer_name.split(' ')[0]
-            else:
-                organizer_name = None
+
             return organizer_name
 
     # I assume there's a better way using locales
@@ -149,7 +155,7 @@ class MijnBuurtjeSource(PlatformSource):
     def format_date(date_str: str):
         # TODO: This is an important field. Should break here!
         if not date_str:
-            return None
+            raise ValueError("Always expecting a date string for conversion!")
 
         segments = date_str.split()
         if len(segments) != 3:
@@ -159,6 +165,11 @@ class MijnBuurtjeSource(PlatformSource):
         month = MijnBuurtjeSource.MONTHS.index(segments[1].lower()) + 1
         d = date(int(segments[2]), month, int(segments[0]))
         return d
+
+    @staticmethod
+    def json_frequency(elem: str):
+        frequency = {"on": elem}
+        return json.dumps(frequency)
 
 
 class MijnBuurtje(Scraper):

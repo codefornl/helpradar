@@ -1,3 +1,4 @@
+import json
 import re
 from collections import namedtuple
 from datetime import date
@@ -69,6 +70,10 @@ class TestMijnBuurtjePlatformSource(TestCase):
     def test_should_scrape_location(self):
         assert self.actual_item.location.startswith("Middelaar, Molenhoek, Mook, Plasmolen")
 
+    def test_should_scrape_frequency(self):
+        frequency = json.loads(self.actual_item.frequency)
+        assert frequency['on'] == "Maandag, Dinsdag, Woensdag, Donderdag, Vrijdag, Zaterdag, Zondag"
+
     @requests_mock.Mocker()
     def test_should_set_location(self, request_mock):
         self.setup_item_request(request_mock, self.item_nolocation_response)
@@ -102,3 +107,7 @@ class TestMijnBuurtjePlatformSource(TestCase):
     def test_should_strip_none_if_no_text(self):
         Element = namedtuple('Element', 'text')
         assert None is MijnBuurtjeSource.strip_text(Element(text=None), "test")
+
+    def test_format_date_should_raise_value_error(self):
+        with self.assertRaises(ValueError):
+            assert None is MijnBuurtjeSource.format_date(None)
