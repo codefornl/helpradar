@@ -10,6 +10,7 @@ import requests_mock
 from dateutil import parser
 from parameterized import parameterized
 
+import testdata
 from models import InitiativeGroup
 from platformen.scraper import ScrapeException
 from platformen.wijamsterdam import WijAmsterdamSource
@@ -20,15 +21,12 @@ class TestWijAmsterdamPlatformSource(TestCase):
 
     @requests_mock.Mocker()
     def setUp(self, request_mock):
-        test_path = os.path.dirname(__file__)
-        file_path = os.path.join(test_path, "test_responses", "wijamsterdam_api_site_idea.json")
-        with open(file_path, 'r', encoding='utf8') as data_file:
-            self.response = data_file.read()
-            self.response_objects = \
-                json.loads(
-                    self.response,
-                    object_hook=lambda d: namedtuple('X', d.keys())(*d.values())
-                )
+        self.response = testdata.read("wijamsterdam_api_site_idea.json")
+        self.response_objects = \
+            json.loads(
+                self.response,
+                object_hook=lambda d: namedtuple('X', d.keys())(*d.values())
+            )
 
         self.url = "https://api2.openstad.amsterdam/api/site/197/idea"
         self.source = WijAmsterdamSource()

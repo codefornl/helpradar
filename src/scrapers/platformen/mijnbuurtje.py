@@ -77,14 +77,17 @@ class MijnBuurtjeSource(PlatformSource):
             raise ScrapeException("Error loading list of initiatives") from ex
 
     def complete(self, initiative: InitiativeImport):
-        session_metadata = self.item_parser.get_session_metadata(initiative.source_uri)
-        full_initiative = self.item_parser.apply_schemas(metadata=session_metadata,
-                                                         url=initiative.source_uri)
-        for key, value in full_initiative.items():
-            setattr(initiative, key, value)
+        try:
+            session_metadata = self.item_parser.get_session_metadata(initiative.source_uri)
+            full_initiative = self.item_parser.apply_schemas(metadata=session_metadata,
+                                                             url=initiative.source_uri)
+            for key, value in full_initiative.items():
+                setattr(initiative, key, value)
 
-        if not initiative.location:
-            initiative.location = self.config.location
+            if not initiative.location:
+                initiative.location = self.config.location
+        except Exception as ex:
+            raise ScrapeException(f"Error scraping {initiative.source_uri}") from ex
 
     def find_initiative_links(self, elements):
         """

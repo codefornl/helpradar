@@ -1,25 +1,25 @@
 import re
-from datetime import datetime, date
+from collections import namedtuple
+from datetime import date
 from unittest import TestCase
+from unittest.mock import patch
 
 import requests_mock
-from coverage.annotate import os
 
+import testdata
+from models import InitiativeImport
+from platformen.TreeParser import HtmlParseError, TreeParser
 from platformen.mijnbuurtje import MijnBuurtjeSource, MijnBuurtjeSourceConfig
+from platformen.scraper import ScrapeException
 
 
 class TestMijnBuurtjePlatformSource(TestCase):
 
     def __init__(self, method_name):
         super().__init__(method_name)
-        test_path = os.path.dirname(__file__)
-        list_file_path = os.path.join(test_path, "test_responses", "mijnbuurtje_list.html")
-        with open(list_file_path, 'r', encoding='utf8') as data_file:
-            self.list_response = data_file.read()
-
-        item_file_path = os.path.join(test_path, "test_responses", "mijnbuurtje_item.html")
-        with open(item_file_path, 'r', encoding='utf8') as data_file:
-            self.item_response = data_file.read()
+        self.list_response = testdata.read("mijnbuurtje_list.html")
+        self.item_response = testdata.read("mijnbuurtje_item.html")
+        self.item_nolocation_response = testdata.read("mijnbuurtje_nolocation_item.html")
 
     @requests_mock.Mocker()
     def setUp(self, request_mock):
@@ -29,14 +29,20 @@ class TestMijnBuurtjePlatformSource(TestCase):
                                          "Test Town")
         self.test_source = MijnBuurtjeSource(self.config)
 
-        request_mock.get(self.config.list_endpoint + "&page=1", text=self.list_response, status_code=200)
-        request_mock.get(self.config.list_endpoint + "&page=2", text=None, status_code=200)
-        item_url_matcher = re.compile("/elkaar-helpen/[0-9]+")
-        request_mock.get(item_url_matcher, text=self.item_response, status_code=200)
+        self.setup_list_requests(request_mock)
+        self.setup_item_request(request_mock, self.item_response)
         self.request_mock = request_mock
         self.actual_result = [item for item in self.test_source.initiatives()]
         self.test_source.complete(self.actual_result[0])
         self.actual_item = self.actual_result[0]
+
+    def setup_item_request(self, request_mock, response):
+        item_url_matcher = re.compile("/elkaar-helpen/[0-9]+")
+        request_mock.get(item_url_matcher, text=response, status_code=200)
+
+    def setup_list_requests(self, request_mock):
+        request_mock.get(self.config.list_endpoint + "&page=1", text=self.list_response, status_code=200)
+        request_mock.get(self.config.list_endpoint + "&page=2", text=None, status_code=200)
 
     def test_should_list_two_items(self):
         assert 2 == len(self.actual_result)
@@ -62,3 +68,37 @@ class TestMijnBuurtjePlatformSource(TestCase):
 
     def test_should_scrape_location(self):
         assert self.actual_item.location.startswith("Middelaar, Molenhoek, Mook, Plasmolen")
+
+    @requests_mock.Mocker()
+    def test_should_set_location(self, request_mock):
+        self.setup_item_request(request_mock, self.item_nolocation_response)
+        test_source = MijnBuurtjeSource(self.config)
+        actual = InitiativeImport(source_uri=self.config.details_endpoint + "1234")
+        test_source.complete(actual)
+
+        assert actual.location == self.config.location
+
+    @requests_mock.Mocker()
+    def test_should_wrap_initiatives_exceptions(self, request_mock):
+        test_source = MijnBuurtjeSource(self.config)
+        self.setup_list_requests(request_mock)
+
+        with patch.object(TreeParser, 'apply_schemas', side_effect=HtmlParseError()):
+            with self.assertRaises(ScrapeException):
+                _ = [item for item in test_source.initiatives()]
+
+    @requests_mock.Mocker()
+    def test_should_wrap_complete_exceptions(self, request_mock):
+        test_source = MijnBuurtjeSource(self.config)
+        self.setup_item_request(request_mock, self.item_response)
+
+        with patch.object(TreeParser, 'apply_schemas', side_effect=HtmlParseError()):
+            with self.assertRaises(ScrapeException):
+                _ = test_source.complete(InitiativeImport(source_uri=self.config.details_endpoint + "1234"))
+
+    def test_should_strip_none_if_none(self):
+        assert None is MijnBuurtjeSource.strip_text(None, "test")
+
+    def test_should_strip_none_if_no_text(self):
+        Element = namedtuple('Element', 'text')
+        assert None is MijnBuurtjeSource.strip_text(Element(text=None), "test")
