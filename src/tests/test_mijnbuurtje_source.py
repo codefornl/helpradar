@@ -110,4 +110,4 @@ class TestMijnBuurtjePlatformSource(TestCase):
 
     def test_format_date_should_raise_value_error(self):
         with self.assertRaises(ValueError):
-            assert None is MijnBuurtjeSource.format_date(None)
+            assert None is MijnBuurtjeSource.format_date("")

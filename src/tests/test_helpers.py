@@ -16,13 +16,10 @@ class TestHelpers(TestCase):
         assert MijnBuurtjeSource.format_organizer(None) is None
 
     def test_format_organizer_empty(self):
-        assert MijnBuurtjeSource.format_organizer('') == ''
+        assert MijnBuurtjeSource.format_organizer('') is None
 
     def test_format_organizer_simple(self):
         assert MijnBuurtjeSource.format_organizer('blub') == 'blub'
-
-    def test_format_organizer_composed(self):
-        assert MijnBuurtjeSource.format_organizer('tic/tac/toe') == 'toe'
 
     def test_format_organizer_dash(self):
         assert MijnBuurtjeSource.format_organizer('eerste-deel') == 'eerste'

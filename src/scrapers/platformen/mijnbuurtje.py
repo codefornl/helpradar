@@ -138,12 +138,9 @@ class MijnBuurtjeSource(PlatformSource):
     @staticmethod
     def format_organizer(organizer):
         if organizer is not None:
+            organizer = re.sub('-', ' ', organizer)
             name_segments = organizer.split()
-            organizer_name = None if len(name_segments) == 0 else name_segments[len(name_segments) - 1]
-            # get the first name of the organizer:
-            if organizer_name is not None:
-                organizer_name = re.sub('-', ' ', organizer_name)
-                organizer_name = organizer_name.split(' ')[0]
+            organizer_name = None if len(name_segments) == 0 else name_segments[0]
 
             return organizer_name
 
