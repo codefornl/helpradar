@@ -1,8 +1,9 @@
 import json
 import logging
 from collections import namedtuple
-from dateutil import parser
 from typing import Generator
+
+from dateutil import parser
 
 from models.initiatives import InitiativeImport, InitiativeGroup
 from .scraper import Scraper, PlatformSource, PlatformSourceConfig, ScrapeException

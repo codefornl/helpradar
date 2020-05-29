@@ -1,5 +1,6 @@
 from os import environ, path
 from pathlib import PurePath
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 

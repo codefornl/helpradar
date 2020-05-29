@@ -1,16 +1,21 @@
 import logging
-from optparse import OptionParser
+from argparse import ArgumentParser
+from functools import reduce
 
+from models import InitiativeGroup
 from platformen import NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper
-    # HeldNodig, MensenDieWillenHelpen, Zorgheldenauto, PuurPapendrecht, NijmegenOost
 from tools import Geocoder
 
 logging.basicConfig(level=logging.DEBUG)
 
-parser = OptionParser(add_help_option=False)
-parser.add_option("-h", "--help", help="show this help message and exit", action="store_true")
-parser.add_option("-l", "--limit", help="LIM is the amount of items each scraper scrapes.", type="int", metavar="LIM")
-parser.add_option("-g", "--nogeo", help="Disables the geocoder", action="store_true", dest="nogeo")
+parser = ArgumentParser(add_help=False)
+parser.add_argument("-h", "--help", help="show this help message and exit", action="store_true")
+parser.add_argument("-l", "--limit", help="LIM is the amount of items each scraper scrapes.", type=int, metavar="LIM")
+parser.add_argument("-g", "--group=SIDE", choices=[InitiativeGroup.SUPPLY, InitiativeGroup.DEMAND],
+                    help="Constrain supporting scrapers to only one SIDE: 'supply' or 'demand'",
+                    type=str, dest="group")
+parser.add_argument("-n", "--nogeo", help="Disables the geocoder", action="store_true", dest="nogeo")
+parser.add_argument("-s", "--scrapers", help="specifies specific scrapers to run", action="append", nargs="+", type=str)
 
 # HeldNodig().scrape()
 # MensenDieWillenHelpen().scrape()
@@ -31,22 +36,29 @@ def docs():
         print('{: <16}{}'.format(s.code, s.name))
 
 
-(opts, args) = parser.parse_args()
+arguments = parser.parse_args()
 
-if opts.help:
+if arguments.help:
     docs()
 else:
-    print(f'Running {len(args)} scrapers. Use --help to see all individual scrapers')
+    print(f'Running {len(arguments.scrapers)} scrapers. Use --help to see all individual scrapers')
+
+    run_scrapers = None
+    if arguments.scrapers:
+        run_scrapers = reduce(lambda a, b: a + b, arguments.scrapers)
+
     for scraper in scrapers:
-        if opts.limit:
-            scraper.limit = opts.limit
+        if arguments.limit:
+            scraper.limit = arguments.limit
+        if arguments.group:
+            scraper.set_group(arguments.group)
 
         # preferably each scraper runs in it's own thread.
-        if not args:
+        if not run_scrapers:
             scraper.scrape()
-        elif args and scraper.code in args:
+        elif scraper.code in run_scrapers:
             scraper.scrape()
 
     # Try to create geo location for items
-    if not opts.nogeo:
+    if not arguments.nogeo:
         Geocoder().geocode()
