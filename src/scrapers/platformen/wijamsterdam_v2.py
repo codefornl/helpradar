@@ -6,8 +6,8 @@ Created on Mon Apr 20 14:11:31 2020
 import datetime as dt
 import re
 
-from .TreeParser import TreeParser  # class for scraping static website
 from models import InitiativeImport, Db
+from .TreeParser import TreeParser  # class for scraping static website
 
 # initialize Db
 db = Db()

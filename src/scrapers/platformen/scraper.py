@@ -102,18 +102,22 @@ class Scraper(ABC):
     Concept for a base class that defines and deals basic setup of a scraper 
     """
 
-    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = []):
+    _group = None
+    """An optional supply/demand group limitation"""
+
+    limit: int = 0
+    """Limits the iteration of scraping initiatives to the given value if greater than 0"""
+
+    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = None):
         # Leave out until full conversion of scrapers.
         # if len(sources) == 0:
         #    raise ValueError("Expecting at least one source!")
         self.platform_url: str = platform_url
         self.name: str = name
         self.code: str = code
-        self._sources = sources
+        self._sources = sources or []
         self._db = Db()
         self._collect_recovery = ScraperExceptionRecoveryStrategy(3)
-        self.limit: int = 0
-        """Limits the iteration if a debugger is attached"""
         self._batch: ImportBatch
 
     def scrape(self):
@@ -170,7 +174,6 @@ class Scraper(ABC):
 
         # Not handling db errors, that is allowed to break execution!
 
-
     def _start_batch(self):
         platform = self.load_platform()
         self._batch = ImportBatch.start_new(platform)
@@ -210,7 +213,18 @@ class Scraper(ABC):
     def add_source(self, source: PlatformSource):
         if source is None:
             raise ValueError("source is None")
+        if source in self._sources:
+            raise ValueError("source already added")
+
         self._sources.append(source)
+
+    def remove_source(self, source: PlatformSource):
+        if source is None:
+            raise ValueError("source is None")
+        self._sources.remove(source)
+
+    def sources(self) -> List[PlatformSource]:
+        return self._sources
 
     def save_batch(self):
         if self._batch is None:
@@ -226,3 +240,28 @@ class Scraper(ABC):
 
     def get_logger(self) -> logging.Logger:
         raise NotImplementedError("Should be implemented by derived scraper")
+
+    def set_group(self, group):
+        """
+        Restricts the scraper to a certain group. If it's not supported it
+        will only log an error message and be ignored this scraping will proceed!
+        """
+        try:
+            supports_group = self.supports_group(group)
+            if not supports_group:
+                self.get_logger().error(f"{self.name} does not support {group}!")
+            else:
+                self._group = group
+        except NotImplementedError:
+            self.get_logger().warning(f"{self.name} does not support restricting on groups!")
+
+
+    def supports_group(self, group):
+        """
+        Implement this to indicate the scraper has support to restrict the scraping
+        to one group.
+        """
+        raise NotImplementedError("Scraper has no implementation for filtering a specific group.")
+
+    def get_group(self):
+        return self._group

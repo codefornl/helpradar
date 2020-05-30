@@ -1,33 +1,22 @@
-import os
+
 from datetime import datetime
 from unittest import TestCase
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, Mock
 
-from models import Platform, InitiativeImport, BatchImportState, Db
-from models.initiatives import InitiativeImportState
+from models import Platform, InitiativeImport, BatchImportState
+from models.initiatives import InitiativeImportState, InitiativeGroup
 from platformen import Scraper
-from platformen.scraper import ScrapeException
-from tools import Geocoder
+from platformen.scraper import ScrapeException, PlatformSource, PlatformSourceConfig
 
 
-class TestDatabase(TestCase):
-    def test_default_sqlite(self):
-        test_db = Db()
-        assert test_db.get_db_url().startswith("sqlite")
+class Temp:
+    _field = None
 
-    def test_postgres_from_env(self):
-        testie = {"DB_USER": "klaas", "DB_PASSWORD": "vaak", "DB_HOST": "thuis", "DB_NAME": "1"}
-        with patch.dict(os.environ, testie):
-            test_db = Db()
-            assert test_db.get_db_url().startswith("postgres")
+    def __init__(self, field):
+        self._field = field
 
-
-class TestGeocoder(TestCase):
-    def setUp(self):
-        self.geocoder = Geocoder()
-
-    def test_user_agent_set(self):
-        assert self.geocoder.geolocator.headers.get('User-Agent') is not None
+    def get_field(self):
+        return self._field
 
 
 class TestScraper(TestCase):
@@ -189,3 +178,35 @@ class TestScraper(TestCase):
             assert True
         except IndexError:
             assert False
+
+    def test_set_supported_group(self):
+        support_mock = Mock(return_value=True)
+        self.scraper.supports_group = support_mock
+
+        self.scraper.set_group(InitiativeGroup.SUPPLY)
+        assert InitiativeGroup.SUPPLY == self.scraper.get_group()
+
+    def test_set_unsupported_group(self):
+        support_mock = Mock(return_value=False)
+        self.scraper.supports_group = support_mock
+        # I was finding parameterized tests slow!
+        with self.subTest():
+            self.scraper.set_group(InitiativeGroup.SUPPLY)
+            self.logger_mock.error.assert_called_with("Test Platform does not support supply!")
+        with self.subTest():
+            self.scraper.set_group(InitiativeGroup.DEMAND)
+            self.logger_mock.error.assert_called_with("Test Platform does not support demand!")
+
+    def test_set_support_not_possible(self):
+        support_mock = Mock(side_effect=NotImplementedError)
+        self.scraper.supports_group = support_mock
+
+        self.scraper.set_group(InitiativeGroup.SUPPLY)
+        self.logger_mock.warning.assert_called_with("Test Platform does not support restricting on groups!")
+
+    def test_should_not_allow_duplicate_source(self):
+        source = PlatformSource(PlatformSourceConfig("", "", ""))
+        self.scraper.add_source(source)
+
+        with self.assertRaises(ValueError):
+            self.scraper.add_source(source)

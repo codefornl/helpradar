@@ -1,7 +1,8 @@
 import json
 import logging
-import requests
 from time import sleep
+
+import requests
 
 from models.database import Db
 from models.initiatives import InitiativeImport
@@ -22,6 +23,9 @@ class WebScraper(Scraper):
 
     def scrape(self):
         return "Not implemented"
+
+    def get_logger(self) -> logging.Logger:
+        return logging.getLogger(__name__)
 
     def get_base_url(self):
         return "https://%s" % self.domain
