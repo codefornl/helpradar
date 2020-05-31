@@ -57,6 +57,7 @@ class MijnBuurtjeSource(PlatformSource):
     def __init__(self, config: MijnBuurtjeSourceConfig):
         super().__init__(config)
         self.item_parser = TreeParser(None, None, self.ITEM_SCHEMA)
+        self.initiative_links_re = re.compile(self.config.details_endpoint + "\\d{4,5}")
 
     def initiatives(self) -> Generator[InitiativeImport, None, None]:
         page_counter = 1
@@ -102,7 +103,7 @@ class MijnBuurtjeSource(PlatformSource):
         """
         initiatives = []
         for e in elements:
-            links = re.findall(self.config.details_endpoint + "\\d{4,5}", e.attrib['href'])
+            links = re.findall(self.initiative_links_re, e.attrib['href'])
             if len(links) > 0:
                 initiatives.append(links)
 
@@ -154,27 +155,17 @@ class MijnBuurtjeSource(PlatformSource):
         if not date_str:
             raise ValueError("Always expecting a date string for conversion!")
 
-        segments = date_str.split()
-        if len(segments) != 3:
-            msg = f"Expecting a 3 segment date, got {date_str}"
-            raise ValueError(msg)
-
-        month = MijnBuurtjeSource.MONTHS.index(segments[1].lower()) + 1
-        d = date(int(segments[2]), month, int(segments[0]))
-        return d
+        try:
+            day, month_name, year = date_str.split()
+            month = MijnBuurtjeSource.MONTHS.index(month_name.lower()) + 1
+            d = date(int(year), month, int(day))
+            return d
+        except ValueError as e:
+            msg = f"Expecting a three segment date, got {date_str}."
+            raise ValueError(msg) from e
 
     @staticmethod
     def json_frequency(elem: str):
         frequency = {"on": elem}
         return json.dumps(frequency)
 
-
-class MijnBuurtje(Scraper):
-    pass
-
-
-class MijnBuurtjes(Scraper):
-    pass
-    """
-    Scraped alle bekende instanties van mijn buurtje
-    """

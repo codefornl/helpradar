@@ -1,6 +1,5 @@
 import json
 import re
-from collections import namedtuple
 from datetime import date
 from unittest import TestCase
 from unittest.mock import patch
@@ -101,13 +100,3 @@ class TestMijnBuurtjePlatformSource(TestCase):
             with self.assertRaises(ScrapeException):
                 _ = test_source.complete(InitiativeImport(source_uri=self.config.details_endpoint + "1234"))
 
-    def test_should_strip_none_if_none(self):
-        assert None is MijnBuurtjeSource.strip_text(None, "test")
-
-    def test_should_strip_none_if_no_text(self):
-        Element = namedtuple('Element', 'text')
-        assert None is MijnBuurtjeSource.strip_text(Element(text=None), "test")
-
-    def test_format_date_should_raise_value_error(self):
-        with self.assertRaises(ValueError):
-            assert None is MijnBuurtjeSource.format_date("")

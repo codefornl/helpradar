@@ -3,14 +3,13 @@ Created on Sun Apr 19 11:27:06 2020
 
 @author: J.S. Kroodsma
 """
-import datetime as dt  # core modules
+import datetime as dt
 import logging
 import os
 import re
 
 import requests
 from lxml import etree
-
 
 class TreeParser:
     """
@@ -65,6 +64,7 @@ class TreeParser:
             self.url = url
             self.html = res.text
             # parse html
+
             tree = etree.HTML(self.html)
         else:
             error_msg = 'GET on {0} gives status_code {1}'.format(url, res.status_code)
