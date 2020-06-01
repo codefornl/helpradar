@@ -36,6 +36,11 @@ class PlatformSourceConfig(object):
     """
     def __init__(self, platform_url, list_endpoint, details_endpoint):
         self.platform_url = platform_url
+        # we could/should improve on the endpoints using a url class of some sort
+        # so we can provide query params separate have the get_*_url methods
+        # compose it with provided arguments. Although (restful) urls often have segments
+        # and not parameters which then need to be replaced and probably require a placeholder
+        # of some sort.
         self.list_endpoint = list_endpoint
         self.details_endpoint = details_endpoint
 

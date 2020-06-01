@@ -73,6 +73,7 @@ class MijnBuurtjeSource(PlatformSource):
         try:
             while page_counter < 100:
                 list_page_url = self.config.list_endpoint + f"&page={page_counter}"
+
                 # schemas: defines fields to be scraped
                 # schema: fieldname:{xpath,all,cast,transform}
                 schemas = {'initiatives':
@@ -161,8 +162,8 @@ class MijnBuurtjeSource(PlatformSource):
             raise ValueError("Always expecting a date string for conversion!")
 
         try:
-            day, month_name, year = date_str.split()
-            month = MijnBuurtjeSource.MONTHS.index(month_name.lower())
+            day, mon_name, year = date_str.split()
+            month = MijnBuurtjeSource.MONTHS.index(mon_name.lower())
             d = date(int(year), month, int(day))
             return d
         except ValueError as e:
