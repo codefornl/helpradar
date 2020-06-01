@@ -11,6 +11,7 @@ import re
 import requests
 from lxml import etree
 
+
 class TreeParser:
     """
     #class variables: same for all instances of class 

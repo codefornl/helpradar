@@ -1,12 +1,13 @@
 import json
+import locale
 import re
 from datetime import date
 from typing import Generator
+from calendar import month_name
 
 from lxml import etree
 
 from models import InitiativeImport
-from platformen import Scraper
 from platformen.TreeParser import TreeParser
 from platformen.scraper import PlatformSource, PlatformSourceConfig, ScrapeException
 
@@ -53,6 +54,14 @@ class MijnBuurtjeSource(PlatformSource):
                        'xpath': '//span[@class="meta-item-content" and contains(text(),"Dorp:")]',
                        'transform': lambda elem: MijnBuurtjeSource.strip_text(elem, "Dorp: ")},
                    }
+    MONTHS = None
+    if not MONTHS:
+        try:
+            locale.setlocale(locale.LC_ALL, 'nl_NL.utf-8')
+            MONTHS = list(month_name)
+        except locale.Error:
+            MONTHS = ["", "januari", "februari", "maart", "april", "mei", "juni",
+                      "juli", "augustus", "september", "oktober", "november", "december"]
 
     def __init__(self, config: MijnBuurtjeSourceConfig):
         super().__init__(config)
@@ -145,10 +154,6 @@ class MijnBuurtjeSource(PlatformSource):
 
             return organizer_name
 
-    # I assume there's a better way using locales
-    MONTHS = ["januari", "februari", "maart", "april", "mei", "juni", "juli",
-              "augustus", "september", "oktober", "november", "december"]
-
     @staticmethod
     def format_date(date_str: str):
         # TODO: This is an important field. Should break here!
@@ -157,7 +162,7 @@ class MijnBuurtjeSource(PlatformSource):
 
         try:
             day, month_name, year = date_str.split()
-            month = MijnBuurtjeSource.MONTHS.index(month_name.lower()) + 1
+            month = MijnBuurtjeSource.MONTHS.index(month_name.lower())
             d = date(int(year), month, int(day))
             return d
         except ValueError as e:
