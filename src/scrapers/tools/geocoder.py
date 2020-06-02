@@ -1,5 +1,6 @@
 import re
 import time
+
 from geopy.geocoders import Nominatim
 
 from models.database import Db
@@ -7,14 +8,13 @@ from models.initiatives import InitiativeImport
 
 
 class Geocoder:
-
     def __init__(self):
         self.geolocator = Nominatim(user_agent="codefornl-covid19")
 
     def geocode(self):
         db = Db()
-        locationset = db.session.query(InitiativeImport)\
-            .filter(InitiativeImport.location.isnot(None))\
+        locationset = db.session.query(InitiativeImport) \
+            .filter(InitiativeImport.location.isnot(None)) \
             .with_for_update().all()
 
         # Regex voor postcode geschreven ls `9999XX`
@@ -56,10 +56,4 @@ class Geocoder:
                 print("SUCCESS: " + match.address)
             db.session.add(item)
             db.session.commit()
-            time.sleep(1) # Sleep so we don't overstretch the nominatim api
-
-
-
-
-
-    
+            time.sleep(1)  # Sleep so we don't overstretch the nominatim api

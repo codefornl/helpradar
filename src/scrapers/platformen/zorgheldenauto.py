@@ -1,4 +1,4 @@
-from .database import Initiative, Db
+from models import InitiativeImport, Db
 
 
 class Zorgheldenauto:
@@ -129,10 +129,12 @@ class Zorgheldenauto:
     def scrape(self):
         db = Db()
         for company in self.zorgheldenautos:
-            db.session.add(Initiative(name=company,
-                                      group="zorgheldenauto",
-                                      source='https://www.auto.nl/zorgheldenauto',
-                                      )
-                           )
+            db.session.add(
+                InitiativeImport(
+                    name=company,
+                    group="zorgheldenauto",
+                    source='https://www.auto.nl/zorgheldenauto',
+                )
+            )
 
         db.session.commit()

@@ -7,6 +7,8 @@ the scraping itself.
 """
 
 import logging
+import sys
+import traceback
 from abc import ABC
 from datetime import datetime
 from typing import Generator, List
@@ -15,7 +17,7 @@ import requests
 from requests import HTTPError
 
 from models.database import Db
-from models.initiatives import Platform, BatchImportState, ImportBatch, InitiativeImport
+from models.initiatives import Platform, BatchImportState, ImportBatch, InitiativeImport, InitiativeImportState
 
 
 class ScrapeException(Exception):
@@ -34,6 +36,11 @@ class PlatformSourceConfig(object):
     """
     def __init__(self, platform_url, list_endpoint, details_endpoint):
         self.platform_url = platform_url
+        # we could/should improve on the endpoints using a url class of some sort
+        # so we can provide query params separate have the get_*_url methods
+        # compose it with provided arguments. Although (restful) urls often have segments
+        # and not parameters which then need to be replaced and probably require a placeholder
+        # of some sort.
         self.list_endpoint = list_endpoint
         self.details_endpoint = details_endpoint
 
@@ -89,6 +96,7 @@ class ScraperExceptionRecoveryStrategy:
     def __init__(self, max_tries: int):
         self.max_tries: int = max_tries
 
+    # noinspection PyUnusedLocal
     def should_raise(self, ex: Exception):
         self._count += 1
         return self._count == self.max_tries
@@ -98,26 +106,24 @@ class Scraper(ABC):
     """
     Concept for a base class that defines and deals basic setup of a scraper 
     """
-    _sources: List[PlatformSource]
 
-    _batch: ImportBatch
-    """
-    The current batch.
-    """
+    _group = None
+    """An optional supply/demand group limitation"""
 
     limit: int = 0
-    """Limits the iteration if a debugger is attached"""
+    """Limits the iteration of scraping initiatives to the given value if greater than 0"""
 
-    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = []):
+    def __init__(self, platform_url: str, name: str, code: str, sources: List[PlatformSource] = None):
         # Leave out until full conversion of scrapers.
         # if len(sources) == 0:
         #    raise ValueError("Expecting at least one source!")
-        self.platform_url = platform_url
-        self.name = name
-        self.code = code
-        self._sources = sources
+        self.platform_url: str = platform_url
+        self.name: str = name
+        self.code: str = code
+        self._sources = sources or []
         self._db = Db()
         self._collect_recovery = ScraperExceptionRecoveryStrategy(3)
+        self._batch: ImportBatch
 
     def scrape(self):
         """
@@ -129,20 +135,24 @@ class Scraper(ABC):
         logger.info(f"Starting {self.name} ({self.code}) scraper")
         self._start_batch()
 
+        total = 0
         try:
             for source in self._sources:
                 for count, initiative in enumerate(source.initiatives()):
                     if not self.should_continue(count):
                         break
                     self._collect_initiative(initiative, source)
+                    total = count
 
         except ScrapeException:
             self.get_logger().exception("Error while reading list of initiatives")
             self._batch.stop(BatchImportState.FAILED)
         else:
+            # now this treats any other exception as valid!
             self._batch.stop(BatchImportState.IMPORTED)
-
-        self.save_batch()
+        finally:
+            self.get_logger().info(f"Saving {total} scraped initiatives from {self._batch.platform.name}")
+            self.save_batch()
 
     def _collect_initiative(self, initiative: InitiativeImport, source):
         if initiative is None:
@@ -152,18 +162,24 @@ class Scraper(ABC):
             source.complete(initiative)
             initiative.scraped_at = datetime.utcnow()
             initiative.source = self.platform_url
-            self.add_initiative(initiative)
             self.get_logger().debug(f"Scraped {initiative.source_uri}")
         except ScrapeException as e:
             self.get_logger()\
                 .exception(f"Error while collecting initiative {initiative.source_uri}")
             # There's maybe no point in doing this unless it's saved or at least counted.
             # this is actually indicating error with down the line processing.
-            initiative.state = "processing_error"
+            initiative.state = InitiativeImportState.IMPORT_ERROR
+            ex_info = sys.exc_info()
+            initiative.error_reason = "".join(traceback.format_exception(*ex_info))
             # Should probably do this very neat with a context manager.
             if self._collect_recovery.should_raise(e):
                 raise e
+        finally:
+            # Always store initiative for traceability.
+            self.add_initiative(initiative)
+
         # Not handling db errors, that is allowed to break execution!
+
 
     def _start_batch(self):
         platform = self.load_platform()
@@ -204,7 +220,18 @@ class Scraper(ABC):
     def add_source(self, source: PlatformSource):
         if source is None:
             raise ValueError("source is None")
+        if source in self._sources:
+            raise ValueError("source already added")
+
         self._sources.append(source)
+
+    def remove_source(self, source: PlatformSource):
+        if source is None:
+            raise ValueError("source is None")
+        self._sources.remove(source)
+
+    def sources(self) -> List[PlatformSource]:
+        return self._sources
 
     def save_batch(self):
         if self._batch is None:
@@ -220,3 +247,28 @@ class Scraper(ABC):
 
     def get_logger(self) -> logging.Logger:
         raise NotImplementedError("Should be implemented by derived scraper")
+
+    def set_group(self, group):
+        """
+        Restricts the scraper to a certain group. If it's not supported it
+        will only log an error message and be ignored this scraping will proceed!
+        """
+        try:
+            supports_group = self.supports_group(group)
+            if not supports_group:
+                self.get_logger().error(f"{self.name} does not support {group}!")
+            else:
+                self._group = group
+        except NotImplementedError:
+            self.get_logger().warning(f"{self.name} does not support restricting on groups!")
+
+
+    def supports_group(self, group):
+        """
+        Implement this to indicate the scraper has support to restrict the scraping
+        to one group.
+        """
+        raise NotImplementedError("Scraper has no implementation for filtering a specific group.")
+
+    def get_group(self):
+        return self._group

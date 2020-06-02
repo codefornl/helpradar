@@ -1,8 +1,7 @@
+from unittest import TestCase
+
 import pytest
 import requests_mock
-
-from unittest import TestCase
-from unittest.mock import MagicMock, Mock, patch
 
 from platformen.scraper import PlatformSourceConfig, PlatformSource, ScrapeException
 

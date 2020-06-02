@@ -39,7 +39,7 @@ def upgrade():
     sa.Column('platform_id', sa.Integer(), nullable=False),
     sa.Column('started_at', sa.DateTime(), nullable=False),
     sa.Column('stopped_at', sa.DateTime(), nullable=False),
-    sa.Column('state', sa.Enum('running', 'imported', 'failed', 'processed', 'processing_error'), nullable=False),
+    sa.Column('state', sa.Enum('running', 'imported', 'failed', 'processed', 'processing_error', name="initiatives_state_enum", native_enum=False), nullable=False),
     sa.ForeignKeyConstraint(['platform_id'], ['platforms.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

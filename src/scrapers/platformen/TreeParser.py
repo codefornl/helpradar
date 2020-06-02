@@ -3,12 +3,12 @@ Created on Sun Apr 19 11:27:06 2020
 
 @author: J.S. Kroodsma
 """
-import datetime as dt  # core modules
+import datetime as dt
 import logging
 import os
 import re
-import requests
 
+import requests
 from lxml import etree
 
 
@@ -45,8 +45,8 @@ class TreeParser:
         # initialize logger, write logs to datestamped LOG_FILE_NAME
         self.LOG_FILE_PATH = nvl(os.getenv('LOG_FILE_PATH'), os.getcwd())
         datestr = dt.datetime.strftime(dt.datetime.now(), '%Y%m%d')
-        LOG_FILE_NAME = datestr + '_' + self.LOG_FILE_NAME
-        logging.basicConfig(filename=self.LOG_FILE_PATH + '/' + LOG_FILE_NAME, level=logging.DEBUG)
+        log_file_name = datestr + '_' + self.LOG_FILE_NAME
+        logging.basicConfig(filename=self.LOG_FILE_PATH + '/' + log_file_name, level=logging.DEBUG)
 
         # GET website html        
         if url is None and tree is None and schemas is None:
@@ -57,7 +57,6 @@ class TreeParser:
     """property setters"""
 
     """class functions"""
-
     def __get_html_tree__(self, url):
         # body
         tree = None
@@ -66,6 +65,7 @@ class TreeParser:
             self.url = url
             self.html = res.text
             # parse html
+
             tree = etree.HTML(self.html)
         else:
             error_msg = 'GET on {0} gives status_code {1}'.format(url, res.status_code)
@@ -75,7 +75,8 @@ class TreeParser:
                 logging.error(error_msg)
         return tree
 
-    def __serialize__(self, html_element):
+    @staticmethod
+    def __serialize__(html_element):
         """ serialize element to value """
         # body
         if type(html_element) in [etree._ElementUnicodeResult]:
@@ -94,7 +95,7 @@ class TreeParser:
             error_msg = 'element_transform_function is not callable {0}'.format(element_transform_function)
             if not callable(element_transform_function):
                 if self.RAISE_ERROR:
-                    raise NOT_FUNCTION_ERROR(error_msg)
+                    raise NotFunctionError(error_msg)
                 else:
                     logging.error(error_msg)
                 v = None
@@ -107,12 +108,10 @@ class TreeParser:
     def get_session_metadata(self, url=None):
         """ utility returing scraping session metadata """
         url = nvl(url, self.url)
-        source_url = re.findall('https:\/\/([A-Z,a-z,0-9,\.]+)\/', str(url))
+        source_url = re.findall('https:\/\/([A-Z,a-z,0-9,\-\.]+)\/', str(url))
         source_url = source_url[0] if len(source_url) > 0 else None
-        metadata = {'source_url': source_url,
-                    'source_uri': url,
-                    'scraped_at': str(dt.datetime.now()),
-                    'created_at': dt.datetime.strftime(dt.datetime.now(), '%Y-%m-%d')}
+        metadata = {'source': source_url,
+                    'source_uri': url}
         return metadata
 
     def set_schema(self, schemas):
@@ -138,26 +137,27 @@ class TreeParser:
                 except Exception as e:
                     error_msg = "apply failed to parse field {0} using xpath {1}. error: {2}".format(ky, xpath, e)
                     if self.RAISE_ERROR:
-                        raise HTML_PARSE_ERROR(error_msg)
+                        raise HtmlParseError(error_msg)
                     else:
                         logging.error(error_msg)
                 # get first element
                 element = elements[0] if len(elements) > 0 else None
                 # transform + serialize
-                if all_elements == True:  # use the first result element
+                if all_elements:  # use the first result element
                     value_input = elements
                 else:
                     value_input = element
-                value = self.__serialize__(
-                    self.__transform_html_element_to_value__(value_input, transform))  # use all elements
+
+                transformed = self.__transform_html_element_to_value__(value_input, transform)
+                value = self.__serialize__(transformed)  # use all elements
                 # set as attributesL elements,element
                 self.elements = elements
                 self.element = element
                 outputs = {'value': value, 'elements': elements, 'element': element}
             self.outputs = outputs
         except Exception as e:
-            print('error in apply')
-            raise e
+            raise HtmlParseError(f"Error parsing {ky}") from e
+
         # return value
         return self.outputs
 
@@ -201,13 +201,13 @@ def from_kwargs(kwargs, *args):
 
 
 # custom error classes
-class NOT_FUNCTION_ERROR(Exception):
+class NotFunctionError(Exception):
     def __init__(self, message=None, errors=None):
         super().__init__(message)
         self.errors = errors
 
 
-class HTML_PARSE_ERROR(Exception):
+class HtmlParseError(Exception):
     def __init__(self, message=None, errors=None):
         super().__init__(message)
         self.errors = errors

@@ -1,11 +1,8 @@
-#from __future__ import annotations
+import datetime
 
-from typing import Type
 from sqlalchemy import Column, ForeignKey, Integer, String, Text, Float, DateTime, Enum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-
-import datetime
 
 Base = declarative_base()
 
@@ -31,17 +28,16 @@ class Platform(InitiativeBase):
     place = Column(Text)
 
 
-class BatchImportState(Enum):
-    RUNNING = "running"
-    IMPORTED = "imported"
-    FAILED = "failed"
-    PROCESSED = "processed"
-    PROCESSING_ERROR = "processing_error"
-
-
 class InitiativeGroup(Enum):
     SUPPLY = "supply"
     DEMAND = 'demand'
+
+
+class InitiativeImportState(Enum):
+    IMPORTED = "imported"
+    IMPORT_ERROR = "import_error"
+    PROCESSED = "processed"
+    PROCESSING_ERROR = "processing_error"
 
 
 class InitiativeImport(Base):
@@ -68,8 +64,16 @@ class InitiativeImport(Base):
     source_uri = Column(String(500), nullable=False, server_default='http://unknown.org')
     created_at = Column(DateTime)
     scraped_at = Column(DateTime)
-    state = Column(Enum("imported", "import_error", "processed", "processing_error"), nullable=False, server_default='imported')
+    state = Column(Enum("imported", "import_error", "processed", "processing_error", name="initiative_imports_state_enum"), nullable=False, server_default='imported')
     error_reason = Column(String())
+
+
+class BatchImportState(Enum):
+    RUNNING = "running"
+    IMPORTED = "imported"
+    FAILED = "failed"
+    PROCESSED = "processed"
+    PROCESSING_ERROR = "processing_error"
 
 
 # Group each import run in a batch for later importing.
@@ -100,4 +104,3 @@ class ImportBatch(Base):
 
         self.state = state
         self.stopped_at = datetime.datetime.now(datetime.timezone.utc)
-

@@ -1,15 +1,17 @@
-from datetime import datetime
 import json
-import os
 from collections import namedtuple
-
-from dateutil import parser
-import requests_mock
-
+from datetime import datetime
+from typing import Dict
 from unittest import TestCase
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock
 
+import requests_mock
+from dateutil import parser
+from parameterized import parameterized
+
+from data import responses
 from models import InitiativeGroup
+from platformen.scraper import ScrapeException
 from platformen.wijamsterdam import WijAmsterdamSource
 
 
@@ -18,14 +20,12 @@ class TestWijAmsterdamPlatformSource(TestCase):
 
     @requests_mock.Mocker()
     def setUp(self, request_mock):
-        test_path = os.path.dirname(__file__)
-        file_path = os.path.join(test_path, "wijams.json")
-        with open(file_path, 'r') as data_file:
-            self.response = data_file.read()
-            self.response_objects = \
-                json.loads(
-                    self.response,
-                    object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+        self.response = responses.read("wijamsterdam_api_site_idea.json")
+        self.response_objects = \
+            json.loads(
+                self.response,
+                object_hook=lambda d: namedtuple('X', d.keys())(*d.values())
+            )
 
         self.url = "https://api2.openstad.amsterdam/api/site/197/idea"
         self.source = WijAmsterdamSource()
@@ -86,3 +86,33 @@ class TestWijAmsterdamPlatformSource(TestCase):
     def test_should_set_area_as_location(self):
         for i, actual in enumerate(self.actual_result):
             assert self.response_objects[i].extraData.area == actual.location
+
+    def test_should_wrap_any_exception(self):
+        cause = Exception("Test Error")
+        self.source.map_initiative = Mock(side_effect=cause)
+
+        try:
+            [item for item in self.source.initiatives()]
+        except ScrapeException as ex:
+            assert cause == ex.__cause__
+
+    @parameterized.expand([
+        "area",
+        "isOrganiserName",
+        "theme"
+    ])
+    def test_should_check_extra_data_area(self, attr):
+        stripped_initiative = json.loads(
+            self.response,
+            object_hook=lambda d: namedtuple(
+                'X', self.remove(attr, d).keys())(*self.remove(attr, d).values())
+        )
+
+        response_json = json.dumps([stripped_initiative])
+        self.request_mock.get(self.url, text=response_json, status_code=200)
+
+        self.actual_result = [item for item in self.source.initiatives()]
+
+    @staticmethod
+    def remove(key, from_dict) -> Dict:
+        return {k: v for (k, v) in from_dict.items() if k != key}

@@ -1,7 +1,8 @@
 import json
 import logging
-import requests
 from time import sleep
+
+import requests
 
 from models.database import Db
 from models.initiatives import InitiativeImport
@@ -23,26 +24,30 @@ class WebScraper(Scraper):
     def scrape(self):
         return "Not implemented"
 
-    def getBaseURL(self):
+    def get_logger(self) -> logging.Logger:
+        return logging.getLogger(__name__)
+
+    def get_base_url(self):
         return "https://%s" % self.domain
 
-    def getHTTPResponse(self, URL):
-        logging.debug("Retrieving URL: %s" % URL)
+    def get_http_response(self, input_url):
+        logging.debug("Retrieving URL: %s" % input_url)
 
-        return requests.get(URL, params=self.HTTPGetParameters, headers=self.HTTPRequestHeaders)
+        return requests.get(input_url, params=self.HTTPGetParameters, headers=self.HTTPRequestHeaders)
 
-    def getHTTPResponseContent(self, URL):
-        HTTPResponse = self.getHTTPResponse(URL)
-        return HTTPResponse.content
+    def get_http_response_content(self, input_url):
+        http_response = self.get_http_response(input_url)
+        return http_response.content
 
-    def getHTTPResponseJSON(self, URL):
-        HTTPContent = self.getHTTPResponseContent(URL)
-        return json.loads(HTTPContent)
+    def get_http_response_json(self, input_url):
+        http_content = self.get_http_response_content(input_url)
+        return json.loads(http_content)
 
-    def sleepForThottling(self):
+    @staticmethod
+    def sleep_for_thottling():
         sleep(0.1)
 
-    def addInitiativeToDatabase(self, initiative):
+    def add_initiative_to_database(self, initiative):
         self.databaseHandler.session.add(initiative)
         self.databaseHandler.session.commit()
 
@@ -58,146 +63,150 @@ class CoronaHelpersScraper(WebScraper):
         self.maxPageSize = 50
         self.pageStartCount = 1
 
-    def checkConnectionToServer(self):
+    def check_connection_to_server(self):
         logging.debug("Checking connection to server")
 
-        HTTPContentJSON = self.queryDeedsPageFromAPI(currentPage=1, pageSize=1)
-        queryStatus = self.getStatusFromJSON(HTTPContentJSON)
+        http_content_json = self.query_deeds_page_from_api(current_page=1, page_size=1)
+        query_status = self.get_status_from_json(http_content_json)
 
-        return int(queryStatus) == 200
+        return int(query_status) == 200
 
-    def queryDeedsPageFromAPI(self, currentPage, pageSize=50):
-        logging.debug("Requesting page %s with page size %s" % (currentPage, pageSize))
+    def query_deeds_page_from_api(self, current_page, page_size=50):
+        logging.debug("Requesting page %s with page size %s" % (current_page, page_size))
 
-        if pageSize > self.maxPageSize:
-            pageSize = self.maxPageSize
+        if page_size > self.maxPageSize:
+            page_size = self.maxPageSize
 
-        HTTPParameters = self.getHTTPParametersForPageQuery(currentPage, pageSize)
-        self.HTTPParameters = HTTPParameters
+        self.HTTPParameters = self.get_http_parameters_for_page_query(current_page, page_size)
 
-        APIDeedsURL = self.getAPIDeedsURL()
-        HTTPContentJSON = self.getHTTPResponseJSON(APIDeedsURL)
+        api_deeds_url = self.get_api_deeds_url()
+        http_content_json = self.get_http_response_json(api_deeds_url)
 
-        return HTTPContentJSON
+        return http_content_json
 
-    def queryDeedDetailsFromAPI(self, deedID):
-        logging.debug("Retrieving details for deed ID %s" % deedID)
+    def query_deed_details_from_api(self, deed_id):
+        logging.debug("Retrieving details for deed ID %s" % deed_id)
 
         self.HTTPGetParameters = {}
 
-        APIDeedDetailsURL = self.getAPIDeedDetailsURL(deedID)
-        HTTPContentJSON = self.getHTTPResponseJSON(APIDeedDetailsURL)
-        deedDetails = self.getDeedDetailsFromJSON(HTTPContentJSON)
+        api_deed_details_url = self.get_api_deed_details_url(deed_id)
+        http_content_json = self.get_http_response_json(api_deed_details_url)
+        deed_details = self.get_deed_details_from_json(http_content_json)
 
-        return deedDetails
+        return deed_details
 
-    def getPageCountFromAPI(self):
+    def get_page_count_from_api(self):
         logging.debug("Retrieving page count")
 
-        HTTPContentJSON = self.queryDeedsPageFromAPI(self.pageStartCount)
-        pageCount = self.getPageCountFromPageJSON(HTTPContentJSON)
+        http_content_json = self.query_deeds_page_from_api(self.pageStartCount)
+        page_count = self.get_page_count_from_page_json(http_content_json)
 
-        return pageCount
+        return page_count
 
-    def queryDeedsPageJSONFromAPI(self, currentPage, pageSize=50):
+    def query_deeds_page_json_from_api(self, current_page, page_size=50):
 
-        HTTPContentJSON = self.queryDeedsPageFromAPI(currentPage, pageSize)
-        deedsQueryResults = self.getDeedsFromPageJSON(HTTPContentJSON)
+        http_content_json = self.query_deeds_page_from_api(current_page, page_size)
+        deeds_query_results = self.get_deeds_from_page_json(http_content_json)
 
-        return deedsQueryResults
+        return deeds_query_results
 
-    def getAPIDeedsURL(self):
-        return "%s/%s" % (self.getBaseURL(), self.APIDeedsEndpoint)
+    def get_api_deeds_url(self):
+        return "%s/%s" % (self.get_base_url(), self.APIDeedsEndpoint)
 
-    def getAPIDeedDetailsURL(self, deedID):
-        return "%s/%s" % (self.getAPIDeedsURL(), deedID)
+    def get_api_deed_details_url(self, deed_id):
+        return "%s/%s" % (self.get_api_deeds_url(), deed_id)
 
-    def getDataFromJSON(self, JSON):
-        return JSON["data"]
+    @staticmethod
+    def get_data_from_json(input_json):
+        return input_json["data"]
 
-    def getStatusFromJSON(self, JSON):
-        return JSON["status"]
+    @staticmethod
+    def get_status_from_json(input_json):
+        return input_json["status"]
 
-    def getDeedDetailsFromJSON(self, JSON):
-        data = self.getDataFromJSON(JSON)
+    def get_deed_details_from_json(self, input_json):
+        data = self.get_data_from_json(input_json)
         return data["deed"]
 
-    def getDeedsFromPageJSON(self, JSON):
-        data = self.getDataFromJSON(JSON)
+    def get_deeds_from_page_json(self, input_json):
+        data = self.get_data_from_json(input_json)
         return data["results"]
 
-    def getDeedIDFromJSON(self, JSON):
-        return JSON["id"]
+    @staticmethod
+    def get_deed_id_from_json(input_json):
+        return input_json["id"]
 
-    def getPageCountFromPageJSON(self, JSON):
-        data = self.getDataFromJSON(JSON)
+    def get_page_count_from_page_json(self, input_json):
+        data = self.get_data_from_json(input_json)
         pagination = data["pagination"]
 
         return pagination["pageCount"]
 
-    def getCoordinatesFromDeedDetails(self, deedDetails):
+    @staticmethod
+    def get_coordinates_from_deed_details(deed_details):
 
-        parsedCoordinates = {"lat": None, "lng": None}
+        parsed_coordinates = {"lat": None, "lng": None}
 
-        coordinates = deedDetails["coordinates"]
+        coordinates = deed_details["coordinates"]
         if coordinates is not None:
-            parsedCoordinates["lat"] = coordinates["lat"]
-            parsedCoordinates["lng"] = coordinates["lng"]
+            parsed_coordinates["lat"] = coordinates["lat"]
+            parsed_coordinates["lng"] = coordinates["lng"]
 
-        return parsedCoordinates
+        return parsed_coordinates
 
-    def getHTTPParametersForPageQuery(self, currentPage, pageSize):
+    @staticmethod
+    def get_http_parameters_for_page_query(current_page, page_size):
 
-        HTTPParameters = {
+        http_parameters = {
             'query': '',
-            'page': str(currentPage),
+            'page': str(current_page),
             'causes': '',
             'activities': '',
             'date': '',
-            'pageSize': str(pageSize),
+            'pageSize': str(page_size),
             'withOrganization': 'true'}
 
-        return HTTPParameters
+        return http_parameters
 
     def scrape(self):
         logging.info("Starting CoronaHelpersScraper scraping")
 
-        if not self.checkConnectionToServer():
+        if not self.check_connection_to_server():
             logging.error("Can't connect to CoronaHelpers server API")
             return
 
-        numberOfPages = self.getPageCountFromAPI()
+        number_of_pages = self.get_page_count_from_api()
 
-        for currentPage in range(numberOfPages):
-            deedsJSON = self.queryDeedsPageJSONFromAPI(currentPage)
-            self.sleepForThottling()
+        for currentPage in range(number_of_pages):
+            deeds_json = self.query_deeds_page_json_from_api(currentPage)
+            self.sleep_for_thottling()
 
-            for deedJSON in deedsJSON:
-                self.processDeed(deedJSON)
-                self.sleepForThottling()
+            for deedJSON in deeds_json:
+                self.process_deed(deedJSON)
+                self.sleep_for_thottling()
 
-    def processDeed(self, deedJSON):
+    def process_deed(self, deed_json):
         logging.info("Processing deed")
 
-        deedID = self.getDeedIDFromJSON(deedJSON)
-        deedDetails = self.queryDeedDetailsFromAPI(deedID)
-        initiative = self.createInitiativeFromDeedDetails(deedDetails)
-        self.addInitiativeToDatabase(initiative)
+        deed_id = self.get_deed_id_from_json(deed_json)
+        deed_details = self.query_deed_details_from_api(deed_id)
+        initiative = self.create_initiative_from_deed_details(deed_details)
+        self.add_initiative_to_database(initiative)
 
-    def createInitiativeFromDeedDetails(self, deedDetails):
+    def create_initiative_from_deed_details(self, deed_details):
         logging.info("Creating initiative from deed details")
 
-        deedID = self.getDeedIDFromJSON(deedDetails)
-        coordinates = self.getCoordinatesFromDeedDetails(deedDetails)
+        deed_id = self.get_deed_id_from_json(deed_details)
+        coordinates = self.get_coordinates_from_deed_details(deed_details)
 
         initiative = InitiativeImport(
-            category=deedDetails["fullType"],
+            category=deed_details["fullType"],
             group="supply",
-            description=deedDetails["summary"],
+            description=deed_details["summary"],
             # name = deedDetails[""],
-            source=self.getAPIDeedDetailsURL(deedID),
+            source=self.get_api_deed_details_url(deed_id),
             # frequency = deedDetails["subtype"],
-            location=deedDetails["address"],
+            location=deed_details["address"],
             latitude=coordinates["lat"],
             longitude=coordinates["lng"]
         )
