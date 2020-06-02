@@ -79,7 +79,9 @@ class TestWijAmsterdamPlatformSource(TestCase):
     def test_should_use_extra_fields_for_original_json(self):
         for i, actual in enumerate(self.actual_result):
             try:
-                _ = json.loads(actual.extra_fields)
+                extra = json.loads(actual.extra_fields)
+                # Just check one field to make sure it's the object dictionary.
+                self.assertTrue("title" in extra)
             except json.JSONDecodeError:
                 assert False
 
