@@ -54,15 +54,15 @@ class WijAmsterdamSource(PlatformSource):
         )
 
         extra_data = item["extraData"]
-        if hasattr(extra_data, "area"):
+        if "area" in extra_data:
             initiative.location = extra_data["area"]
-        if hasattr(extra_data, "isOrganiserName"):
+        if "isOrganiserName" in extra_data:
             initiative.organiser = extra_data["isOrganiserName"]
-        if hasattr(extra_data, "theme"):
+        if "theme" in extra_data:
             initiative.category = extra_data["theme"]
-        if hasattr(extra_data, "isOrganiserWebsite"):
+        if "isOrganiserWebsite" in extra_data:
             initiative.url = extra_data["isOrganiserWebsite"]
-        if hasattr(item, "position"):
+        if "position" in item:
             initiative.latitude = item["position"]["lat"]
             initiative.longitude = item["position"]["lng"]
 
