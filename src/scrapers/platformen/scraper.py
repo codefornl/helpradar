@@ -36,6 +36,11 @@ class PlatformSourceConfig(object):
     """
     def __init__(self, platform_url, list_endpoint, details_endpoint):
         self.platform_url = platform_url
+        # we could/should improve on the endpoints using a url class of some sort
+        # so we can provide query params separate have the get_*_url methods
+        # compose it with provided arguments. Although (restful) urls often have segments
+        # and not parameters which then need to be replaced and probably require a placeholder
+        # of some sort.
         self.list_endpoint = list_endpoint
         self.details_endpoint = details_endpoint
 
@@ -130,8 +135,8 @@ class Scraper(ABC):
         logger.info(f"Starting {self.name} ({self.code}) scraper")
         self._start_batch()
 
+        total = 0
         try:
-            total = 0
             for source in self._sources:
                 for count, initiative in enumerate(source.initiatives()):
                     if not self.should_continue(count):
@@ -143,6 +148,7 @@ class Scraper(ABC):
             self.get_logger().exception("Error while reading list of initiatives")
             self._batch.stop(BatchImportState.FAILED)
         else:
+            # now this treats any other exception as valid!
             self._batch.stop(BatchImportState.IMPORTED)
         finally:
             self.get_logger().info(f"Saving {total} scraped initiatives from {self._batch.platform.name}")
@@ -173,6 +179,7 @@ class Scraper(ABC):
             self.add_initiative(initiative)
 
         # Not handling db errors, that is allowed to break execution!
+
 
     def _start_batch(self):
         platform = self.load_platform()
