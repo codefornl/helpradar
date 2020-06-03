@@ -3,7 +3,8 @@ from argparse import ArgumentParser
 from functools import reduce
 
 from models import InitiativeGroup, FeatureType
-from platformen import NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper
+from platformen import NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper, Maasburen, PuurPapendrecht, NijmegenOost
+# HeldNodig, MensenDieWillenHelpen, Zorgheldenauto
 from tools import Geocoder
 
 logging.basicConfig(level=logging.DEBUG)
@@ -25,9 +26,13 @@ parser.add_argument("-s", "--scrapers", help="specifies specific scrapers to run
 # HeldNodig().scrape()
 # MensenDieWillenHelpen().scrape()
 # Zorgheldenauto().scrape()
-# PuurPapendrecht().scrape()
-# NijmegenOost().scrape()
-scrapers = [NLvoorElkaar(), WijAmsterdam(), CoronaHelpersScraper()]
+scrapers = [
+    NLvoorElkaar(),
+    WijAmsterdam(),
+    CoronaHelpersScraper(),
+    PuurPapendrecht(),
+    NijmegenOost(),
+    Maasburen()]
 
 
 def docs():

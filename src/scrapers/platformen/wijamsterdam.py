@@ -26,45 +26,45 @@ class WijAmsterdamSource(PlatformSource):
         response = self.get(self.config.list_endpoint)
 
         try:
-            data = json.loads(
-                response.content,
-                object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+            data = json.loads(response.content)
 
             for item in data:
-                initiative = self.map_initiative(response, item)
+                initiative = self.map_initiative(item)
                 yield initiative
         except Exception as ex:
             msg = f"Error reading contents from {self.config.list_endpoint}"
             raise ScrapeException(msg) from ex
 
     @staticmethod
-    def map_initiative(response, item):
+    def map_initiative(item):
+        org = json.dumps(item)
         initiative = InitiativeImport(
-            source_id=item.id,
-            source_uri=f"https://wijamsterdam.nl/initiatief/{item.id}",
+            source_id=item["id"],
+            source_uri=f"https://wijamsterdam.nl/initiatief/{item['id']}",
             # using dateutil and not datetime because: https://stackoverflow.com/a/3908349/167131
-            created_at=parser.parse(item.createdAt),
-            name=item.title,
-            description=f"{item.summary}"
+            created_at=parser.parse(item["createdAt"]),
+            name=item["title"],
+            description=f"{item['summary']}"
                         f"\n--------\n"
-                        f"{item.description}",
+                        f"{item['description']}",
             group=InitiativeGroup.SUPPLY,
-            extra_fields=response.content.decode("utf-8")
+            extra_fields=org
             # Probably better to leave email / phone empty
             # name is already tricky maybe albeit open data.
         )
 
-        if hasattr(item.extraData, "area"):
-            initiative.location = item.extraData.area
-        if hasattr(item.extraData, "isOrganiserName"):
-            initiative.organiser = item.extraData.isOrganiserName
-        if hasattr(item.extraData, "theme"):
-            initiative.category = item.extraData.theme
-        if hasattr(item.extraData, "isOrganiserWebsite"):
-            initiative.url = item.extraData.isOrganiserWebsite
-        if hasattr(item, "position"):
-            initiative.latitude = item.position.lat
-            initiative.longitude = item.position.lng
+        extra_data = item["extraData"]
+        if "area" in extra_data:
+            initiative.location = extra_data["area"]
+        if "isOrganiserName" in extra_data:
+            initiative.organiser = extra_data["isOrganiserName"]
+        if "theme" in extra_data:
+            initiative.category = extra_data["theme"]
+        if "isOrganiserWebsite" in extra_data:
+            initiative.url = extra_data["isOrganiserWebsite"]
+        if "position" in item:
+            initiative.latitude = item["position"]["lat"]
+            initiative.longitude = item["position"]["lng"]
 
         return initiative
 
