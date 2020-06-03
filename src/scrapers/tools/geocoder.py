@@ -44,11 +44,7 @@ class Geocoder:
             exit()
 
         for item in location_set:
-            if feature_type is FeatureType.ADDRESS:
-                # Use None
-                self.geocode(item, db)
-            else:
-                self.geocode(item, db, feature_type=feature_type)
+            self.geocode(item, db, feature_type=feature_type)
 
     def geocode(self, item, db, feature_type=None):
         logger = get_logger()
@@ -87,6 +83,8 @@ class Geocoder:
                 for hit in zip_without_space:
                     geocode_term = geocode_term.replace(hit, hit[:4] + "" + hit[4:])
 
+            if feature_type is FeatureType.ADDRESS:
+                feature_type = None
             match = self.geo_locator.geocode(geocode_term, country_codes=["NL"],
                                              featuretype=feature_type,
                                              addressdetails=True)
