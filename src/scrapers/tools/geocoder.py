@@ -1,3 +1,4 @@
+import logging
 import re
 import time
 
@@ -12,9 +13,13 @@ from models.initiatives import InitiativeImport
 class Geocoder:
 
     def __init__(self):
-        self.geo_locator = Nominatim(user_agent="codefornl-covid19")
+        self.geo_locator = Nominatim(user_agent="code-for-nl-covid-19")
 
-    def batch(self, featuretype=None):
+    def get_logger(self) -> logging.Logger:
+        return logging.getLogger(__name__)
+
+    def batch(self, feature_type=None):
+        logger = self.get_logger()
         db = Db()
         # Default concat function to sqlite
         concat_func = func.group_concat(InitiativeImport.id.distinct()).label('id_array')
@@ -32,17 +37,18 @@ class Geocoder:
 
         # What if location set is blank?
         if len(location_set) == 0:
-            print("Ik wil geocoderen, maar er is geen data.")
+            logger.warning("Ik wil geocoderen, maar er is geen data.")
             exit()
 
         for item in location_set:
-            if featuretype is FeatureType.ADDRESS:
+            if feature_type is FeatureType.ADDRESS:
                 # Use None
                 self.geocode(item, db)
             else:
-                self.geocode(item, db, featuretype=featuretype)
+                self.geocode(item, db, feature_type=feature_type)
 
-    def geocode(self, item, db, featuretype=None):
+    def geocode(self, item, db, feature_type=None):
+        logger = self.get_logger()
         id_array = []
         match_address = "Niet gevonden"
 
@@ -55,40 +61,40 @@ class Geocoder:
         else:
             id_array = item[1].split(',')
 
-        geocodeterm = item[0]
+        geocode_term = item[0]
         # item.location prepareren voor stadsdelen
-        geocodeterm = geocodeterm.replace('Amsterdam Algemeen', 'Amsterdam')
+        geocode_term = geocode_term.replace('Amsterdam Algemeen', 'Amsterdam')
 
-        if geocodeterm.startswith('Stadsdeel'):
-            geocodeterm = geocodeterm + ' Amsterdam'
+        if geocode_term.startswith('Stadsdeel'):
+            geocode_term = geocode_term + ' Amsterdam'
 
         # is the item.location National?
-        if geocodeterm in ['Landelijk', 'Heel Nederland']:
+        if geocode_term in ['Landelijk', 'Heel Nederland']:
             match_address = 'Nederland'
             match_lat = None
             match_lon = None
-            msg = "WARNING: " + geocodeterm + " defined as `National`, " + str(len(id_array)) + \
-                  " entries set to `" + \
-                  match_address + "`"
+            logger.warning(geocode_term + " defined as `National`, " + str(len(id_array)) + \
+                            " entries set to `" + \
+                            match_address + "`")
         else:
             # is the item.location Dutch postal code correct?
-            zipwithoutspace = p.findall(item.location)
+            zip_without_space = p.findall(item.location)
 
-            if len(zipwithoutspace) > 0:
+            if len(zip_without_space) > 0:
 
-                for hit in zipwithoutspace:
-                    geocodeterm = geocodeterm.replace(hit, hit[:4] + '' + hit[4:])
+                for hit in zip_without_space:
+                    geocode_term = geocode_term.replace(hit, hit[:4] + '' + hit[4:])
 
-            match = self.geo_locator.geocode(geocodeterm, country_codes=['NL'],
-                                             featuretype=featuretype,
+            match = self.geo_locator.geocode(geocode_term, country_codes=['NL'],
+                                             featuretype=feature_type,
                                              addressdetails=True)
 
             if match is None:
                 match_lat = None
                 match_lon = None
-                msg = "WARNING: " + geocodeterm + " not found, " + str(len(id_array)) + \
-                      " entries set to `" + \
-                      match_address + "`"
+                logger.warning(geocode_term + " not found, " + str(len(id_array)) + \
+                                " entries set to `" + \
+                                match_address + "`")
             else:
                 if 'postcode' in match.raw["address"]:
                     match_address = match.raw["address"]["postcode"]
@@ -99,7 +105,7 @@ class Geocoder:
 
                 match_lat = match.latitude
                 match_lon = match.longitude
-                msg = "SUCCESS: " + str(len(id_array)) + " entries mapped to: `" + match_address + "`"
+                logger.info(str(len(id_array)) + " entries mapped to: `" + match_address + "`")
 
         db.session.query(InitiativeImport).filter(InitiativeImport.id.in_(id_array)).update({
             InitiativeImport.osm_address: match_address,
@@ -108,5 +114,4 @@ class Geocoder:
         }, synchronize_session=False)
 
         db.session.commit()
-        print(msg)
         time.sleep(1)  # Sleep so we don't overstretch the nominatim api
