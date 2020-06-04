@@ -9,7 +9,7 @@ from models import InitiativeImport, InitiativeGroup
 from platformen.nlvoorelkaar import NLvoorElkaar
 
 
-class TestNLvoorElkaarPlatformSourceSupply(TestCase):
+class TestNLvoorElkaarSupplyPlatformSource(TestCase):
 
     @requests_mock.Mocker()
     def setUp(self, request_mock):
@@ -52,7 +52,7 @@ class TestNLvoorElkaarPlatformSourceSupply(TestCase):
         ))
 
 
-class TestNLvoorElkaarPlatformSourceDemand(TestCase):
+class TestNLvoorElkaarDemandPlatformSource(TestCase):
 
     @requests_mock.Mocker()
     def setUp(self, request_mock):
