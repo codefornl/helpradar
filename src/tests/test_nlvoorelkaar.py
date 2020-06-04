@@ -4,19 +4,16 @@ from unittest import TestCase, skip
 import pytest
 import requests_mock
 
+from data import responses
 from models import InitiativeImport, InitiativeGroup
 from platformen.nlvoorelkaar import NLvoorElkaar
 
 
-class TestNLvoorElkaarPlatformSourceSuuply(TestCase):
+class TestNLvoorElkaarPlatformSourceSupply(TestCase):
 
     @requests_mock.Mocker()
     def setUp(self, request_mock):
-        # for a large part a cloen of Wij Amsterdam test
-        test_path = os.path.dirname(__file__)
-        file_path = os.path.join(test_path, "test_responses", "nlvoorelkaar_supply.html")
-        with open(file_path, 'r') as data_file:
-            self.response = data_file.read()
+        self.response = responses.read("nlvoorelkaar_supply.html")
 
         scraper = NLvoorElkaar()
         self.source = scraper._sources[0]
@@ -59,12 +56,8 @@ class TestNLvoorElkaarPlatformSourceDemand(TestCase):
 
     @requests_mock.Mocker()
     def setUp(self, request_mock):
-        # for a large part a cloen of Wij Amsterdam test
-        test_path = os.path.dirname(__file__)
-        file_path = os.path.join(test_path, "test_responses", "nlvoorelkaar_demand.html")
-        with open(file_path, 'r') as data_file:
-            self.response = data_file.read()
-
+        self.response = responses.read("nlvoorelkaar_demand.html")
+ 
         scraper = NLvoorElkaar()
         self.source = scraper._sources[1]
 

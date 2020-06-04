@@ -1,49 +1,19 @@
-import requests
-from bs4 import BeautifulSoup
+import logging
 
-from models import InitiativeImport, Db
+from platformen import Scraper
+from platformen.mijnbuurtje import MijnBuurtjeSource, MijnBuurtjeSourceConfig
 
 
-class PuurPapendrecht:
-    """A simple example class"""
-
+class PuurPapendrecht(Scraper):
     def __init__(self):
-        self.URL = 'https://puurpapendrecht.nl/elkaar-helpen?format=fragment&page='
+        super().__init__("https://www.puurpapendrecht.nl", 'Puur Papendrecht', "mbpp")
+        # form list enpoint
+        cfg = MijnBuurtjeSourceConfig(
+            "https://www.puurpapendrecht.nl",
+            "https://puurpapendrecht.nl/elkaar-helpen?themes_puurpapendrecht_deed%5B%5D=837&format=fragment",
+            "https://puurpapendrecht.nl/elkaar-helpen/",
+            "Papendrecht")
+        self.add_source(MijnBuurtjeSource(cfg))
 
-    def scrape(self):
-        db = Db()
-        counter = 1
-        while counter > 0:
-            # print(self.URL + str(counter))
-            page = requests.get(self.URL + str(counter))
-            soup = BeautifulSoup(page.content, 'html.parser')
-            results = soup.find_all(class_='postpreview')
-
-            if len(results) > 0:
-                counter += 1
-                for card in results:
-                    try:
-                        title = card.find(class_='heading3 heading3--semibold').text.strip(' \t\n\r')
-                        name = card.find(class_='entity-content-title').text
-                        description = card.find(class_='paragraph').text.strip(' \t\n\r')
-                        rawtheme = card.find(class_='postpreview-subtitle').text
-                        link = card.find(class_='postpreview-content')
-                        final_link = link['href']
-                        source_id = final_link.split('/')[-2]
-
-                        db.session.add(
-                            InitiativeImport(
-                                name=name + " - " + title,
-                                description=description,
-                                group=rawtheme,
-                                source=final_link,
-                                source_id=source_id,
-                            )
-                        )
-                    except:
-                        print(card)
-                        pass
-            else:
-                counter = -1
-
-        db.session.commit()
+    def get_logger(self) -> logging.Logger:
+        return logging.getLogger(__name__)
