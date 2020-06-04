@@ -68,7 +68,15 @@ class NLvoorElkaarSource(PlatformSource):
 
             if self.config.group == InitiativeGroup.DEMAND:
                 title = soup.find("h2", "result__title")
-                initiative.organiser = title.contents[0]
+                initiative.name = title.contents[0]
+
+            h5nodeOrganization = soup.find("h5", text="Aangesloten bij:")
+            if h5nodeOrganization:
+                initiative.organiser = h5nodeOrganization.find_next_sibling().get_text(strip=True)
+            else:
+                h5nodePerson = soup.find("h5", text="Geplaatst door:")
+                if h5nodePerson:
+                    initiative.organiser = h5nodePerson.find_next_sibling().get_text(strip=True)
 
             if not initiative.location:
                 self.try_alternative_place(soup, initiative)
