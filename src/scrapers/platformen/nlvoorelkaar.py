@@ -34,7 +34,7 @@ class NLvoorElkaarSource(PlatformSource):
 
     def initiatives(self) -> Generator[InitiativeImport, None, None]:
         url = self.config.get_list_url()
-        page = PlatformSource.get(url)
+        page = self.get(url)
 
         try:
             result = page.json()
@@ -53,7 +53,7 @@ class NLvoorElkaarSource(PlatformSource):
     def complete(self, initiative: InitiativeImport):
         initiative_url = self.config.get_initiative_url(initiative.source_id)
         # This already raises ScrapeExceptions
-        detail = PlatformSource.get(initiative_url)
+        detail = self.get(initiative_url)
 
         try:
             soup = BeautifulSoup(detail.content, 'html.parser')

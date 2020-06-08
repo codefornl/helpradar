@@ -18,7 +18,7 @@ from requests import HTTPError
 
 from models.database import Db
 from models.initiatives import Platform, BatchImportState, ImportBatch, InitiativeImport, InitiativeImportState
-
+from requests.structures import CaseInsensitiveDict
 
 class ScrapeException(Exception):
     """
@@ -34,7 +34,8 @@ class PlatformSourceConfig(object):
     Container to hold standard items usually required for a platform source
     to operate.
     """
-    def __init__(self, platform_url, list_endpoint, details_endpoint):
+    def __init__(self, platform_url, list_endpoint, details_endpoint, headers = None):
+
         self.platform_url = platform_url
         # we could/should improve on the endpoints using a url class of some sort
         # so we can provide query params separate have the get_*_url methods
@@ -43,6 +44,13 @@ class PlatformSourceConfig(object):
         # of some sort.
         self.list_endpoint = list_endpoint
         self.details_endpoint = details_endpoint
+        
+        httpHeaders = CaseInsensitiveDict()
+        httpHeaders['User-Agent'] = 'Helpradar.nl'
+        if headers is not None:
+            for key, value in headers.items():
+                httpHeaders[key] = value
+        self.headers = httpHeaders
 
     def get_list_url(self):
         return '%s%s' % (self.platform_url, self.list_endpoint)
@@ -76,10 +84,10 @@ class PlatformSource(ABC):
         """
         pass
 
-    @staticmethod
-    def get(uri):
+    def get(self, uri):
         try:
-            response = requests.get(uri)
+            response = requests.get(uri, headers = self.config.headers)
+            
             response.raise_for_status()
             return response
         except HTTPError as e:
