@@ -18,24 +18,22 @@ class Geocoder:
 
     def __init__(self):
         self.geo_locator = Nominatim(user_agent="code-for-nl-covid-19")
+        self.db = Db()
 
     def batch(self, feature_type=None):
         logger = get_logger()
-        db = Db()
         # Default concat function to sqlite
         concat_func = func.group_concat(InitiativeImport.id.distinct()).label("id_array")
 
-        if db.session.bind.driver != "pysqlite":
+        if self.db.session.bind.driver != "pysqlite":
             # Assume postgres
             concat_func = func.array_agg(InitiativeImport.id, type_=ARRAY(Integer)).label("id_string")
 
-        location_set = db.session.query(
+        location_set = self.db.session.query(
             InitiativeImport.location,
             concat_func
         ) \
             .filter(InitiativeImport.location.isnot(None)) \
-            .filter(InitiativeImport.longitude.isnot(None)) \
-            .filter(InitiativeImport.latitude.isnot(None)) \
             .with_for_update().group_by(InitiativeImport.location).all()
 
         # What if location set is blank?
@@ -44,9 +42,9 @@ class Geocoder:
             exit()
 
         for item in location_set:
-            self.geocode(item, db, feature_type=feature_type)
+            self.geocode(item, feature_type)
 
-    def geocode(self, item, db, feature_type=None):
+    def geocode(self, item, feature_type=None):
         logger = get_logger()
         match_address = "Niet gevonden"
 
@@ -60,11 +58,9 @@ class Geocoder:
             id_array = item[1].split(",")
 
         geocode_term = item[0]
+
         # item.location prepareren voor stadsdelen
         geocode_term = geocode_term.replace("Amsterdam Algemeen", "Amsterdam")
-
-        if geocode_term.startswith("Stadsdeel"):
-            geocode_term = geocode_term + " Amsterdam"
 
         # is the item.location National?
         if geocode_term in ["Landelijk", "Heel Nederland"]:
@@ -74,6 +70,12 @@ class Geocoder:
             logger.warning(geocode_term + " defined as `National`, " + str(len(id_array)) +
                            " entries set to `" +
                            match_address + "`")
+        elif geocode_term.startswith("Stadsdeel"):
+            match_address = "Amsterdam " + geocode_term.replace("Stadsdeel ", "")
+            match_lat = None
+            match_lon = None
+            logger.warning(f"Geocode term starts with as stadsdeel {geocode_term}, {len(id_array)} "
+                           f"entries set to `{match_address}` as result")
         else:
             # is the item.location Dutch postal code correct?
             zip_without_space = p.findall(item.location)
@@ -85,6 +87,7 @@ class Geocoder:
 
             if feature_type is FeatureType.ADDRESS:
                 feature_type = None
+
             match = self.geo_locator.geocode(geocode_term, country_codes=["NL"],
                                              featuretype=feature_type,
                                              addressdetails=True)
@@ -92,6 +95,7 @@ class Geocoder:
             if match is None:
                 match_lat = None
                 match_lon = None
+                match_address = geocode_term
                 logger.warning(geocode_term + " not found, " + str(len(id_array)) +
                                " entries set to `" +
                                match_address + "`")
@@ -107,11 +111,27 @@ class Geocoder:
                 match_lon = match.longitude
                 logger.info(str(len(id_array)) + " entries mapped to: `" + match_address + "`")
 
-        db.session.query(InitiativeImport).filter(InitiativeImport.id.in_(id_array)).update({
-            InitiativeImport.osm_address: match_address,
-            InitiativeImport.latitude: match_lat,
-            InitiativeImport.longitude: match_lon
-        }, synchronize_session=False)
+        self.bulk_update(match_address, match_lat, match_lon, id_array)
 
-        db.session.commit()
         time.sleep(1)  # Sleep so we don"t overstretch the nominatim api
+
+    def bulk_update(self, address, lat, lng, ids):
+        logger = get_logger()
+        # Updates address and lat/lng for Initiatives that don't have lat/lng from platform.
+        count_nolocation = self.db.session.query(InitiativeImport) \
+            .filter(InitiativeImport.id.in_(ids)) \
+            .filter(InitiativeImport.latitude == None) \
+            .update({
+            InitiativeImport.osm_address: address,
+            InitiativeImport.latitude: lat,
+            InitiativeImport.longitude: lng}, synchronize_session=False)
+        logger.info(f"Updated {count_nolocation} initiatives with address and geo coordinates.")
+
+        # Id's that already have lat/lng should only have the address updated
+        count_address_only = self.db.session.query(InitiativeImport) \
+            .filter(InitiativeImport.id.in_(ids)) \
+            .filter(InitiativeImport.latitude != None) \
+            .update({InitiativeImport.osm_address: address}, synchronize_session=False)
+        logger.info(f"Updated {count_address_only} initiatives with address only.")
+
+        self.db.session.commit()
