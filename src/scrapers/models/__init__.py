@@ -1,4 +1,5 @@
 from .database import Db
+from .geocoder import FeatureType
 from .initiatives import InitiativeBase, Platform, ImportBatch, InitiativeImport, BatchImportState, InitiativeGroup
 
 __all__ = [
@@ -9,4 +10,5 @@ __all__ = [
     "InitiativeGroup",
     "InitiativeImport",
     "Platform",
+    "FeatureType"
 ]
