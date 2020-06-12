@@ -35,6 +35,8 @@ class PlatformSourceConfig(object):
     Container to hold standard items usually required for a platform source
     to operate.
     """
+    DEFAULT_HEADER = {'User-Agent':'Helpradar.nl'}
+
     def __init__(self, platform_url, list_endpoint, details_endpoint, headers = None):
 
         self.platform_url = platform_url
@@ -45,8 +47,6 @@ class PlatformSourceConfig(object):
         # of some sort.
         self.list_endpoint = list_endpoint
         self.details_endpoint = details_endpoint
-        
-        self.defaultHeader = {'User-Agent':'Helpradar.nl'}
         self.headers = headers
 
     def get_list_url(self):
@@ -84,7 +84,7 @@ class PlatformSource(ABC):
     def get(self, uri):
         try:
             session = Session()
-            session.headers = self.config.defaultHeader
+            session.headers = self.config.DEFAULT_HEADER
             response = session.get(uri, headers = self.config.headers)
 
             response.raise_for_status()
