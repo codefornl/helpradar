@@ -15,6 +15,7 @@ from typing import Generator, List
 
 import requests
 from requests import HTTPError
+from requests import Session
 
 from models.database import Db
 from models.initiatives import Platform, BatchImportState, ImportBatch, InitiativeImport, InitiativeImportState
@@ -45,12 +46,8 @@ class PlatformSourceConfig(object):
         self.list_endpoint = list_endpoint
         self.details_endpoint = details_endpoint
         
-        httpHeaders = CaseInsensitiveDict()
-        httpHeaders['User-Agent'] = 'Helpradar.nl'
-        if headers is not None:
-            for key, value in headers.items():
-                httpHeaders[key] = value
-        self.headers = httpHeaders
+        self.defaultHeader = {'User-Agent':'Helpradar.nl'}
+        self.headers = headers
 
     def get_list_url(self):
         return '%s%s' % (self.platform_url, self.list_endpoint)
@@ -86,8 +83,10 @@ class PlatformSource(ABC):
 
     def get(self, uri):
         try:
-            response = requests.get(uri, headers = self.config.headers)
-            
+            session = Session()
+            session.headers = self.config.defaultHeader
+            response = session.get(uri, headers = self.config.headers)
+
             response.raise_for_status()
             return response
         except HTTPError as e:
