@@ -8,4 +8,4 @@ class TestGeocoder(TestCase):
         self.geocoder = Geocoder()
 
     def test_user_agent_set(self):
-        assert self.geocoder.geolocator.headers.get('User-Agent') is not None
+        assert self.geocoder.geo_locator.headers.get('User-Agent') is not None
