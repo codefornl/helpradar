@@ -37,7 +37,7 @@ class TestMijnBuurtjePlatformSource(TestCase):
         self.actual_item = self.actual_result[0]
 
     def setup_item_request(self, request_mock, response):
-        item_url_matcher = re.compile("/elkaar-helpen/[0-9]+")
+        item_url_matcher = re.compile("/elkaar-helpen/[0-9]+/[a-zA-Z0-9-]+")
         request_mock.get(item_url_matcher, text=response, status_code=200)
 
     def setup_list_requests(self, request_mock):
@@ -46,6 +46,9 @@ class TestMijnBuurtjePlatformSource(TestCase):
 
     def test_should_list_two_items(self):
         assert 2 == len(self.actual_result)
+
+    def test_should_source_uri(self):
+        assert self.actual_item.source_uri.endswith("elkaar-helpen/1838/hulp-bij-maasburen-nl")
 
     def test_should_scrape_name(self):
         assert "Hulp bij Maasburen.nl" == self.actual_item.name
@@ -77,7 +80,7 @@ class TestMijnBuurtjePlatformSource(TestCase):
     def test_should_set_location(self, request_mock):
         self.setup_item_request(request_mock, self.item_nolocation_response)
         test_source = MijnBuurtjeSource(self.config)
-        actual = InitiativeImport(source_uri=self.config.details_endpoint + "1234")
+        actual = InitiativeImport(source_uri=self.config.details_endpoint + "1234/loc-test")
         test_source.complete(actual)
 
         assert actual.location == self.config.location
