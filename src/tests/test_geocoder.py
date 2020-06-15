@@ -1,3 +1,4 @@
+import re
 from unittest import TestCase
 
 from tools import Geocoder
