@@ -20,15 +20,14 @@ class Match:
         self.lat = lat
         self.lon = lon
 
+# Regex for postal code written as `9999XX`
+POSTCAL_CODE_REGEX = re.compile(r"\d{4}[A-Za-z]{2}")
+# Regex that strips municipality from location if whole location doesn't deliver result
+# like finding Oisterwijk in  "'t Westend / 't Seuverick (Oisterwijk)"
+NLVE_MUNICIPALITY_REGEX = re.compile(r"[\w '-/]+\((?P<muni>[\w ]+)?\)")
+
 
 class Geocoder:
-    # Regex for postal code written as `9999XX`
-    POSTCAL_CODE_REGEX = re.compile(r"\d{4}[A-Z]{2}")
-    # Regex that strips municipality from location if whole location doesn't deliver result
-    # like finding Oisterwijk in  "'t Westend / 't Seuverick (Oisterwijk)"
-    NLVE_MUNICIPALITY_REGEX = re.compile(r"[\w '-/]+\((?P<muni>[\w ]+)?\)")
-
-
     def __init__(self):
         self.geo_locator = Nominatim(user_agent="code-for-nl-covid-19")
         self.db = Db()
@@ -112,7 +111,7 @@ class Geocoder:
 
     def match_nominatim(self, item, geocode_term, feature_type, id_array):
         # is the item.location Dutch postal code correct?
-        zip_without_space = self.POSTCAL_CODE_REGEX.findall(item.location)
+        zip_without_space = POSTCAL_CODE_REGEX.findall(item.location)
 
         if len(zip_without_space) > 0:
 
@@ -145,7 +144,7 @@ class Geocoder:
             return Match(match_address, match_lat, match_lon)
 
     def match_nominatim_nlve_muni(self, item, geocode_term, feature_type, id_array):
-        match = self.NLVE_MUNICIPALITY_REGEX.match(geocode_term)
+        match = NLVE_MUNICIPALITY_REGEX.match(geocode_term)
         if match:
             municipality = match.group('muni')
             get_logger().info(f"Trying to map {municipality} from {geocode_term}")
