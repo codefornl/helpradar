@@ -186,15 +186,43 @@ class MijnBuurtjeSource(PlatformSource):
 
 class MijnBuurtje(Scraper):
     """
-    Scrapes all known mijn buurtjes instances.
+    Scrapes all known mijn buurtje instances.
     """
     def __init__(self):
         super().__init__("https://mijnbuurtje.nl", "Mijn Buurtje", "mibu")
-        self._add_instance("https://nijmegen-oost.nl", {"theme%5B%5D": 836}, "Nijmegen")
-        self._add_instance("https://puurpapendrecht.nl", {"themes_puurpapendrecht_deed%5B%5D": 837}, "Papendrecht")
-        self._add_instance("https://maasburen.nl", {"theme%5B%5D": 836}, "Gemeente Maasburen")
+        self._add_instance("https://nijmegen-oost.nl", "Nijmegen")
+        self._add_instance("https://puurpapendrecht.nl", "Papendrecht", {"themes_puurpapendrecht_deed%5B%5D": 837})
+        self._add_instance("https://maasburen.nl", "Gemeente Maasburen")
+        self._add_instance("https://onsoverbetuwe.nl", "Gemeente Overbetuwe")
+        self._add_instance("https://buurtkanaal.nl", "Gemeente Brummen")
+        self._add_instance("https://onzewippolder.nl", "Gemeente Delft")
+        self._add_instance("https://kijkopdevoordijk.nl", "Gemeente Delft")
+        self._add_instance("https://buitenhofbruist.nl", "Gemeente Delft")
+        self._add_instance("https://onstanthof.nl", "Gemeente Delft")
+        self._add_instance("https://kenhem.com", "Ede")
+        self._add_instance("https://lindenholtleeft.nl", "Nijmegen")
+        self._add_instance("https://wijwijchen.nl", "Wijchen")
+        self._add_instance("https://mienthuus.de", "Kranenburg")
+        self._add_instance("https://buurtkiep.nl", "Den Bosch")
+        self._add_instance("https://stinskracht.nl", "Zwolle")
+        self._add_instance("https://entrede.nl", "Ede")
+        self._add_instance("https://centrede.nl", "Ede")
+        self._add_instance("https://haareneen.nl", "Haaren")
+        self._add_instance("https://utdorp.nl", "Venlo")
+        self._add_instance("https://mooimergelland.nl", "Eijsden-Margraten")
+        self._add_instance("https://onsalphenchaam.nl", "Alphen-Chaam")
+        self._add_instance("https://westersite.nl", "Amsterdam West")
+        self._add_instance("https://onsoosterhuizen.nl", "Apeldoorn")
+        self._add_instance("https://mijnbrakkenstein.nl", "Nijmegen")
+        self._add_instance("https://mijnspijkerkwartier.nl", "Arnhem")
+        self._add_instance("https://lentselucht.nl", "Nijmegen")
+        self._add_instance("https://onsthuus.nl", "Boxtel")
+        self._add_instance("https://nieuw-dijk.nl", "Nieuw-Dijk")
 
-    def _add_instance(self, url, query_params, location):
+    def _add_instance(self, url, location, query_params = None):
+        if not query_params:
+            query_params = {"theme%5B%5D": 836}
+
         qparams = "&".join([f"{k}={v}" for (k, v) in query_params.items()])
         cfg = MijnBuurtjeSourceConfig(
             url,
