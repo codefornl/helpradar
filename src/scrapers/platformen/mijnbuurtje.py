@@ -1,5 +1,6 @@
 import json
 import locale
+import logging
 import re
 import time
 from datetime import date
@@ -10,7 +11,7 @@ from lxml import etree
 
 from models import InitiativeImport
 from platformen.TreeParser import TreeParser
-from platformen.scraper import PlatformSource, PlatformSourceConfig, ScrapeException
+from platformen.scraper import PlatformSource, PlatformSourceConfig, ScrapeException, Scraper
 
 
 class MijnBuurtjeSourceConfig(PlatformSourceConfig):
@@ -182,3 +183,28 @@ class MijnBuurtjeSource(PlatformSource):
         frequency = {"on": elem}
         return json.dumps(frequency)
 
+
+class MijnBuurtje(Scraper):
+    """
+    Scrapes all known mijn buurtjes instances.
+    """
+    def __init__(self):
+        super().__init__("https://mijnbuurtje.nl", "Mijn Buurtje", "mibu")
+        self._add_instance("https://nijmegen-oost.nl", {"theme%5B%5D": 836}, "Nijmegen")
+        self._add_instance("https://puurpapendrecht.nl", {"themes_puurpapendrecht_deed%5B%5D": 837}, "Papendrecht")
+        self._add_instance("https://maasburen.nl", {"theme%5B%5D": 836}, "Gemeente Maasburen")
+
+    def _add_instance(self, url, query_params, location):
+        qparams = "&".join([f"{k}={v}" for (k, v) in query_params.items()])
+        cfg = MijnBuurtjeSourceConfig(
+            url,
+            f"{url}/elkaar-helpen?{qparams}&format=fragment",
+            f"{url}/elkaar-helpen/",
+            location)
+        self.add_source(MijnBuurtjeSource(cfg))
+
+    def get_logger(self) -> logging.Logger:
+        return logging.getLogger("platformen.mijnbuurtje")
+
+    def supports_group(self, group):
+        return True

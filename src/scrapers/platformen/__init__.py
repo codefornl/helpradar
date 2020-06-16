@@ -9,10 +9,12 @@ from .nlvoorelkaar import NLvoorElkaar
 # from .zorgheldenauto import Zorgheldenauto
 from .puurpapendrecht import PuurPapendrecht
 from .wijamsterdam import WijAmsterdam
+from .mijnbuurtje import MijnBuurtje
 
 __all__ = [
     'CoronaHelpersScraper',
     'Maasburen',
+    'MijnBuurtje',
     'NijmegenOost',
     'NLvoorElkaar',
     'PuurPapendrecht',
