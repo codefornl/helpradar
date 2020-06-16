@@ -180,7 +180,6 @@ class Scraper(ABC):
 
         # Not handling db errors, that is allowed to break execution!
 
-
     def _start_batch(self):
         platform = self.load_platform()
         self._batch = ImportBatch.start_new(platform)
@@ -244,6 +243,7 @@ class Scraper(ABC):
 
     def add_initiative(self, initiative):
         self._batch.initiatives.append(initiative)
+        self._db.session.commit()
 
     def get_logger(self) -> logging.Logger:
         raise NotImplementedError("Should be implemented by derived scraper")
