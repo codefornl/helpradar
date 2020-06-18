@@ -15,10 +15,11 @@ from typing import Generator, List
 
 import requests
 from requests import HTTPError
+from requests import Session
 
 from models.database import Db
 from models.initiatives import Platform, BatchImportState, ImportBatch, InitiativeImport, InitiativeImportState
-
+from requests.structures import CaseInsensitiveDict
 
 class ScrapeException(Exception):
     """
@@ -34,7 +35,10 @@ class PlatformSourceConfig(object):
     Container to hold standard items usually required for a platform source
     to operate.
     """
-    def __init__(self, platform_url, list_endpoint, details_endpoint):
+    DEFAULT_HEADER = {'User-Agent':'Helpradar.nl'}
+
+    def __init__(self, platform_url, list_endpoint, details_endpoint, headers = None):
+
         self.platform_url = platform_url
         # we could/should improve on the endpoints using a url class of some sort
         # so we can provide query params separate have the get_*_url methods
@@ -43,6 +47,7 @@ class PlatformSourceConfig(object):
         # of some sort.
         self.list_endpoint = list_endpoint
         self.details_endpoint = details_endpoint
+        self.headers = headers
 
     def get_list_url(self):
         return '%s%s' % (self.platform_url, self.list_endpoint)
@@ -60,6 +65,8 @@ class PlatformSource(ABC):
     
     def __init__(self, config: PlatformSourceConfig):
         self.config = config
+        self.session = Session()
+        self.session.headers = self.config.DEFAULT_HEADER
 
     def initiatives(self) -> Generator[InitiativeImport, None, None]:
         """
@@ -76,10 +83,9 @@ class PlatformSource(ABC):
         """
         pass
 
-    @staticmethod
-    def get(uri):
+    def get(self, uri):
         try:
-            response = requests.get(uri)
+            response = self.session.get(uri, headers = self.config.headers)
             response.raise_for_status()
             return response
         except HTTPError as e:
