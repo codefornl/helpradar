@@ -45,7 +45,7 @@ class CoronaPioniersSource(PlatformSource):
         self.category_dict = self.get_category_dict()
 
         url = self.config.get_api_list_url()
-        page = PlatformSource.get(url)
+        page = self.get(url)
 
         try:
             result = page.json()
@@ -67,7 +67,7 @@ class CoronaPioniersSource(PlatformSource):
 
     def complete(self, initiative: InitiativeImport):
         post_url = self.config.get_api_post_url(initiative.source_id)
-        detail = PlatformSource.get(post_url)
+        detail = self.get(post_url)
 
         try:
             initiative_url_guid = '75aa5e4d-fe98-4a7a-94ec-adab2f7f9b88'
@@ -103,7 +103,7 @@ class CoronaPioniersSource(PlatformSource):
                 if result['values'][image_url_guid]:
                     image_id=result['values'][image_url_guid][0]
                     image_api_url = self.config.get_api_media_url(image_id)
-                    image_response = PlatformSource.get(image_api_url)
+                    image_response = self.get(image_api_url)
                     image_response_json = image_response.json()
                     if image_response_json['original_file_url']:
                         image_url = image_response_json['original_file_url']
@@ -121,7 +121,7 @@ class CoronaPioniersSource(PlatformSource):
     def get_category_dict(self):
         category_dict = dict()
         category_tags_url = self.config.get_api_category_tags_url()
-        category_tags = PlatformSource.get(category_tags_url)
+        category_tags = self.get(category_tags_url)
 
         try:
             result = category_tags.json()

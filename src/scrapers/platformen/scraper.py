@@ -65,6 +65,8 @@ class PlatformSource(ABC):
     
     def __init__(self, config: PlatformSourceConfig):
         self.config = config
+        self.session = Session()
+        self.session.headers = self.config.DEFAULT_HEADER
 
     def initiatives(self) -> Generator[InitiativeImport, None, None]:
         """
@@ -83,10 +85,7 @@ class PlatformSource(ABC):
 
     def get(self, uri):
         try:
-            session = Session()
-            session.headers = self.config.DEFAULT_HEADER
-            response = session.get(uri, headers = self.config.headers)
-
+            response = self.session.get(uri, headers = self.config.headers)
             response.raise_for_status()
             return response
         except HTTPError as e:
