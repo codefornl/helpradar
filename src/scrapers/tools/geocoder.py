@@ -33,7 +33,26 @@ class Geocoder:
         self.db = Db()
 
     def batch(self, feature_type=None):
+
+        # self.geocode(feature_type)
+        self.reverse(feature_type)
+
+    def reverse(self, feature_type=None):
+        reverse_candidates = self.db.session.query(InitiativeImport)\
+            .filter(InitiativeImport.location.is_(None))\
+            .filter(InitiativeImport.latitude.isnot(None))\
+            .filter(InitiativeImport.osm_address.is_(None))
+
+        for initiative in reverse_candidates:
+            match = self.geo_locator.reverse((initiative.latitude, initiative.longitude),
+                                                        True, addressdetails=True)
+            initiative.osm_address = self.get_address(match)
+            get_logger().info(f"Resolved {initiative.name} to be located in {initiative.osm_address}")
+            self.db.session.commit()
+
+    def geocode(self, feature_type=None):
         logger = get_logger()
+        #
         # Default concat function to sqlite
         concat_func = func.group_concat(InitiativeImport.id.distinct()).label("id_array")
 
@@ -128,16 +147,7 @@ class Geocoder:
         if match is None:
             return None
         else:
-            match_address = None
-            if "postcode" in match.raw["address"]:
-                match_address = match.raw["address"]["postcode"]
-            if "village" in match.raw["address"]:
-                match_address = match.raw["address"]["village"]
-            if "town" in match.raw["address"]:
-                match_address = match.raw["address"]["town"]
-            elif "city" in match.raw["address"]:
-                match_address = match.raw["address"]["city"]
-
+            match_address = self.get_address(match)
             match_lat = match.latitude
             match_lon = match.longitude
             get_logger().info(f"{str(len(id_array))} entries mapped to: `" + match_address + "`")
@@ -172,3 +182,16 @@ class Geocoder:
         logger.info(f"Updated {count_address_only} initiatives with address only.")
 
         self.db.session.commit()
+
+    def get_address(self, match):
+        match_address = None
+        if "postcode" in match.raw["address"]:
+            match_address = match.raw["address"]["postcode"]
+        if "village" in match.raw["address"]:
+            match_address = match.raw["address"]["village"]
+        if "town" in match.raw["address"]:
+            match_address = match.raw["address"]["town"]
+        elif "city" in match.raw["address"]:
+            match_address = match.raw["address"]["city"]
+
+        return match_address
