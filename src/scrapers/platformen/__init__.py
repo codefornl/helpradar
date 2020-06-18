@@ -9,6 +9,7 @@ from .nlvoorelkaar import NLvoorElkaar
 # from .zorgheldenauto import Zorgheldenauto
 from .puurpapendrecht import PuurPapendrecht
 from .wijamsterdam import WijAmsterdam
+from .coronapioniers import CoronaPioniers
 
 __all__ = [
     'CoronaHelpersScraper',
@@ -18,4 +19,5 @@ __all__ = [
     'PuurPapendrecht',
     'Scraper',
     'WijAmsterdam',
+    'CoronaPioniers'
 ]

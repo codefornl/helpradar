@@ -1,6 +1,7 @@
 import json
 import locale
 import re
+import time
 from datetime import date
 from typing import Generator
 from calendar import month_name
@@ -66,7 +67,8 @@ class MijnBuurtjeSource(PlatformSource):
     def __init__(self, config: MijnBuurtjeSourceConfig):
         super().__init__(config)
         self.item_parser = TreeParser(None, None, self.ITEM_SCHEMA)
-        self.initiative_links_re = re.compile(self.config.details_endpoint + "\\d{4,5}")
+
+        self.initiative_links_re = re.compile(self.config.details_endpoint + "\\d{4,5}/[a-zA-Z0-9-]+")
 
     def initiatives(self) -> Generator[InitiativeImport, None, None]:
         page_counter = 1
@@ -88,7 +90,7 @@ class MijnBuurtjeSource(PlatformSource):
 
                 output = initiative_parser.apply_schemas()
                 for uri in output['initiatives']:
-                    yield InitiativeImport(source_uri=uri)
+                    yield InitiativeImport(source_uri=uri[0])
 
                 page_counter = page_counter + 1
         except Exception as ex:
@@ -96,6 +98,9 @@ class MijnBuurtjeSource(PlatformSource):
 
     def complete(self, initiative: InitiativeImport):
         try:
+            # Robots.txt mentions 10 secs crawl delay.
+            time.sleep(10)
+
             session_metadata = self.item_parser.get_session_metadata(initiative.source_uri)
             full_initiative = self.item_parser.apply_schemas(metadata=session_metadata,
                                                              url=initiative.source_uri)
@@ -104,6 +109,7 @@ class MijnBuurtjeSource(PlatformSource):
 
             if not initiative.location:
                 initiative.location = self.config.location
+
         except Exception as ex:
             raise ScrapeException(f"Error scraping {initiative.source_uri}") from ex
 
@@ -136,7 +142,8 @@ class MijnBuurtjeSource(PlatformSource):
             if type(e) in [etree._ElementUnicodeResult]:
                 texts.append(f"{e.strip()}")
             else:
-                texts.append(f"{e.text.strip()}")
+                if e.tag == "p" or e.tag == "span" or e.tag == "div":
+                    texts.append(f"{e.text.strip()}")
         return ' '.join(texts)
 
     @staticmethod

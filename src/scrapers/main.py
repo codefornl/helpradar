@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 from functools import reduce
 
 from models import InitiativeGroup, FeatureType
-from platformen import NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper, Maasburen, PuurPapendrecht, NijmegenOost
+from platformen import NLvoorElkaar, WijAmsterdam, CoronaHelpersScraper, Maasburen, PuurPapendrecht, NijmegenOost, CoronaPioniers
 # HeldNodig, MensenDieWillenHelpen, Zorgheldenauto
 from tools import Geocoder
 
@@ -32,7 +32,8 @@ scrapers = [
     CoronaHelpersScraper(),
     PuurPapendrecht(),
     NijmegenOost(),
-    Maasburen()]
+    Maasburen(),
+    CoronaPioniers()]
 
 
 def docs():
