@@ -27,7 +27,7 @@ class TestMijnBuurtjePlatformSource(TestCase):
                                          "https://testbuurtje.nl/elkaar-helpen?theme%5B%5D=836&format=fragment",
                                          "https://testbuurtje.nl/elkaar-helpen/",
                                          "Test Town")
-        self.test_source = MijnBuurtjeSource(self.config)
+        self.test_source = MijnBuurtjeSource(self.config, delay=0)
 
         self.setup_list_requests(request_mock)
         self.setup_item_request(request_mock, self.item_response)
@@ -79,7 +79,7 @@ class TestMijnBuurtjePlatformSource(TestCase):
     @requests_mock.Mocker()
     def test_should_set_location(self, request_mock):
         self.setup_item_request(request_mock, self.item_nolocation_response)
-        test_source = MijnBuurtjeSource(self.config)
+        test_source = MijnBuurtjeSource(self.config, delay=0)
         actual = InitiativeImport(source_uri=self.config.details_endpoint + "1234/loc-test")
         test_source.complete(actual)
 
@@ -96,7 +96,7 @@ class TestMijnBuurtjePlatformSource(TestCase):
 
     @requests_mock.Mocker()
     def test_should_wrap_complete_exceptions(self, request_mock):
-        test_source = MijnBuurtjeSource(self.config)
+        test_source = MijnBuurtjeSource(self.config, delay=0)
         self.setup_item_request(request_mock, self.item_response)
 
         with patch.object(TreeParser, 'apply_schemas', side_effect=HtmlParseError()):

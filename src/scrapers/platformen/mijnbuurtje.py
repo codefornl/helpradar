@@ -65,10 +65,12 @@ class MijnBuurtjeSource(PlatformSource):
             MONTHS = ["", "januari", "februari", "maart", "april", "mei", "juni",
                       "juli", "augustus", "september", "oktober", "november", "december"]
 
-    def __init__(self, config: MijnBuurtjeSourceConfig):
-        super().__init__(config)
-        self.item_parser = TreeParser(None, None, self.ITEM_SCHEMA)
+    delay = 10
 
+    def __init__(self, config: MijnBuurtjeSourceConfig, delay: int = 10):
+        super().__init__(config)
+        self.delay = delay
+        self.item_parser = TreeParser(None, None, self.ITEM_SCHEMA)
         self.initiative_links_re = re.compile(self.config.details_endpoint + "\\d{4,5}/[a-zA-Z0-9-]+")
 
     def initiatives(self) -> Generator[InitiativeImport, None, None]:
@@ -100,7 +102,7 @@ class MijnBuurtjeSource(PlatformSource):
     def complete(self, initiative: InitiativeImport):
         try:
             # Robots.txt mentions 10 secs crawl delay.
-            time.sleep(10)
+            time.sleep(self.delay)
 
             session_metadata = self.item_parser.get_session_metadata(initiative.source_uri)
             full_initiative = self.item_parser.apply_schemas(metadata=session_metadata,
